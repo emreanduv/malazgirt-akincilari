@@ -27,6 +27,11 @@
    `jarsigner -sigalg SHA256withRSA -digestalg SHA-256 -keystore imza-anahtari/malazgirt-upload.jks paket.aab malazgirt`
    → Play Console'da yeni sürüm olarak yükle.
 
+## 1.0.1 (14 Ekim 2026, iPhone testinden sonra)
+- Bölüm 2 geliştirme almadan iki kez kaybedildi → zorluk acemi oyuncuya göre yeniden ayarlandı (araclar/kalibre.js).
+- Geliştirme alınabilirken menü, brifing ve zafer ekranında uyarı.
+- iOS: TestFlight'a 1.0.1 yüklendi. Android: `imza-anahtari/malazgirt-1.0.1-3-imzali.aab` hazır.
+
 ## Sıradakiler
 - Apple ve Google'ın inceleme yanıtlarını bekle.
 - 12+ test kullanıcısının Gmail adresini "Hisar Testçileri" listesine ekle, 14 gün sonra üretim başvurusu.
