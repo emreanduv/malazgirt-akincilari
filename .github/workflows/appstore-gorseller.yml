@@ -16,7 +16,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Görselleri hazırla
         run: |
-          mkdir -p fastlane/screenshots/tr
+          mkdir -p fastlane/screenshots/tr fastlane/metadata
+          echo '# deliver ayarları komut satırından veriliyor' > fastlane/Deliverfile
           cp store/screenshots-ios/*.png fastlane/screenshots/tr/
           ls -la fastlane/screenshots/tr
       - name: App Store Connect anahtarı
@@ -24,8 +25,9 @@ jobs:
         run: |
           python3 -c "import json,os; json.dump({'key_id':os.environ['ASC_KEY_ID'],'issuer_id':os.environ['ASC_ISSUER_ID'],'key':os.environ['P8'],'in_house':False}, open('api_key.json','w'))"
       - name: Yükle
+        env: { CI: "true", FASTLANE_SKIP_UPDATE_CHECK: "1", FASTLANE_HIDE_CHANGELOG: "1" }
         run: |
           fastlane deliver --api_key_path api_key.json --app_identifier com.anduv.malazgirt \
             --app_version "${{ inputs.version_name }}" --skip_binary_upload true --skip_metadata true \
-            --screenshots_path fastlane/screenshots --overwrite_screenshots true \
+            --screenshots_path fastlane/screenshots --metadata_path fastlane/metadata --overwrite_screenshots true --precheck_include_in_app_purchases false \
             --force true --run_precheck_before_submit false --submit_for_review false
