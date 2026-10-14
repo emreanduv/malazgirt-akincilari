@@ -409,7 +409,7 @@ function finish(win) {
     const last = i === NL - 1;
     $('wTitle').textContent = last ? 'MALAZGİRT!' : 'ZAFER!';
     $('wStars').innerHTML = starHtml(stars);
-    $('wStats').innerHTML = (last ? '' : G.L.ad + ' geçildi.<br>') + 'Sağ kalan akıncı: <b>' + G.count + '</b>' + (G.heroes ? ' · Altın Alp: <b>' + G.heroes + '</b>' : '') + '<br>Dağıtılan Bizans askeri: <b>' + fmt(G.kills) + '</b>';
+    $('wStats').innerHTML = (last ? '' : G.L.ad + ' geçildi.<br>') + 'Sağ kalan akıncı: <b>' + G.count + '</b>' + (G.heroes ? ' · Altın Alp: <b>' + G.heroes + '</b>' : '') + '<br>Dağıtılan Bizans askeri: <b>' + fmt(G.kills) + '</b>' + (!last && canUpgrade() ? '<br><span class="hint">Ordugâh\'ta yeni geliştirme alabilirsin!</span>' : '');
     $('wEpi').hidden = !last;
     if (last) $('wEpi').textContent = '26 Ağustos 1071. Bizans ordusu dağıldı, İmparator Romen Diyojen esir düştü. Sultan Alparslan onu bağışlayıp serbest bıraktı. Anadolu\'nun kapıları açıldı.';
     $('wGain').textContent = gain;
@@ -434,10 +434,14 @@ function show(n) {
   $('hud').hidden = !playing; $('weapon').hidden = !playing; $('sndBtn').hidden = !(n === 'menu' || n === 'pause');
   if (n === 'menu') renderMenu(); if (n === 'levels') renderLevels(); if (n === 'camp') renderCamp();
 }
+const canUpgrade = () => M.UPG.some(u => S.up[u.k] < M.UPMAX && S.coins >= M.upCost(u, S.up[u.k]));
+let campFrom = 'menu';
+function openCamp(from) { campFrom = from; show('camp'); }
 const nextLevel = () => Math.min(NL - 1, S.unlocked - 1);
 function renderMenu() {
   const i = nextLevel(); $('mCoins').textContent = S.coins; $('mStars').textContent = totalStars() + ' / ' + NL * 3 + ' yıldız';
   $('bPlaySub').textContent = 'Bölüm ' + (i + 1) + ' · ' + M.LEVELS[i].ad;
+  $('bCamp').classList.toggle('notify', canUpgrade());
 }
 let regionSel = -1;
 function renderLevels() {
@@ -487,6 +491,7 @@ function openBrief(i) {
   const kinds = new Set(); let boss = null; L.objs.forEach(o => { if (o.t === 'squad') kinds.add(o.ft); if (o.t === 'boss') boss = o; });
   let chips = ''; kinds.forEach(k => chips += '<span class="chip">' + M.FOES[k].ad + '</span>'); if (boss) chips += '<span class="chip boss">' + M.BOSSES[boss.id].ad + '</span>';
   $('brFoes').innerHTML = chips;
+  $('brCamp').hidden = !canUpgrade();
   previewLevel(i); show('brief');
 }
 function pause(on) { if (mode !== 'play') return; paused = on; drag = false; show(on ? 'pause' : null); drumOn = !on; }
@@ -494,7 +499,9 @@ function pause(on) { if (mode !== 'play') return; paused = on; drag = false; sho
 document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => { SFX.click(); const g = b.dataset.go; if (g === 'menu') { previewLevel(nextLevel()); } show(g); }));
 $('bPlay').addEventListener('click', () => { unlockAudio(); SFX.click(); openBrief(nextLevel()); });
 $('bLevels').addEventListener('click', () => { SFX.click(); regionSel = -1; show('levels'); });
-$('bCamp').addEventListener('click', () => { SFX.click(); show('camp'); });
+$('bCamp').addEventListener('click', () => { SFX.click(); openCamp('menu'); });
+$('brCamp').addEventListener('click', () => { SFX.click(); openCamp('brief'); });
+$('cBack').addEventListener('click', () => { SFX.click(); if (campFrom === 'brief') openBrief(briefI); else { previewLevel(nextLevel()); show('menu'); } });
 $('bStart').addEventListener('click', () => { unlockAudio(); startGame(briefI); });
 $('pauseBtn').addEventListener('click', () => { SFX.click(); pause(true); });
 $('pResume').addEventListener('click', () => { SFX.click(); pause(false); });
@@ -504,7 +511,7 @@ $('wNext').addEventListener('click', () => { SFX.click(); if (lastRes.i >= NL - 
 $('wRetry').addEventListener('click', () => { SFX.click(); startGame(lastRes.i); });
 $('wMenu').addEventListener('click', () => { SFX.click(); previewLevel(nextLevel()); show('menu'); });
 $('lRetry').addEventListener('click', () => { SFX.click(); startGame(lastRes.i); });
-$('lCamp').addEventListener('click', () => { SFX.click(); previewLevel(lastRes.i); show('camp'); });
+$('lCamp').addEventListener('click', () => { SFX.click(); briefI = lastRes.i; openCamp('brief'); });
 $('lMenu').addEventListener('click', () => { SFX.click(); previewLevel(nextLevel()); show('menu'); });
 
 /* ================= ÇİZİM ================= */

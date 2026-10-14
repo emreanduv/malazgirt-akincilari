@@ -13,7 +13,10 @@ function bot(G, o) {
 function botCore(G, o) {
   // 1) Yakın kapı varsa iyi tarafı seç
   const g = G.gates.find(g => !g.passed && G.z - g.z < 30 && G.z - g.z > -1);
-  if (g) { const l = M.applyOp(G.count, g.L), r = M.applyOp(G.count, g.R); let left = l >= r; if (o.r && o.r() < (o.wrong || 0)) left = !left; G.tx = left ? -3 : 3; return; }
+  if (g) { const l = M.applyOp(G.count, g.L), r = M.applyOp(G.count, g.R); let left = l >= r;
+    // insanlar bariz farkı kaçırmaz, yakın seçeneklerde yanılır
+    const ratio = Math.max(l, r) / Math.max(1, Math.min(l, r));
+    if (o.r && o.r() < (o.wrong || 0) / (1 + 2 * (ratio - 1))) left = !left; G.tx = left ? -3 : 3; return; }
   // 2) Önündeki yapıya: eritebiliyorsa hizalan, eritemiyorsa kaç
   const dps = (G.count + G.heroes * M.HERO_POW) * G.st.dmg * M.WEAPONS[G.wTier].m * G.st.rate;
   const ahead = G.objs.filter(o => o.alive && o.z < G.z && G.z - o.z < 30).sort((a, b) => b.z - a.z);

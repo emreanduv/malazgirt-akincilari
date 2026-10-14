@@ -80,6 +80,9 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .alt:active{transform:translateY(4px);box-shadow:0 1px 0 #0b4f53}
 .alt.dark{background:linear-gradient(180deg,#2c5590,var(--lapis));box-shadow:0 5px 0 var(--lapis-d)}
 .row{display:flex;gap:12px}.row>*{flex:1;min-width:0}
+.notify{position:relative}.notify::after{content:'';position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;background:#e23b3b;border:2px solid #fff8ea;animation:ping 1.2s ease-in-out infinite}
+@keyframes ping{50%{transform:scale(1.3)}}
+.hint{color:#f0b232;font-weight:800}
 .meta{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .credit{font-size:13px;font-weight:600;opacity:.75;text-align:center}
 #sndBtn{position:fixed;right:max(14px,env(safe-area-inset-right,0px));top:calc(env(safe-area-inset-top,0px) + 14px);z-index:5;width:46px;height:46px;border-radius:50%;
@@ -191,7 +194,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 
 <!-- Ordugâh -->
 <section id="scrCamp" class="screen solid" hidden>
-  <div class="topbar"><button class="back" data-go="menu" aria-label="Geri">‹</button><h2>Ordugâh</h2><div class="pill"><b class="akce"></b><span id="cCoins">0</span></div></div>
+  <div class="topbar"><button class="back" id="cBack" aria-label="Geri">‹</button><h2>Ordugâh</h2><div class="pill"><b class="akce"></b><span id="cCoins">0</span></div></div>
   <div class="camp" id="camp"></div>
   <p class="note">Akçe her zaferle gelir. İlk zafer tam ödül, tekrar oynadığın bölümler üçte bir ödül verir. Takıldığın yerde eski bölümleri yıldızlamak da iyi gelir.</p>
 </section>
@@ -207,7 +210,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
     <p id="brText"></p>
     <div class="foes" id="brFoes"></div>
   </div>
-  <div class="stack"><button class="big" id="bStart">SAVAŞA BAŞLA</button></div>
+  <div class="stack"><button class="alt dark notify" id="brCamp" hidden>Önce Ordugâh: geliştirme hazır</button><button class="big" id="bStart">SAVAŞA BAŞLA</button></div>
 </section>
 
 <!-- Duraklat -->
