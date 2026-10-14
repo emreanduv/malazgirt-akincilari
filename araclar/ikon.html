@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8">
+<!-- Uygulama ikonu, açılış ekranı ve Google Play öne çıkan görseli üretir. araclar/magaza-gorselleri.js açar ve ekran görüntüsü alır.
+     ?tur=ikon | ikon-on (Android ön plan, saydam) | splash | feature -->
+<style>
+@font-face{font-family:"Baloo 2";font-weight:800;src:url(../www/fonts/baloo-2-latin-ext-800-normal.woff2) format("woff2");unicode-range:U+0100-02AF}
+@font-face{font-family:"Baloo 2";font-weight:800;src:url(../www/fonts/baloo-2-latin-800-normal.woff2) format("woff2");unicode-range:U+0000-00FF}
+html,body{margin:0;background:transparent}
+#w{position:relative;overflow:hidden}
+#bg{position:absolute;inset:0;width:100%;height:100%}#gl{position:absolute}
+#txt{position:absolute;left:0;right:0;text-align:center;font-family:"Baloo 2",sans-serif;font-weight:800;color:#fff}
+</style></head><body>
+<div id="w"><canvas id="bg"></canvas><canvas id="gl"></canvas><div id="txt"></div></div>
+<script src="../www/lib/three.min.js"></script>
+<script>
+const tur = new URLSearchParams(location.search).get('tur') || 'ikon';
+const SIZE = { ikon: [1024, 1024], 'ikon-on': [1024, 1024], splash: [2732, 2732], feature: [1024, 500] }[tur];
+const [W, H] = SIZE; const w = document.getElementById('w'); w.style.width = W + 'px'; w.style.height = H + 'px';
+const bg = document.getElementById('bg'); bg.width = W; bg.height = H; const c = bg.getContext('2d');
+
+function seljukStar(cx, cy, r, fill, stroke, lw) {
+  c.save(); c.translate(cx, cy);
+  for (let k = 0; k < 2; k++) { c.save(); c.rotate(k * Math.PI / 4); c.beginPath(); c.rect(-r * .707, -r * .707, r * 1.414, r * 1.414); if (fill) { c.fillStyle = fill; c.fill(); } if (stroke) { c.lineWidth = lw; c.strokeStyle = stroke; c.stroke(); } c.restore(); }
+  c.restore();
+}
+function pattern(alpha) {
+  const s = Math.max(W, H) / 7;
+  for (let y = -s; y < H + s; y += s) for (let x = -s; x < W + s; x += s) seljukStar(x + ((y / s) % 2 ? s / 2 : 0), y, s * 0.3, null, `rgba(127,227,231,${alpha})`, Math.max(2, s * 0.025));
+}
+// zemin
+if (tur !== 'ikon-on') {
+  const g = c.createRadialGradient(W / 2, H * 0.42, 10, W / 2, H / 2, Math.max(W, H) * 0.75);
+  g.addColorStop(0, '#2c5c9a'); g.addColorStop(0.55, '#1d3f6e'); g.addColorStop(1, '#0c1c34'); c.fillStyle = g; c.fillRect(0, 0, W, H);
+  pattern(0.10);
+}
+// büyük altın Selçuklu yıldızı ve hilal
+const R = tur === 'feature' ? H * 0.42 : Math.min(W, H) * (tur === 'splash' ? 0.17 : 0.38);
+const cx = tur === 'feature' ? W * 0.27 : W / 2, cy = tur === 'feature' ? H * 0.52 : (tur === 'splash' ? H * 0.4 : H * 0.5);
+if (tur !== 'ikon-on') {
+  seljukStar(cx, cy, R, 'rgba(240,178,50,.95)', '#9a5f0e', R * 0.04);
+  seljukStar(cx, cy, R * 0.86, '#1fa3a8', null, 0);
+  seljukStar(cx, cy, R * 0.8, null, 'rgba(255,248,234,.55)', R * 0.015);
+}
+
+// 3D altın akıncı
+const gl = document.getElementById('gl');
+const GS = tur === 'feature' ? H * 1.0 : tur === 'splash' ? R * 2.3 : W;
+gl.width = GS; gl.height = GS; gl.style.inset = 'auto'; gl.style.width = GS + 'px'; gl.style.height = GS + 'px'; gl.style.left = (cx - GS / 2) + 'px'; gl.style.top = (cy - GS / 2 - (tur === 'ikon-on' ? 0 : GS * 0.02)) + 'px';
+const renderer = new THREE.WebGLRenderer({ canvas: gl, antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setSize(GS, GS, false); renderer.setClearColor(0x000000, 0);
+const scene = new THREE.Scene();
+const cam = new THREE.PerspectiveCamera(28, 1, 0.1, 100);
+scene.add(new THREE.HemisphereLight(0xfff4dc, 0x3a4a6a, 0.85));
+const d = new THREE.DirectionalLight(0xfff0d2, 0.95); d.position.set(3, 4, 5); scene.add(d);
+const rim = new THREE.DirectionalLight(0x7fe3e7, 0.7); rim.position.set(-4, 2, -3); scene.add(rim);
+const gold = new THREE.MeshPhongMaterial({ color: 0xe8b33a, specular: 0xfff2b0, shininess: 90, emissive: 0x3d2800 });
+const tq = new THREE.MeshPhongMaterial({ color: 0x1aa3a8, shininess: 30 });
+const tqd = new THREE.MeshPhongMaterial({ color: 0x137479, shininess: 30 });
+const steel = new THREE.MeshPhongMaterial({ color: 0xdfe4ea, specular: 0xffffff, shininess: 120 });
+const red = new THREE.MeshLambertMaterial({ color: 0xc8303a });
+const skin = new THREE.MeshLambertMaterial({ color: 0xe2b68c });
+const cloth = new THREE.MeshLambertMaterial({ color: 0xf3ead6 });
+const dark = new THREE.MeshLambertMaterial({ color: 0x3a2a1f });
+const wood = new THREE.MeshPhongMaterial({ color: 0x7a4520, shininess: 40 });
+const hero = new THREE.Group();
+function add(geo, mat, x, y, z, rx = 0, ry = 0, rz = 0) { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.set(rx, ry, rz); hero.add(m); return m; }
+add(new THREE.BoxGeometry(.32, .42, .22), dark, 0, .21, 0);
+add(new THREE.CylinderGeometry(.19, .3, .56, 20), tq, 0, .68, 0);
+add(new THREE.CylinderGeometry(.235, .235, .08, 20), gold, 0, .5, 0);
+add(new THREE.TorusGeometry(.215, .025, 8, 24), gold, 0, .86, 0, Math.PI / 2, 0, 0);
+add(new THREE.BoxGeometry(.48, .14, .26), tqd, 0, .92, 0);
+add(new THREE.SphereGeometry(.17, 24, 16), skin, 0, 1.08, 0);
+add(new THREE.CylinderGeometry(.205, .2, .1, 24), cloth, 0, 1.16, 0);
+add(new THREE.ConeGeometry(.2, .46, 24), steel, 0, 1.42, 0);
+add(new THREE.SphereGeometry(.035, 10, 8), gold, 0, 1.66, 0);
+add(new THREE.ConeGeometry(.045, .22, 8), red, 0, 1.75, 0);
+add(new THREE.SphereGeometry(.028, 10, 8), new THREE.MeshBasicMaterial({ color: 0x1b1b1b }), -.06, 1.1, .158);
+add(new THREE.SphereGeometry(.028, 10, 8), new THREE.MeshBasicMaterial({ color: 0x1b1b1b }), .06, 1.1, .158);
+add(new THREE.BoxGeometry(.16, .035, .04), dark, 0, 1.02, .16);
+// sol elde dikey yay, sırtta sadak
+const bowG = new THREE.Group(); bowG.position.set(-.36, .86, .12);
+const arc = new THREE.Mesh(new THREE.TorusGeometry(.42, .028, 8, 28, Math.PI), wood); arc.rotation.z = Math.PI / 2; bowG.add(arc);
+const tip1 = new THREE.Mesh(new THREE.SphereGeometry(.04, 8, 6), gold); tip1.position.set(0, .42, 0); bowG.add(tip1);
+const tip2 = tip1.clone(); tip2.position.y = -.42; bowG.add(tip2);
+const str = new THREE.Mesh(new THREE.BoxGeometry(.01, .84, .01), new THREE.MeshBasicMaterial({ color: 0xfff6d8 })); bowG.add(str);
+hero.add(bowG);
+add(new THREE.BoxGeometry(.13, .5, .13), wood, .12, .9, -.2, .3, 0, 0);
+for (let k = 0; k < 3; k++) add(new THREE.ConeGeometry(.03, .1, 6), red, .08 + k * .04, 1.2, -.27, .3, 0, 0);
+scene.add(hero);
+hero.rotation.y = 0.5;
+if (tur === 'splash') { cam.position.set(0, 1.05, 4.6); cam.lookAt(0, .9, 0); } else if (tur === 'ikon-on') { cam.position.set(0, 1.2, 6.2); cam.lookAt(0, .95, 0); } else { cam.position.set(0, 1.3, 3.75); cam.lookAt(0, 1.08, 0); }
+renderer.render(scene, cam);
+
+const t = document.getElementById('txt');
+if (tur === 'splash') {
+  t.style.top = (H * 0.6) + 'px';
+  t.innerHTML = '<div style="font-size:' + (H * 0.035) + 'px;letter-spacing:.3em;color:#f0b232">1071</div><div style="font-size:' + (H * 0.075) + 'px;line-height:.95;text-shadow:0 ' + H * .005 + 'px 0 #122a4b">MALAZGİRT</div><div style="display:inline-block;margin-top:' + H * .01 + 'px;font-size:' + (H * 0.032) + 'px;letter-spacing:.14em;padding:' + H * .003 + 'px ' + H * .02 + 'px 0;background:#137479;border:' + H * .003 + 'px solid #f0b232;border-radius:' + H * .008 + 'px">AKINCILARI</div>';
+}
+if (tur === 'feature') {
+  t.style.left = (W * 0.5) + 'px'; t.style.right = '24px'; t.style.top = '92px'; t.style.textAlign = 'left';
+  t.innerHTML = '<div style="font-size:30px;letter-spacing:.3em;color:#f0b232">1071</div><div style="font-size:78px;line-height:.92;text-shadow:0 4px 0 #122a4b">MALAZGİRT</div><div style="display:inline-block;margin-top:10px;font-size:36px;letter-spacing:.12em;padding:2px 20px 0;background:#137479;border:3px solid #f0b232;border-radius:10px">AKINCILARI</div><div style="margin-top:22px;font-size:26px;color:#ffe9a8;line-height:1.2">Akıncılarını topla, kapıyı seç,<br>Bizans ordusunu dağıt.</div>';
+}
+document.title = 'hazir';
+</script></body></html>

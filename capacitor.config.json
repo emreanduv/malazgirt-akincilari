@@ -1,0 +1,8 @@
+{
+  "appId": "com.anduv.malazgirt",
+  "appName": "Malazgirt Akıncıları",
+  "webDir": "www",
+  "backgroundColor": "#0c1c34",
+  "android": { "backgroundColor": "#0c1c34" },
+  "ios": { "backgroundColor": "#0c1c34", "contentInset": "never" }
+}
