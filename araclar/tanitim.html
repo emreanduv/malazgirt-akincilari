@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8">
+<!-- Sosyal medya tanıtım görseli: ?bg=arka/dev-dik.png&w=1080&h=1920&ust=PEK YAKINDA&alt=... -->
+<style>
+@font-face{font-family:"Baloo 2";font-weight:800;src:url(../www/fonts/baloo-2-latin-ext-800-normal.woff2) format("woff2");unicode-range:U+0100-02AF,U+1E00-1EFF}
+@font-face{font-family:"Baloo 2";font-weight:800;src:url(../www/fonts/baloo-2-latin-800-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+2000-206F}
+@font-face{font-family:"Baloo 2";font-weight:600;src:url(../www/fonts/baloo-2-latin-ext-600-normal.woff2) format("woff2");unicode-range:U+0100-02AF,U+1E00-1EFF}
+@font-face{font-family:"Baloo 2";font-weight:600;src:url(../www/fonts/baloo-2-latin-600-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+2000-206F}
+:root{--lapis:#1d3f6e;--lapis-d:#122a4b;--night:#0c1c34;--tq-d:#137479;--gold:#f0b232;--gold-d:#9a5f0e;--crimson:#c8303a;--crimson-d:#7d1a21;--paper:#fff8ea}
+*{box-sizing:border-box}
+html,body{margin:0;background:#0c1c34}
+#w{position:relative;overflow:hidden;font-family:"Baloo 2",sans-serif;color:#fff}
+#bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,28,52,.92) 0%,rgba(12,28,52,.55) 22%,rgba(12,28,52,0) 38%,rgba(12,28,52,0) 66%,rgba(12,28,52,.7) 84%,rgba(12,28,52,.95) 100%)}
+.top{position:absolute;left:0;right:0;display:flex;flex-direction:column;align-items:center}
+.yr{font-weight:800;letter-spacing:.3em;color:var(--gold);text-shadow:0 .1em 0 var(--lapis-d);display:flex;align-items:center;gap:.5em}
+.yr svg{width:1.2em;height:1.2em}
+h1{margin:0;font-size:1em;font-weight:800;line-height:.95;text-shadow:0 .04em 0 var(--lapis),0 .08em 0 var(--lapis-d),0 .14em .25em rgba(0,0,0,.45)}
+.ribbon{background:linear-gradient(180deg,#2bb9be,var(--tq-d));border:.12em solid var(--gold);border-radius:.35em;padding:.05em .8em 0;font-weight:800;letter-spacing:.12em;box-shadow:0 .15em 0 var(--gold-d),0 .3em .6em rgba(0,0,0,.35)}
+.bot{position:absolute;left:0;right:0;display:flex;flex-direction:column;align-items:center;text-align:center}
+.soon{font-weight:800;line-height:1;color:#fff;padding:.18em .6em .06em;border-radius:.28em;
+  background:linear-gradient(180deg,#ffcf55,var(--gold) 45%,#d8871a);box-shadow:0 .1em 0 var(--gold-d),0 .2em .4em rgba(0,0,0,.4);text-shadow:0 .05em 0 rgba(120,60,0,.6);transform:rotate(-2deg)}
+.sub{font-weight:600;color:var(--paper);text-shadow:0 2px 6px rgba(0,0,0,.6)}
+.sub b{color:var(--gold);font-weight:800}
+.by{font-weight:800;letter-spacing:.06em;color:var(--paper);display:flex;align-items:center;gap:.5em;opacity:.95}
+.by i{display:inline-block;width:2.2em;height:2px;background:var(--gold)}
+.tag{position:absolute;font-weight:800;color:#fff;background:var(--crimson);border:.1em solid #fff;border-radius:.4em;padding:.1em .5em 0;box-shadow:0 .12em 0 var(--crimson-d);transform:rotate(4deg)}
+</style></head><body>
+<div id="w">
+  <img id="bg" alt="">
+  <div class="shade"></div>
+  <div class="top" id="top">
+    <div class="yr"><svg viewBox="0 0 24 24"><path fill="#f0b232" d="M15.5 3.5a8.5 8.5 0 1 0 5 15.4A9.5 9.5 0 1 1 15.5 3.5z"/></svg>1071<svg viewBox="0 0 24 24"><path fill="#f0b232" d="M12 2l2.1 4.3 4.7-.9-.9 4.7L22 12l-4.1 1.9.9 4.7-4.7-.9L12 22l-1.9-4.3-4.7.9.9-4.7L2 12l4.3-1.9-.9-4.7 4.7.9z"/></svg></div>
+    <h1>MALAZGİRT</h1>
+    <div class="ribbon">AKINCILARI</div>
+  </div>
+  <div class="tag" id="tag" hidden></div>
+  <div class="bot" id="bot">
+    <div class="soon" id="soon">PEK YAKINDA</div>
+    <div class="sub" id="sub"></div>
+    <div class="by"><i></i>Bir Mr. Anduv! oyunu<i></i></div>
+  </div>
+</div>
+<script>
+const q = new URLSearchParams(location.search);
+const W = +q.get('w') || 1080, H = +q.get('h') || 1920, u = W / 1080;
+const w = document.getElementById('w'); w.style.width = W + 'px'; w.style.height = H + 'px';
+const set = (id, css) => Object.assign(document.getElementById(id).style, css);
+const tall = H / W > 1.5;
+set('top', { top: (tall ? 150 : 60) * u + 'px', fontSize: (tall ? 150 : 120) * u + 'px' });
+document.querySelector('.yr').style.fontSize = (tall ? 40 : 32) * u + 'px';
+document.querySelector('.ribbon').style.fontSize = (tall ? 62 : 50) * u + 'px';
+document.querySelector('.ribbon').style.marginTop = 16 * u + 'px';
+set('bot', { bottom: (tall ? 150 : 48) * u + 'px', gap: (tall ? 34 : 20) * u + 'px' });
+set('soon', { fontSize: (tall ? 120 : 92) * u + 'px' });
+set('sub', { fontSize: (tall ? 46 : 36) * u + 'px' });
+document.querySelector('.by').style.fontSize = (tall ? 38 : 30) * u + 'px';
+document.getElementById('sub').innerHTML = q.get('alt') || '<b>App Store</b> ve <b>Google Play</b>\'de';
+if (q.get('ust')) document.getElementById('soon').textContent = q.get('ust');
+if (q.get('etiket')) { const t = document.getElementById('tag'); t.hidden = false; t.textContent = q.get('etiket');
+  Object.assign(t.style, { fontSize: 44 * u + 'px', right: 70 * u + 'px', top: (+q.get('ey') || 0.42) * H + 'px' }); }
+const img = document.getElementById('bg');
+img.onload = () => document.fonts.ready.then(() => setTimeout(() => document.title = 'hazir', 100));
+if (q.get('pos')) img.style.objectPosition = q.get('pos');
+img.src = '../tanitim/' + (q.get('bg') || 'arka/dev-dik.png');
+</script>
+</body></html>
