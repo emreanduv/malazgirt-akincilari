@@ -8,7 +8,7 @@ function rng(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = M
 let seedN = 1;
 function play(i, up) {
   const G = M.newGame(i, up);
-  const o = { r: rng(seedN++ * 131), wrong: 0.12, jit: 1.4, delay: 0.2 };   // hata yapan "insan" oyuncu
+  const o = { r: rng(seedN++ * 131), wrong: +(process.env.WRONG || 0.12), jit: +(process.env.JIT || 1.4), delay: +(process.env.DELAY || 0.2) };   // hata yapan "insan" oyuncu
   let n = 0;
   while ((G.state === 'play' || G.state === 'march') && n < 60 * 240) { bot(G, o); M.step(G, 1 / 30); n++; }
   return G;
@@ -19,7 +19,7 @@ const up = { start: 0, dmg: 0, rate: 0, zirh: 0 };
 let coins = 0, tries = 0, totalTries = 0;
 const best = [];
 const rows = [];
-for (let i = 0; i < 50;) {
+for (let i = 0; i < M.NL;) {
   const G = play(i, up);
   const win = G.state === 'win';
   coins += M.rewardOf(G, win, win && !best[i]);
@@ -32,7 +32,7 @@ for (let i = 0; i < 50;) {
   // geliştirme al (en ucuzu)
   for (;;) {
     let bestU = null, bc = 1e9;
-    for (const u of M.UPG) { const l = up[u.k]; if (l >= M.UPMAX) continue; const c = M.upCost(u, l); if (c < bc) { bc = c; bestU = u; } }
+    for (const u of M.UPG) { const l = up[u.k]; if (l >= M.upCap(M.seferOf(i < M.NL ? i : M.NL - 1))) continue; const c = M.upCost(u, l); if (c < bc) { bc = c; bestU = u; } }
     if (!bestU || coins < bc) break; coins -= bc; up[bestU.k]++;
   }
 }

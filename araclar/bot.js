@@ -17,9 +17,12 @@ function botCore(G, o) {
     // insanlar bariz farkı kaçırmaz, yakın seçeneklerde yanılır
     const ratio = Math.max(l, r) / Math.max(1, Math.min(l, r));
     if (o.r && o.r() < (o.wrong || 0) / (1 + 2 * (ratio - 1))) left = !left; G.tx = left ? -3 : 3; return; }
+  // 1b) Mancınık halkası yaklaşıyorsa halkadan uzaklaş
+  const tas = G.objs.find(o => o.alive && o.t === 'tas' && G.z - o.z < 14 && G.z - o.z > -1);
+  if (tas && Math.abs(G.x - tas.x) < tas.r + G.Rx * 0.35 + 0.4) { const gap = tas.r + G.Rx * 0.35 + 0.7; G.tx = tas.x > 0 ? tas.x - gap : tas.x + gap; return; }
   // 2) Önündeki yapıya: eritebiliyorsa hizalan, eritemiyorsa kaç
   const dps = (G.count + G.heroes * M.HERO_POW) * G.st.dmg * M.WEAPONS[G.wTier].m * G.st.rate;
-  const ahead = G.objs.filter(o => o.alive && o.z < G.z && G.z - o.z < 30).sort((a, b) => b.z - a.z);
+  const ahead = G.objs.filter(o => o.alive && o.t !== 'tas' && o.t !== 'gecit' && o.t !== 'kervan' && o.z < G.z && G.z - o.z < 30).sort((a, b) => b.z - a.z);
   const wall = ahead.find(o => (o.t === 'barricade' || o.t === 'pedestal') && G.z - o.z < 14 && o.hp / Math.max(1, dps * 0.5) > (G.z - o.z) / 9);
   if (wall) { G.tx = wall.x > 0 ? -6 : 6; return; }
   for (const o of ahead) {

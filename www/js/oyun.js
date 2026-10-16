@@ -5,12 +5,14 @@ const M = window.MANTIK;
 const $ = id => document.getElementById(id);
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const FONT = '"Baloo 2","Arial Rounded MT Bold","Trebuchet MS",system-ui,sans-serif';
-const NL = M.LEVELS.length;
+const NL = M.NL, NSF = M.SEFERLER.length;
 
 /* ================= KAYIT ================= */
 const SKEY = 'malazgirt-akincilari-v1';
 let S = { coins: 0, unlocked: 1, stars: [], up: { start: 0, dmg: 0, rate: 0, zirh: 0 }, sound: true, seen: 0 };
 try { const s = JSON.parse(localStorage.getItem(SKEY)); if (s && typeof s === 'object') { S = Object.assign(S, s); S.up = Object.assign({ start: 0, dmg: 0, rate: 0, zirh: 0 }, s.up || {}); } } catch (e) {}
+// 1.0 → 1.1 göçü: Malazgirt'i bitirmiş oyuncu 2. seferi açık bulsun
+if (S.stars[49] && S.unlocked < 51) S.unlocked = 51;
 function persist() { try { localStorage.setItem(SKEY, JSON.stringify(S)); } catch (e) {} }
 const totalStars = () => S.stars.reduce((a, b) => a + (b || 0), 0);
 const fmt = n => n >= 10000 ? (n / 1000).toFixed(n >= 100000 ? 0 : 1).replace('.', ',') + 'B' : String(Math.max(0, Math.ceil(n)));
@@ -88,7 +90,25 @@ const THEMES = [
   { sky: 0xd6dfc8, ground: 0xa9b07a, hill: [0x8f9d63, 0x9fa96f, 0x7f8f58, 0xb0b27c], mt: 0x8a8070, bush: 0x5d7a3e, sun: 0xfff6e2, hemiG: 0x6d7a4a },
   { sky: 0xcfe0e6, ground: 0xc7b68a, hill: [0xb3a479, 0xa7a07c, 0xbcae84, 0x9e9474], mt: 0x8b8f99, bush: 0x6f8450, sun: 0xfff4e6, hemiG: 0x7d8a8a, lake: 0x2f7fa8 },
   { sky: 0xdde6cf, ground: 0x9db06e, hill: [0x7f9a55, 0x8ea760, 0x718c4b, 0x9bb06b], mt: 0x7c7a6a, bush: 0x4f6e36, sun: 0xfff2d8, hemiG: 0x5f7a40, river: 0x4d9cc0 },
-  { sky: 0xf0c48e, ground: 0xd8b46a, hill: [0xc99a55, 0xbd8f4e, 0xd2a660, 0xb5884a], mt: 0x9b6f5a, bush: 0x7d7a3e, sun: 0xffd9a0, hemiG: 0x8a5e3a }
+  { sky: 0xf0c48e, ground: 0xd8b46a, hill: [0xc99a55, 0xbd8f4e, 0xd2a660, 0xb5884a], mt: 0x9b6f5a, bush: 0x7d7a3e, sun: 0xffd9a0, hemiG: 0x8a5e3a },
+  // 2. sefer: Kapadokya, Konya Ovası, Frigya, Bitinya, İznik
+  { sky: 0xf1dcc0, ground: 0xd9b48a, hill: [0xd8a982, 0xe0b993, 0xcf9d78, 0xe6c4a0], mt: 0xc49a7a, bush: 0x8a8a5a, sun: 0xfff0dc, hemiG: 0x9c7a5a, peri: 1 },
+  { sky: 0xe8e2c8, ground: 0xcdbb84, hill: [0xc2b077, 0xd1bf86, 0xb8a66c, 0xc9b67e], mt: 0xa89880, bush: 0x8e8a4e, sun: 0xfff4dc, hemiG: 0x8f7d50 },
+  { sky: 0xdfe3d0, ground: 0xb9ad80, hill: [0xa99b6e, 0xb5a878, 0x9c8f64, 0xc0b384], mt: 0x9a8a7a, bush: 0x6d7a45, sun: 0xfff4e0, hemiG: 0x7a7050, peri: 2 },
+  { sky: 0xd4e4d0, ground: 0x8fae68, hill: [0x6f9a50, 0x7fa85c, 0x628c48, 0x8cb066], mt: 0x6d7a6a, bush: 0x3f6a32, sun: 0xfff6e2, hemiG: 0x4f6a3a, forest: 1, river: 0x4a8fb5 },
+  { sky: 0xcfe2ea, ground: 0xb9b884, hill: [0x9aa66e, 0xa8b07a, 0x8e9a64, 0xb4b886], mt: 0x8a8f96, bush: 0x5f7a42, sun: 0xfff4e6, hemiG: 0x6a7a5a, lake: 0x3a86b0, forest: 0.4 },
+  // 3. sefer: Marmara, Sakarya, Dorylaion, Orta Anadolu, Ereğli
+  { sky: 0xd2e6ee, ground: 0xc8c08e, hill: [0xa8b07a, 0xb6ba84, 0x9aa46c, 0xc0c08e], mt: 0x8a919a, bush: 0x5f7a42, sun: 0xfff6ea, hemiG: 0x6a7a62, lake: 0x2a74a8 },
+  { sky: 0xd6e4d2, ground: 0x96b06c, hill: [0x739a52, 0x84a65e, 0x668e4a, 0x90b26a], mt: 0x6f7c6e, bush: 0x3f6a32, sun: 0xfff4e0, hemiG: 0x52703c, forest: 1, river: 0x4d94bb },
+  { sky: 0xf3e2b0, ground: 0xd8c27a, hill: [0xccb06a, 0xd6bc74, 0xc2a462, 0xdcc480], mt: 0xa88f6a, bush: 0x8a8a44, sun: 0xffeccc, hemiG: 0x957a48, river: 0x5a9cc0 },
+  { sky: 0xf2d9a8, ground: 0xdcbf80, hill: [0xcfa86c, 0xd8b478, 0xc49c62, 0xe0bf86], mt: 0xb08a68, bush: 0x9a8a4e, sun: 0xffe4b8, hemiG: 0x9a7448 },
+  { sky: 0xf0c0a0, ground: 0xcfae78, hill: [0xbf9a66, 0xc8a46e, 0xb48e5c, 0xd2ae78], mt: 0x987062, bush: 0x7a7a42, sun: 0xffd6a8, hemiG: 0x8a5e44, river: 0x5a9cc0 },
+  // 4. sefer: Konya, Göller, Sultan Dağları, Tzivritze, Miryokefalon
+  { sky: 0xe6d6b8, ground: 0xc8b080, hill: [0xb89a6a, 0xc4a674, 0xae9060, 0xcab07e], mt: 0x8f7a68, bush: 0x8a6e3a, sun: 0xffeccc, hemiG: 0x8a6a44 },
+  { sky: 0xcfe3ec, ground: 0xb3b685, hill: [0x93a26c, 0xa2ac78, 0x86965f, 0xaeb482], mt: 0x7f8a96, bush: 0x5a7440, sun: 0xfff6ea, hemiG: 0x667a62, lake: 0x2f88b8 },
+  { sky: 0xdde4ea, ground: 0xa9a27e, hill: [0x8f9278, 0x9a9c82, 0x84886e, 0xa4a48a], mt: 0x8a8c94, bush: 0x5f6e48, sun: 0xfff6ee, hemiG: 0x6a6e66, mtN: 46, cliff: 1 },
+  { sky: 0xd8d8d0, ground: 0x9e9474, hill: [0x8f877a, 0x9a9184, 0x847c70, 0xa49a8c], mt: 0x77726a, bush: 0x5f6a48, sun: 0xfff0e0, hemiG: 0x6a645a, mtN: 52, cliff: 2 },
+  { sky: 0xf0b890, ground: 0xc9a070, hill: [0xb88e60, 0xc29868, 0xae8458, 0xcca272], mt: 0x8a6a5a, bush: 0x7a6a3a, sun: 0xffd2a0, hemiG: 0x8a5a40, cliff: 1 }
 ];
 
 /* geometri yardımcıları: renkli parçaları tek geometriye birleştir (az çizim çağrısı) */
@@ -166,13 +186,76 @@ const katafraktG = merge([
   P(BOX(.04, .04, 1.6), 0x6b4a2b, Mx(.24, 1.55, -.5)),
   P(CONE(.04, .18, 4), 0xd5dbe0, Mx(.24, 1.55, -1.38, 1, 1, 1, -Math.PI / 2, 0, 0))
 ]);
-const FOE_GEO = { piyade: piyadeG(), okcu: okcuG, katafrakt: katafraktG, varang: varangG };
+// Akrit: Bizans sınır süvarisi (hafif atlı, mızrak, yuvarlak kalkan)
+const akritG = merge([
+  P(BOX(.42, .46, 1.15), 0x7a4a2a, Mx(0, .92, 0)),
+  ...[[-.15, .43], [.15, .43], [-.15, -.43], [.15, -.43]].map(([x, z]) => P(BOX(.11, .7, .11), 0x4a2e1c, Mx(x, .35, z))),
+  P(BOX(.22, .46, .28), 0x7a4a2a, Mx(0, 1.3, -.6, 1, 1, 1, -.5, 0, 0)),
+  P(BOX(.18, .2, .4), 0x6a3e22, Mx(0, 1.52, -.78, 1, 1, 1, -.2, 0, 0)),
+  P(BOX(.5, .1, .5), 0xa83a2e, Mx(0, 1.2, .05)),
+  P(CYL(.15, .2, .5, 7), 0xa83a2e, Mx(0, 1.5, .05)),
+  P(SPH(.13, 7, 5), 0xe0b08a, Mx(0, 1.85, .05)),
+  P(CYL(.1, .15, .16, 7), 0x8a949e, Mx(0, 1.98, .05)),
+  P(CYL(.24, .24, .05, 10), 0xd8b040, Mx(-.24, 1.5, .05, 1, 1, 1, 0, 0, Math.PI / 2)),
+  P(BOX(.035, .035, 1.7), 0x6b4a2b, Mx(.22, 1.55, -.45)),
+  P(CONE(.04, .18, 4), 0xd5dbe0, Mx(.22, 1.55, -1.38, 1, 1, 1, -Math.PI / 2, 0, 0))
+]);
+// Şövalye: beyaz örtülü at, kova miğfer, uzun kalkan, mızrak
+const sovalyeG = merge([
+  P(BOX(.48, .52, 1.25), 0x4a3020, Mx(0, .96, 0)),
+  P(BOX(.56, .5, 1.34), 0xe8e2d2, Mx(0, .9, 0)),
+  ...[[-.17, .46], [.17, .46], [-.17, -.46], [.17, -.46]].map(([x, z]) => P(BOX(.12, .66, .12), 0x2b1f18, Mx(x, .33, z))),
+  P(BOX(.24, .5, .3), 0xe8e2d2, Mx(0, 1.36, -.64, 1, 1, 1, -.5, 0, 0)),
+  P(BOX(.2, .22, .44), 0xe8e2d2, Mx(0, 1.6, -.82, 1, 1, 1, -.2, 0, 0)),
+  P(CYL(.16, .21, .52, 7), 0x2c4f8f, Mx(0, 1.58, .05)),
+  P(BOX(.3, .26, .24), 0x9aa3ad, Mx(0, 1.68, .05)),
+  P(BOX(.26, .3, .26), 0xaab3bb, Mx(0, 1.98, .05)),
+  P(BOX(.27, .04, .04), 0x1a1a1a, Mx(0, 2.0, -.08)),
+  P(BOX(.06, .5, .34), 0x2c4f8f, Mx(-.27, 1.55, -.02)),
+  P(BOX(.065, .2, .1), 0xf0b232, Mx(-.3, 1.62, -.02)),
+  P(BOX(.04, .04, 1.8), 0x6b4a2b, Mx(.24, 1.6, -.55)),
+  P(CONE(.045, .2, 4), 0xd5dbe0, Mx(.24, 1.6, -1.5, 1, 1, 1, -Math.PI / 2, 0, 0))
+]);
+// Haçlı piyadesi: mavi tunik, örme zırh, burun korumalı miğfer, uzun kalkan
+const frankG = merge([
+  P(BOX(.3, .42, .2), 0x2a2226, Mx(0, .21, 0)),
+  P(CYL(.18, .27, .52, 7), 0x2c4f8f, Mx(0, .66, 0)),
+  P(BOX(.36, .3, .24), 0x9aa3ad, Mx(0, .82, 0)),
+  P(SPH(.14, 7, 5), 0xe6c09a, Mx(0, 1.03, 0)),
+  P(CONE(.17, .28, 7), 0x9aa3ad, Mx(0, 1.2, 0)),
+  P(BOX(.03, .12, .03), 0x9aa3ad, Mx(0, 1.04, -.14)),
+  P(BOX(.06, .62, .34), 0xe8e2d2, Mx(.3, .62, -.04)),
+  P(BOX(.065, .16, .1), 0xc8303a, Mx(.33, .7, -.04))
+]);
+// Arbaletçi
+const arbaletG = merge([
+  P(BOX(.28, .42, .2), 0x2e2a26, Mx(0, .21, 0)),
+  P(CYL(.16, .25, .52, 7), 0x3a5a8a, Mx(0, .66, 0)),
+  P(SPH(.14, 7, 5), 0xe6c09a, Mx(0, 1.03, 0)),
+  P(new THREE.SphereGeometry(.16, 7, 5, 0, Math.PI * 2, 0, Math.PI / 2), 0x8a949e, Mx(0, 1.06, 0)),
+  P(BOX(.1, .1, .6), 0x5b3a1e, Mx(0, .86, -.3)),
+  P(BOX(.62, .05, .05), 0x3a2a1a, Mx(0, .88, -.56))
+]);
+// Kalkanlı ağır piyade: büyük dikdörtgen kalkan, uzun mızrak
+const kalkanliG = merge([
+  P(BOX(.32, .44, .22), 0x24262b, Mx(0, .22, 0)),
+  P(CYL(.19, .28, .54, 7), 0x8e2a35, Mx(0, .68, 0)),
+  P(BOX(.4, .32, .26), 0xa8925a, Mx(0, .84, 0)),
+  P(SPH(.14, 7, 5), 0xd9a882, Mx(0, 1.06, 0)),
+  P(CONE(.18, .3, 8), 0xa8925a, Mx(0, 1.25, 0)),
+  P(BOX(.62, .82, .06), 0x9b1f27, Mx(0, .66, -.26)),
+  P(BOX(.5, .08, .07), 0xe3a92b, Mx(0, .66, -.29)),
+  P(BOX(.08, .7, .07), 0xe3a92b, Mx(0, .66, -.29)),
+  P(BOX(.04, 1.6, .04), 0x5b3a1e, Mx(.3, .95, -.1))
+]);
+const FOE_GEO = { piyade: piyadeG(), okcu: okcuG, katafrakt: katafraktG, varang: varangG, akrit: akritG, frank: frankG, arbalet: arbaletG, sovalye: sovalyeG, kalkanli: kalkanliG };
+const ATLI_GEO = { katafrakt: katafraktG, akrit: akritG, sovalye: sovalyeG };
 
 const armyMat = new THREE.MeshLambertMaterial({ vertexColors: true });
 const goldMat = new THREE.MeshPhongMaterial({ color: 0xe8b33a, specular: 0xfff2b0, shininess: 90, emissive: 0x3d2800 });
 const dummy = new THREE.Object3D();
 function inst(g, m, n) { const im = new THREE.InstancedMesh(g, m, n); im.castShadow = true; im.instanceMatrix.setUsage(THREE.DynamicDrawUsage); im.frustumCulled = false; im.count = 0; scene.add(im); return im; }
-const MAXC = 220, MAXE = 700, MAXA = 280;
+const MAXC = 220, MAXE = 500, MAXA = 280;
 const crowdMesh = inst(akinciG, armyMat, MAXC);
 const heroMesh = inst(akinciG, goldMat, M.MAX_HERO);
 const foeMesh = {}; for (const k in FOE_GEO) foeMesh[k] = inst(FOE_GEO[k], armyMat, MAXE);
@@ -217,7 +300,16 @@ function puffTexture() { const L = makeLabel(64, 64), { ctx } = L; const g = ctx
 const roadTex = tileTexture(), glowTex = glowTexture(), puffTex = puffTexture();
 // sancak dokusu: firuze zemin, altın hilal
 function flagTexture(bg, fg) { const L = makeLabel(128, 192), { ctx } = L; ctx.fillStyle = bg; ctx.fillRect(0, 0, 128, 192); ctx.fillStyle = fg; ctx.beginPath(); ctx.arc(60, 80, 36, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = bg; ctx.beginPath(); ctx.arc(74, 74, 31, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = fg; for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.moveTo(0, 150 + i * 14); ctx.lineTo(128, 150 + i * 14); ctx.lineTo(128, 156 + i * 14); ctx.lineTo(0, 156 + i * 14); ctx.fill(); } L.tex.needsUpdate = true; return L.tex; }
-const flagTex = flagTexture('#1fa3a8', '#f0b232'), flagTexRed = flagTexture('#8e1f2a', '#e7c56a');
+// düşman sancağı: hilalsiz; Bizans kızıl-altın baklava, Haçlı mavi-beyaz bölümlü
+function enemyFlag(bg, fg, kind) {
+  const L = makeLabel(128, 192), { ctx } = L; ctx.fillStyle = bg; ctx.fillRect(0, 0, 128, 192);
+  ctx.fillStyle = fg;
+  if (kind === 'parti') { ctx.fillRect(0, 0, 64, 96); ctx.fillRect(64, 96, 64, 96); }
+  else { ctx.beginPath(); ctx.moveTo(64, 34); ctx.lineTo(100, 84); ctx.lineTo(64, 134); ctx.lineTo(28, 84); ctx.closePath(); ctx.fill(); ctx.fillStyle = bg; ctx.beginPath(); ctx.moveTo(64, 58); ctx.lineTo(82, 84); ctx.lineTo(64, 110); ctx.lineTo(46, 84); ctx.closePath(); ctx.fill(); }
+  ctx.strokeStyle = fg; ctx.lineWidth = 8; ctx.strokeRect(4, 4, 120, 184); L.tex.needsUpdate = true; return L.tex;
+}
+const flagTex = flagTexture('#1fa3a8', '#f0b232');
+const ENEMY_FLAG = [enemyFlag('#8e1f2a', '#e7c56a'), enemyFlag('#6a1b5a', '#e7c56a'), enemyFlag('#2c4f8f', '#ece6d6', 'parti'), enemyFlag('#7a1b2a', '#e7c56a')];
 
 /* ================= DÜNYA ================= */
 const world = new THREE.Group(); scene.add(world);
@@ -239,7 +331,26 @@ function buildWorld(ti) {
     const h = new THREE.Mesh(hillGeo, new THREE.MeshLambertMaterial({ color: T.hill[i % 4] })); h.scale.set(r, r * (0.18 + rnd() * 0.22), r * (0.8 + rnd() * 0.6)); h.position.set(side * (30 + rnd() * 120), 0, 40 - rnd() * 1300); world.add(h);
   }
   const mtGeo = CONE(1, 1, 6);
-  for (let i = 0; i < 26; i++) { const side = rnd() < .5 ? -1 : 1; const r = 40 + rnd() * 50; const m = new THREE.Mesh(mtGeo, new THREE.MeshLambertMaterial({ color: T.mt })); m.scale.set(r, r * (0.5 + rnd() * 0.6), r); m.position.set(side * (160 + rnd() * 160), 0, -100 - rnd() * 1300); world.add(m); }
+  for (let i = 0; i < (T.mtN || 26); i++) { const side = rnd() < .5 ? -1 : 1; const r = 40 + rnd() * 50; const m = new THREE.Mesh(mtGeo, new THREE.MeshLambertMaterial({ color: T.mt })); m.scale.set(r, r * (0.5 + rnd() * 0.6), r); m.position.set(side * (160 + rnd() * 160), 0, -100 - rnd() * 1300); world.add(m); }
+  if (T.peri) {   // peri bacaları / kaya kuleleri
+    const coneM = new THREE.MeshLambertMaterial({ color: T.hill[3] }), capM = new THREE.MeshLambertMaterial({ color: T.mt });
+    for (let i = 0; i < 46 * T.peri; i++) { const side = rnd() < .5 ? -1 : 1, h = 5 + rnd() * 9, x = side * (14 + rnd() * 60), z = 20 - rnd() * 1300;
+      const c = new THREE.Mesh(CONE(1.6 + rnd(), h, 8), coneM); c.position.set(x, h / 2, z); world.add(c);
+      const k = new THREE.Mesh(CONE(1.3, 1.4, 8), capM); k.position.set(x, h + 0.3, z); world.add(k); }
+  }
+  if (T.forest) {   // çam ormanı
+    const n = Math.round(260 * T.forest), trunk = new THREE.InstancedMesh(CYL(.18, .22, 1.4, 5), new THREE.MeshLambertMaterial({ color: 0x5a3a22 }), n);
+    const crown = new THREE.InstancedMesh(CONE(1.3, 3.4, 7), new THREE.MeshLambertMaterial({ color: 0x2f5a2c }), n);
+    for (let i = 0; i < n; i++) { const side = rnd() < .5 ? -1 : 1; if (T.lake && side < 0) continue; const x = side * (10 + rnd() * 70), z = 30 - rnd() * 1300, s = 0.8 + rnd() * 0.9;
+      dummy.position.set(x, .7 * s, z); dummy.scale.set(s, s, s); dummy.updateMatrix(); trunk.setMatrixAt(i, dummy.matrix);
+      dummy.position.set(x, 2.6 * s, z); dummy.updateMatrix(); crown.setMatrixAt(i, dummy.matrix); }
+    world.add(trunk); world.add(crown); dummy.scale.set(1, 1, 1);
+  }
+  if (T.cliff) {   // yol kenarında kayalıklar
+    const rockM = new THREE.MeshLambertMaterial({ color: T.mt });
+    for (let i = 0; i < 70 * T.cliff; i++) { const side = rnd() < .5 ? -1 : 1, s = 3 + rnd() * 7; const r = new THREE.Mesh(new THREE.DodecahedronGeometry(1, 0), rockM);
+      r.scale.set(s, s * (0.8 + rnd() * 1.2), s); r.rotation.set(rnd(), rnd() * 6, rnd()); r.position.set(side * (11 + s * 0.6 + rnd() * 30), s * 0.4, 20 - rnd() * 1300); world.add(r); }
+  }
   const bush = new THREE.InstancedMesh(SPH(.6, 6, 4), new THREE.MeshLambertMaterial({ color: T.bush }), 220);
   for (let i = 0; i < 220; i++) { const side = rnd() < .5 ? -1 : 1; dummy.position.set(side * (8 + rnd() * 26), 0.15, 30 - rnd() * 1300); const s = 0.5 + rnd() * 1.1; dummy.scale.set(s * 1.3, s * 0.6, s); dummy.rotation.set(0, rnd() * 6, 0); dummy.updateMatrix(); bush.setMatrixAt(i, dummy.matrix); }
   world.add(bush); dummy.scale.set(1, 1, 1); dummy.rotation.set(0, 0, 0);
@@ -283,7 +394,7 @@ function buildLevelView(G) {
       else if (o.kind === 'weapon') {
         const bow = new THREE.Group(); const arc = new THREE.Mesh(new THREE.TorusGeometry(.6, .07, 6, 16, Math.PI), capMat); arc.rotation.z = Math.PI / 2; bow.add(arc);
         bow.add(new THREE.Mesh(BOX(.03, 1.2, .03), new THREE.MeshBasicMaterial({ color: 0xfff6d8 })));
-        const ar = new THREE.Mesh(BOX(1.3, .06, .06), new THREE.MeshBasicMaterial({ color: M.WEAPONS[Math.min(o.val, 4)].c })); ar.position.x = -.2; bow.add(ar); bow.position.y = 1.0; item.add(bow);
+        const ar = new THREE.Mesh(BOX(1.3, .06, .06), new THREE.MeshBasicMaterial({ color: M.WEAPONS[Math.min(o.val, M.WEAPONS.length - 1)].c })); ar.position.x = -.2; bow.add(ar); bow.position.y = 1.0; item.add(bow);
       } else {
         const pole = new THREE.Mesh(CYL(.06, .06, 2.4, 6), postMat); pole.position.y = 1.2; item.add(pole);
         const hair = new THREE.Mesh(CONE(.35, 1.0, 8), new THREE.MeshLambertMaterial({ color: 0x2a1a12 })); hair.position.y = 2.0; hair.rotation.x = Math.PI; item.add(hair);
@@ -298,16 +409,38 @@ function buildLevelView(G) {
       }
       const L = makeLabel(256, 128); drawBig(L, fmt(o.hp), '#ffd9a0'); const lab = labelSprite(L, 2.2, 1.1); lab.position.set(0, 2.2, 0); g.add(lab);
       g.position.set(o.x, 0, o.z); levelGroup.add(g); VIEW.objs.set(o, { g, L, shown: o.hp });
+    } else if (o.t === 'kervan') {     // ganimet arabası
+      const g = new THREE.Group(), body = new THREE.Mesh(BOX(1.9, .9, 2.8), woodMat); body.position.y = 1.0; body.castShadow = true; g.add(body);
+      const tent = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.0, 2.6, 10, 1, false, 0, Math.PI), new THREE.MeshLambertMaterial({ color: 0xe8dcc0 })); tent.rotation.set(Math.PI / 2, 0, Math.PI / 2); tent.position.y = 1.45; g.add(tent);
+      [[-1, .9], [1, .9], [-1, -.9], [1, -.9]].forEach(([x, z]) => { const w = new THREE.Mesh(CYL(.45, .45, .16, 10), new THREE.MeshLambertMaterial({ color: 0x3a2a1a })); w.rotation.z = Math.PI / 2; w.position.set(x, .45, z); g.add(w); });
+      const chest = new THREE.Mesh(BOX(.9, .5, .7), capMat); chest.position.set(0, 1.7, -1.6); g.add(chest);
+      const L = makeLabel(256, 128); drawBig(L, fmt(o.hp), '#ffe08a'); const lab = labelSprite(L, 2.2, 1.1); lab.position.set(0, 3.4, 0); g.add(lab);
+      g.position.set(o.x, 0, o.z); levelGroup.add(g); VIEW.objs.set(o, { g, L, shown: o.hp });
+    } else if (o.t === 'tas') {        // mancınık halkası ve düşen taş
+      const g = new THREE.Group();
+      const ring = new THREE.Mesh(new THREE.RingGeometry(o.r - .25, o.r, 28), new THREE.MeshBasicMaterial({ color: 0xe0343f, transparent: true, opacity: .85, depthWrite: false }));
+      ring.rotation.x = -Math.PI / 2; ring.position.y = .05; g.add(ring);
+      const fill = new THREE.Mesh(new THREE.CircleGeometry(o.r - .25, 28), new THREE.MeshBasicMaterial({ color: 0xe0343f, transparent: true, opacity: .18, depthWrite: false }));
+      fill.rotation.x = -Math.PI / 2; fill.position.y = .04; g.add(fill);
+      const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(1.1, 0), stoneDark); rock.castShadow = true; rock.visible = false; g.add(rock);
+      g.position.set(o.x, 0, o.z); levelGroup.add(g); VIEW.objs.set(o, { g, ring, fill, rock });
+    } else if (o.t === 'gecit') {      // dar geçit: iki yanda kaya duvarı
+      const g = new THREE.Group(), rockM = new THREE.MeshLambertMaterial({ color: 0x8a7e6e });
+      [-1, 1].forEach(sd => { const w = new THREE.Mesh(BOX(4, 4.5, o.len), rockM); w.position.set(sd * (o.w + 2), 2.25, -o.len / 2); w.castShadow = true; w.receiveShadow = true; g.add(w);
+        for (let k = 0; k < 5; k++) { const r = new THREE.Mesh(new THREE.DodecahedronGeometry(1.4 + (k % 2) * .5, 0), stoneDark); r.position.set(sd * (o.w + .9 + (k % 2) * .5), 4.6 + (k % 3) * .3, -k * o.len / 4.5); g.add(r); } });
+      const L = makeLabel(512, 128); drawBig(L, 'DAR GEÇİT · ' + M.gecitCap(o.w) + ' kişi sığar', '#ffd9a0', '#16202e', 64); const lab = labelSprite(L, 5.4, 1.35); lab.position.set(0, 5.2, 0); g.add(lab);
+      g.position.set(0, 0, o.z); levelGroup.add(g); VIEW.objs.set(o, { g });
     } else if (o.t === 'squad') {
       const L = makeLabel(256, 128); drawCount(L, o.n); const spr = labelSprite(L, o.final ? 3.2 : 2.4, o.final ? 1.6 : 1.2); levelGroup.add(spr);
       VIEW.objs.set(o, { spr, L, shown: o.n, seed: Math.random() * 100 });
     } else if (o.t === 'boss') {
       const B = M.BOSSES[o.id];
-      const geo = B.tip === 'katafrakt' ? katafraktG : B.tip === 'varang' ? varangG : piyadeG(B.renk, 0xc9a24a);
-      const m = new THREE.Mesh(geo, armyMat); const sc = B.tip === 'katafrakt' ? 2.6 : 3.4; m.scale.set(sc, sc, sc); m.rotation.y = Math.PI; m.castShadow = true;
+      const atli = !!M.FOES[B.tip].atli;
+      const geo = atli ? ATLI_GEO[B.tip] : B.tip === 'varang' ? varangG : B.tip === 'kalkanli' ? kalkanliG : B.tip === 'frank' ? frankG : piyadeG(B.renk, 0xc9a24a);
+      const m = new THREE.Mesh(geo, armyMat); const sc = atli ? 2.6 : 3.4; m.scale.set(sc, sc, sc); m.rotation.y = Math.PI; m.castShadow = true;
       const g = new THREE.Group(); g.add(m);
-      const crown = new THREE.Mesh(CYL(.5, .4, .3, 8), capMat); crown.position.y = (B.tip === 'katafrakt' ? 2.3 : 1.55) * sc; g.add(crown);
-      const L = makeLabel(512, 128); drawBossBar(L, B.ad, o.hp, o.max); const spr = labelSprite(L, 5.2, 1.3); spr.position.y = (B.tip === 'katafrakt' ? 2.3 : 1.6) * sc + 1.6; g.add(spr);
+      const crown = new THREE.Mesh(CYL(.5, .4, .3, 8), capMat); crown.position.y = (atli ? 2.3 : 1.55) * sc; g.add(crown);
+      const L = makeLabel(512, 128); drawBossBar(L, B.ad, o.hp, o.max); const spr = labelSprite(L, 5.2, 1.3); spr.position.y = (atli ? 2.3 : 1.6) * sc + 1.6; g.add(spr);
       g.position.set(o.x, 0, o.z); levelGroup.add(g); VIEW.objs.set(o, { g, L, shown: o.hp, m, base: sc });
     }
   }
@@ -323,7 +456,7 @@ function buildLevelView(G) {
   const cg = BOX(.8, .8, 2.3); for (let x = -16.5; x <= 16.6; x += 1.5) { const c = new THREE.Mesh(cg, stoneMat); c.position.set(x, 6.4, 0); f.add(c); }
   [-8, 8].forEach(x => { const t = new THREE.Mesh(CYL(2.4, 2.6, 9, 10), stoneDark); t.position.set(x, 4.5, 0); t.castShadow = true; f.add(t); for (let a = 0; a < 10; a++) { const c = new THREE.Mesh(BOX(.7, .8, .7), stoneDark); const an = a / 10 * Math.PI * 2; c.position.set(x + Math.cos(an) * 2.2, 9.4, Math.sin(an) * 2.2); f.add(c); } });
   const gate = new THREE.Mesh(BOX(4.4, 4.4, .3), new THREE.MeshLambertMaterial({ color: 0x3a2a20 })); gate.position.set(0, 2.2, 1.15); f.add(gate);
-  const banners = [];[-4, 4, -12.5, 12.5].forEach(x => { const b = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 2.6), new THREE.MeshLambertMaterial({ map: flagTexRed, side: THREE.DoubleSide })); b.position.set(x, 4.2, 1.15); f.add(b); banners.push(b); });
+  const banners = [];[-4, 4, -12.5, 12.5].forEach(x => { const b = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 2.6), new THREE.MeshLambertMaterial({ map: ENEMY_FLAG[G.L.sf], side: THREE.DoubleSide })); b.position.set(x, 4.2, 1.15); f.add(b); banners.push(b); });
   f.position.z = fz; levelGroup.add(f); VIEW.fort = { gate, banners };
   // yol ve kenar taşları
   const len = G.L.len + 60, cz = 20 - len / 2;
@@ -381,11 +514,14 @@ function handleEvents() {
   for (const e of G.events) {
     switch (e.type) {
       case 'gain': popup('+' + e.v, e.x, 1.8, e.z); SFX.gain(); break;
+      case 'loot': popup('+' + e.v + ' akçe', e.x, 3, e.z, 'gold'); SFX.buy(); break;
+      case 'tas': { const v = VIEW.objs.get(e.o); if (v) { v.g.visible = false; } puff(e.o.x, .8, e.o.z, 3.4); puff(e.o.x + 1, 1.2, e.o.z, 2.4); noise(0.3, 0.2, 300); tone(90, 0.3, 'sine', 0.15, 0.5);
+        if (e.v) { popup('−' + e.v, G.x, 2.6, G.z, 'bad'); if (navigator.vibrate) try { navigator.vibrate(40); } catch (x) {} } break; }
       case 'gate': { popup((e.d >= 0 ? '+' : '') + e.d, e.x, 2.5, e.z - 1, e.d >= 0 ? '' : 'bad'); e.d >= 0 ? SFX.good() : SFX.bad(); const v = VIEW.gates.find(v => v.gt === e.g); if (v) { v.anim = e.g.side < 0 ? 0 : 1; v.t = 0; } break; }
       case 'weapon': popup(M.WEAPONS[e.w].ad + '!', e.x, 3, e.z, 'gold'); SFX.weapon(); updateWeapon(); break;
       case 'hero': popup('Altın Alp katıldı!', e.x, 3.2, e.z, 'gold'); SFX.hero(); break;
       case 'troops': popup('+' + e.v + ' akıncı', e.x, 3, e.z, 'gold'); SFX.good(); break;
-      case 'crash': popup('−' + e.v, e.x, 2.4, e.z, 'bad'); SFX.crash(); if (navigator.vibrate) try { navigator.vibrate(30); } catch (x) {} break;
+      case 'crash': popup((e.gecit ? 'Sıkıştı −' : '−') + e.v, e.x, 2.4, e.z, 'bad'); SFX.crash(); if (navigator.vibrate) try { navigator.vibrate(30); } catch (x) {} break;
       case 'break': { const v = VIEW.objs.get(e.o); if (v) v.die = 0.3; puff(e.o.x, 1, e.o.z, 2.4); puff(e.o.x + .6, 1.4, e.o.z, 1.8); SFX.break(); break; }
       case 'hit': SFX.tick(); if (Math.random() < .4) puff(e.x + (Math.random() - .5) * 2, .8, e.z, .9); break;
       case 'clash': SFX.tick(); if (Math.random() < .5) puff(e.x + (Math.random() - .5) * 2.5, .9, e.z, 1.4); break;
@@ -406,14 +542,14 @@ function finish(win) {
   persist();
   lastRes = { i, win, stars, gain };
   if (win) {
-    const last = i === NL - 1;
-    $('wTitle').textContent = last ? 'MALAZGİRT!' : 'ZAFER!';
+    const SF = M.SEFERLER[M.seferOf(i)], last = i % 50 === 49;
+    $('wTitle').textContent = last ? SF.zafer : 'ZAFER!';
     $('wStars').innerHTML = starHtml(stars);
-    $('wStats').innerHTML = (last ? '' : G.L.ad + ' geçildi.<br>') + 'Sağ kalan akıncı: <b>' + G.count + '</b>' + (G.heroes ? ' · Altın Alp: <b>' + G.heroes + '</b>' : '') + '<br>Dağıtılan Bizans askeri: <b>' + fmt(G.kills) + '</b>' + (!last && canUpgrade() ? '<br><span class="hint">Ordugâh\'ta yeni geliştirme alabilirsin!</span>' : '');
+    $('wStats').innerHTML = (last ? '' : G.L.ad + ' geçildi.<br>') + 'Sağ kalan akıncı: <b>' + G.count + '</b>' + (G.heroes ? ' · Altın Alp: <b>' + G.heroes + '</b>' : '') + '<br>Dağıtılan düşman askeri: <b>' + fmt(G.kills) + '</b>' + (G.loot ? '<br>Kervan ganimeti: <b>' + G.loot + ' akçe</b>' : '') + (!last && canUpgrade() ? '<br><span class="hint">Ordugâh\'ta yeni geliştirme alabilirsin!</span>' : '');
     $('wEpi').hidden = !last;
-    if (last) $('wEpi').textContent = '26 Ağustos 1071. Bizans ordusu dağıldı, İmparator Romen Diyojen esir düştü. Sultan Alparslan onu bağışlayıp serbest bıraktı. Anadolu\'nun kapıları açıldı.';
+    if (last) $('wEpi').textContent = SF.epilog + (i < NL - 1 ? ' Sıradaki sefer: ' + M.SEFERLER[M.seferOf(i) + 1].ad + '!' : ' Yeni seferler pek yakında.');
     $('wGain').textContent = gain;
-    $('wNext').textContent = last ? 'SEFER HARİTASI' : 'DEVAM';
+    $('wNext').textContent = i === NL - 1 ? 'SEFER HARİTASI' : last ? 'YENİ SEFER' : 'DEVAM';
     show('win'); fanfare(); for (let k = 0; k < stars; k++) setTimeout(() => SFX.star(k), 300 + k * 250);
   } else {
     let tip;
@@ -434,7 +570,8 @@ function show(n) {
   $('hud').hidden = !playing; $('weapon').hidden = !playing; $('sndBtn').hidden = !(n === 'menu' || n === 'pause');
   if (n === 'menu') renderMenu(); if (n === 'levels') renderLevels(); if (n === 'camp') renderCamp();
 }
-const canUpgrade = () => M.UPG.some(u => S.up[u.k] < M.UPMAX && S.coins >= M.upCost(u, S.up[u.k]));
+const upCapNow = () => M.upCap(M.seferOf(Math.min(NL, S.unlocked) - 1));
+const canUpgrade = () => M.UPG.some(u => S.up[u.k] < upCapNow() && S.coins >= M.upCost(u, S.up[u.k]));
 let campFrom = 'menu';
 function openCamp(from) { campFrom = from; show('camp'); }
 const nextLevel = () => Math.min(NL - 1, S.unlocked - 1);
@@ -443,20 +580,30 @@ function renderMenu() {
   $('bPlaySub').textContent = 'Bölüm ' + (i + 1) + ' · ' + M.LEVELS[i].ad;
   $('bCamp').classList.toggle('notify', canUpgrade());
 }
-let regionSel = -1;
+let regionSel = -1, seferSel = -1;
 function renderLevels() {
   if (regionSel < 0) regionSel = Math.floor(nextLevel() / 10);
+  if (seferSel < 0) seferSel = Math.floor(regionSel / 5);
   $('lStars').textContent = totalStars() + ' / ' + NL * 3;
-  const tabs = $('tabs'); tabs.innerHTML = '';
-  M.REGIONS.forEach((R, r) => {
-    const lock = r * 10 + 1 > S.unlocked; let st = 0; for (let k = 0; k < 10; k++) st += S.stars[r * 10 + k] || 0;
+  $('sPrev').disabled = seferSel === 0; $('sNext').disabled = seferSel >= NSF;
+  const grid = $('grid'), tabs = $('tabs'); grid.innerHTML = ''; tabs.innerHTML = '';
+  if (seferSel >= NSF) {     // yakında
+    $('sName').textContent = M.SOON.ad; $('sSub').textContent = 'Sıradaki sefer';
+    $('regionHead').textContent = '';
+    grid.innerHTML = '<div class="soon" style="grid-column:1/-1"><h3>Pek yakında</h3><p>Kösedağ, Ankara, İstanbul ve daha fazlası. Yeni seferler güncellemelerle geliyor. Bu arada eski bölümleri yıldızla, Ordugâh\'ı güçlendir.</p></div>';
+    return;
+  }
+  const SF = M.SEFERLER[seferSel];
+  $('sName').textContent = (seferSel + 1) + '. Sefer: ' + SF.ad; $('sSub').textContent = SF.yil + ' · ' + SF.alt;
+  if (Math.floor(regionSel / 5) !== seferSel) regionSel = seferSel * 5;
+  for (let r = seferSel * 5; r < seferSel * 5 + 5; r++) {
+    const R = M.REGIONS[r], lock = r * 10 + 1 > S.unlocked; let st = 0; for (let k = 0; k < 10; k++) st += S.stars[r * 10 + k] || 0;
     const b = document.createElement('button'); b.className = 'tab' + (lock ? ' locked' : ''); b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', r === regionSel);
     b.innerHTML = R.ad + '<small>' + (lock ? 'Kilitli' : st + ' / 30 yıldız') + '</small>';
     b.addEventListener('click', () => { SFX.click(); regionSel = r; renderLevels(); });
     tabs.appendChild(b);
-  });
+  }
   $('regionHead').textContent = M.REGIONS[regionSel].alt;
-  const grid = $('grid'); grid.innerHTML = '';
   for (let k = 0; k < 10; k++) {
     const i = regionSel * 10 + k, L = M.LEVELS[i], lock = i + 1 > S.unlocked;
     const b = document.createElement('button'); b.className = 'lv' + (lock ? ' lock' : '') + (i === nextLevel() && !lock ? ' cur' : '');
@@ -472,12 +619,13 @@ function renderCamp() {
   $('cCoins').textContent = S.coins;
   const camp = $('camp'); camp.innerHTML = '';
   M.UPG.forEach(u => {
-    const l = S.up[u.k], max = l >= M.UPMAX, cost = max ? 0 : M.upCost(u, l);
+    const cap = upCapNow(), l = S.up[u.k], max = l >= cap, cost = max ? 0 : M.upCost(u, l);
     const card = document.createElement('div'); card.className = 'card';
-    let pips = ''; for (let k = 0; k < M.UPMAX; k++) pips += '<i' + (k < l ? ' class="on"' : '') + '></i>';
-    card.innerHTML = '<h3>' + u.ad + '</h3><div class="lvl">SEVİYE ' + l + ' / ' + M.UPMAX + '</div><div class="pips">' + pips + '</div><div class="d">' + u.desc(l) + (max ? '' : '<br><b>Sonraki: ' + u.desc(l + 1) + '</b>') + '</div>';
+    let pips = ''; for (let k = 0; k < cap; k++) pips += '<i' + (k < l ? ' class="on"' : '') + '></i>';
+    card.innerHTML = '<h3>' + u.ad + '</h3><div class="lvl">SEVİYE ' + l + ' / ' + cap + '</div><div class="pips">' + pips + '</div><div class="d">' + u.desc(l) + (max ? '' : '<br><b>Sonraki: ' + u.desc(l + 1) + '</b>') + '</div>';
     const b = document.createElement('button'); b.className = 'buy'; b.disabled = max || S.coins < cost;
-    b.innerHTML = max ? 'EN ÜST SEVİYE' : '<b class="akce"></b>' + cost; b.setAttribute('aria-label', max ? u.ad + ' en üst seviyede' : u.ad + ' geliştir, ' + cost + ' akçe');
+    const capTxt = cap < M.UPMAX ? 'YENİ SEFERDE AÇILIR' : 'EN ÜST SEVİYE';
+    b.innerHTML = max ? capTxt : '<b class="akce"></b>' + fmt(cost); b.setAttribute('aria-label', max ? u.ad + ': ' + capTxt.toLocaleLowerCase('tr') : u.ad + ' geliştir, ' + cost + ' akçe');
     b.addEventListener('click', () => { if (max || S.coins < cost) return; S.coins -= cost; S.up[u.k]++; persist(); SFX.buy(); renderCamp(); if (mode === 'menu') previewLevel(nextLevel()); });
     card.appendChild(b); camp.appendChild(card);
   });
@@ -486,7 +634,7 @@ let briefI = 0;
 function openBrief(i) {
   briefI = i; const L = M.LEVELS[i], R = M.REGIONS[L.reg];
   $('scrBrief').querySelector('.topbar h2').textContent = 'Bölüm ' + (i + 1) + ' / ' + NL;
-  $('brReg').textContent = R.ad + ' · ' + R.alt; $('brName').textContent = L.ad; $('brText').textContent = L.brief;
+  $('brReg').textContent = M.SEFERLER[L.sf].ad + ' · ' + R.ad; $('brName').textContent = L.ad; $('brText').textContent = L.brief;
   $('brStars').innerHTML = starHtml(S.stars[i] || 0).replace(/ style="[^"]*"/g, '');
   const kinds = new Set(); let boss = null; L.objs.forEach(o => { if (o.t === 'squad') kinds.add(o.ft); if (o.t === 'boss') boss = o; });
   let chips = ''; kinds.forEach(k => chips += '<span class="chip">' + M.FOES[k].ad + '</span>'); if (boss) chips += '<span class="chip boss">' + M.BOSSES[boss.id].ad + '</span>';
@@ -498,7 +646,9 @@ function pause(on) { if (mode !== 'play') return; paused = on; drag = false; sho
 
 document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => { SFX.click(); const g = b.dataset.go; if (g === 'menu') { previewLevel(nextLevel()); } show(g); }));
 $('bPlay').addEventListener('click', () => { unlockAudio(); SFX.click(); openBrief(nextLevel()); });
-$('bLevels').addEventListener('click', () => { SFX.click(); regionSel = -1; show('levels'); });
+$('bLevels').addEventListener('click', () => { SFX.click(); regionSel = -1; seferSel = -1; show('levels'); });
+$('sPrev').addEventListener('click', () => { SFX.click(); seferSel = Math.max(0, seferSel - 1); regionSel = seferSel * 5; renderLevels(); });
+$('sNext').addEventListener('click', () => { SFX.click(); seferSel = Math.min(NSF, seferSel + 1); regionSel = Math.min(seferSel, NSF - 1) * 5; renderLevels(); });
 $('bCamp').addEventListener('click', () => { SFX.click(); openCamp('menu'); });
 $('brCamp').addEventListener('click', () => { SFX.click(); openCamp('brief'); });
 $('cBack').addEventListener('click', () => { SFX.click(); if (campFrom === 'brief') openBrief(briefI); else { previewLevel(nextLevel()); show('menu'); } });
@@ -507,7 +657,7 @@ $('pauseBtn').addEventListener('click', () => { SFX.click(); pause(true); });
 $('pResume').addEventListener('click', () => { SFX.click(); pause(false); });
 $('pRestart').addEventListener('click', () => { SFX.click(); startGame(G.i); });
 $('pMenu').addEventListener('click', () => { SFX.click(); previewLevel(nextLevel()); show('menu'); });
-$('wNext').addEventListener('click', () => { SFX.click(); if (lastRes.i >= NL - 1) { regionSel = 4; show('levels'); } else openBrief(lastRes.i + 1); });
+$('wNext').addEventListener('click', () => { SFX.click(); if (lastRes.i >= NL - 1) { seferSel = NSF; show('levels'); } else openBrief(lastRes.i + 1); });
 $('wRetry').addEventListener('click', () => { SFX.click(); startGame(lastRes.i); });
 $('wMenu').addEventListener('click', () => { SFX.click(); previewLevel(nextLevel()); show('menu'); });
 $('lRetry').addEventListener('click', () => { SFX.click(); startGame(lastRes.i); });
@@ -526,20 +676,20 @@ function renderCrowd(t) {
   heroMesh.count = h; heroMesh.instanceMatrix.needsUpdate = true; dummy.scale.set(1, 1, 1);
 }
 function renderFoes(t) {
-  const idx = { piyade: 0, okcu: 0, katafrakt: 0, varang: 0 };
+  const idx = {}; for (const k in foeMesh) idx[k] = 0;
   for (const o of G.objs) {
     if (o.t !== 'squad') continue; const v = VIEW.objs.get(o);
     if (!o.alive || o.z < G.z - 110 || o.z > G.z + 14) { v.spr.visible = false; continue; }
     if (!o.cols) { o.cols = 1; o.rows = 1; o.w = 1; o.d = 1; }
-    const cap = o.ft === 'katafrakt' ? 90 : 160, m = Math.min(o.n, cap), mesh = foeMesh[o.ft];
-    const sx = o.ft === 'katafrakt' ? 0.8 : 0.55, sz = o.ft === 'katafrakt' ? 1.1 : 0.6;
-    const cols = Math.max(1, Math.min(o.ft === 'katafrakt' ? 8 : 12, Math.ceil(Math.sqrt(m * 1.3)))), rows = Math.ceil(m / cols);
+    const atli = !!M.FOES[o.ft].atli, cap = atli ? 90 : 160, m = Math.min(o.n, cap), mesh = foeMesh[o.ft];
+    const sx = atli ? 0.8 : 0.55, sz = atli ? 1.1 : 0.6;
+    const cols = Math.max(1, Math.min(atli ? 8 : 12, Math.ceil(Math.sqrt(m * 1.3)))), rows = Math.ceil(m / cols);
     const moving = M.FOES[o.ft].v > 0 && (G.z - o.z) < 42;
     for (let j = 0; j < m && idx[o.ft] < MAXE; j++) {
       const r = Math.floor(j / cols), c = j % cols; const jx = Math.sin(j * 12.9898 + v.seed) * 0.12, jz = Math.cos(j * 78.233 + v.seed) * 0.12;
       dummy.position.set(o.x + (c - (cols - 1) / 2) * sx + jx, moving ? Math.abs(Math.sin(t * 10 + j)) * 0.1 : 0, o.z + (r - (rows - 1) / 2) * sz + jz); dummy.rotation.set(0, Math.PI, 0); dummy.updateMatrix(); mesh.setMatrixAt(idx[o.ft]++, dummy.matrix);
     }
-    v.spr.visible = true; v.spr.position.set(o.x, o.ft === 'katafrakt' ? 3.3 : 2.5, o.z + rows * sz / 2);
+    v.spr.visible = true; v.spr.position.set(o.x, atli ? 3.3 : 2.5, o.z + rows * sz / 2);
     if (o.n !== v.shown) { v.shown = o.n; drawCount(v.L, o.n); }
   }
   for (const k in foeMesh) { foeMesh[k].count = idx[k]; foeMesh[k].instanceMatrix.needsUpdate = true; }
@@ -556,9 +706,11 @@ function renderObjs(dt, t) {
     if (o.t === 'squad') continue;
     if (o.alive) {
       if (v.L && Math.ceil(o.hp) !== v.shown) { v.shown = Math.ceil(o.hp); if (o.t === 'boss') drawBossBar(v.L, M.BOSSES[o.id].ad, o.hp, o.max); else drawBig(v.L, fmt(o.hp), o.t === 'barricade' ? '#ffd9a0' : '#fff'); }
-      const s = 1 + o.flash * 1.2; v.g.scale.set(s, s, s);
+      if (o.flash !== undefined) { const s = 1 + o.flash * 1.2; v.g.scale.set(s, s, s); }
       if (v.item) v.item.rotation.y += dt * 1.6;
       if (o.t === 'boss') { v.g.position.z = o.z; v.m.rotation.z = Math.sin(t * 6) * 0.04; }
+      if (o.t === 'kervan') { v.g.position.x = o.x; v.g.rotation.z = Math.sin(t * 9) * 0.02; }
+      if (o.t === 'tas') { const dz = G.z - o.z; v.ring.material.opacity = .5 + .4 * Math.abs(Math.sin(t * 6)); if (dz < 16) { v.rock.visible = true; v.rock.position.y = Math.max(.6, 18 * dz / 16); v.rock.rotation.x += dt * 4; } }
     } else if (v.die !== undefined && v.die > 0) { v.die -= dt; const s = Math.max(0.01, v.die / 0.3); v.g.scale.set(s, s, s); if (v.die <= 0) v.g.visible = false; }
     else if (v.g && !o.alive && v.die === undefined) v.g.visible = false;
   }
@@ -603,10 +755,10 @@ function autoSteer() {
 }
 function boot() {
   if (Q.has('kare')) {
-    S.sound = false; S.unlocked = NL; S.up = { start: 8, dmg: 8, rate: 8, zirh: 8 }; S.coins = 1840;
+    S.sound = false; S.unlocked = NL; const kq = +Q.get('kare') || 0, uq = Math.round(kq < 50 ? Math.max(8, kq * 0.2 + 2) : Math.min(M.upCap(M.seferOf(kq)), 12 + (kq - 50) * 0.1)); S.up = { start: uq, dmg: uq, rate: uq, zirh: uq }; S.coins = 1840;
     S.stars = [3, 3, 3, 2, 3, 3, 3, 3, 2, 3, 3, 3, 2, 3, 3, 1, 3, 3]; persist = () => {};
     const sc = +Q.get('hiz') || 1, ekran = Q.get('ekran');
-    if (ekran) { previewLevel(+Q.get('kare') || 0); if (ekran === 'brief') openBrief(+Q.get('kare')); else { regionSel = +(Q.get('bolge') || 0); show(ekran); } }
+    if (ekran) { previewLevel(+Q.get('kare') || 0); if (ekran === 'brief') openBrief(+Q.get('kare')); else { regionSel = +(Q.get('bolge') || 0); seferSel = Math.floor(regionSel / 5); show(ekran); } }
     else {
       startGame(+Q.get('kare')); $('banner') && $('banner').remove(); hintT = 0;
       if (Q.has('ileri')) { const stopZ = G.L.endZ + (+Q.get('ileri')); let n = 0; while (G.z > stopZ && G.state === 'play' && n++ < 20000) { autoSteer(); M.step(G, 1 / 30); handleEvents(); } $('pops').innerHTML = ''; updateWeapon(); }

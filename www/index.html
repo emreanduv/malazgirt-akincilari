@@ -90,7 +90,16 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 #sndBtn svg{width:24px;height:24px}
 
 /* Bölüm haritası */
-.tabs{width:100%;max-width:560px;display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.sefer{flex:none;width:100%;max-width:560px;display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#2bb9be,var(--tq-d));border:3px solid var(--gold);border-radius:16px;padding:6px 8px;box-shadow:0 4px 0 var(--gold-d)}
+.sefer>div{flex:1;text-align:center;line-height:1.1}
+.sefer b{display:block;font-size:19px;font-weight:800;letter-spacing:.02em}
+.sefer small{display:block;font-size:13px;font-weight:600;color:#fff8ea;opacity:.95}
+.sefer button{border:2px solid rgba(255,255,255,.5);background:rgba(18,42,75,.85);border-radius:12px;width:40px;height:40px;font-size:22px;font-weight:800;line-height:1;padding:0;color:#fff}
+.sefer button:disabled{opacity:.3}
+.soon{width:100%;max-width:560px;background:var(--paper);color:var(--ink);border-radius:18px;padding:22px 18px;text-align:center;box-shadow:0 5px 0 var(--paper-d)}
+.soon h3{margin:0 0 6px;font-size:24px;font-weight:800;color:var(--lapis)}
+.soon p{margin:0;font-size:15px;font-weight:600;color:var(--muted)}
+.tabs{flex:none;width:100%;max-width:560px;display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tab{flex:none;border:2px solid rgba(255,255,255,.25);background:rgba(18,42,75,.9);border-radius:12px;padding:4px 12px 1px;font-weight:800;font-size:15px;line-height:1.3;text-align:left}
 .tab small{display:block;font-size:12px;font-weight:600;color:var(--gold)}
@@ -187,6 +196,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 <!-- Bölüm haritası -->
 <section id="scrLevels" class="screen solid" hidden>
   <div class="topbar"><button class="back" data-go="menu" aria-label="Geri">‹</button><h2>Sefer Haritası</h2><div class="pill" id="lStars">0</div></div>
+  <div class="sefer"><button id="sPrev" aria-label="Önceki sefer">‹</button><div><b id="sName"></b><small id="sSub"></small></div><button id="sNext" aria-label="Sonraki sefer">›</button></div>
   <div class="tabs" id="tabs" role="tablist"></div>
   <div class="regionHead" id="regionHead"></div>
   <div class="grid" id="grid"></div>

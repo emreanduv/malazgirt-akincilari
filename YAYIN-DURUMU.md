@@ -32,6 +32,14 @@
 - Geliştirme alınabilirken menü, brifing ve zafer ekranında uyarı.
 - iOS: TestFlight'a 1.0.1 yüklendi. Android: `imza-anahtari/malazgirt-1.0.1-3-imzali.aab` hazır.
 
+## 1.1.0 (hazırlanıyor): 200 bölüm, 4 sefer
+- Seferler: Malazgirt (1–50), Anadolu'ya Akın (51–100), Haçlılara Karşı (101–150), Miryokefalon (151–200)
+- Yeni düşmanlar: Akrit, Haçlı piyadesi, Arbaletçi, Şövalye, Kalkanlı; yeni mekanikler: kervan (akçe), mancınık halkası, dar geçit
+- Ordugâh 30 seviye (her sefer +5 açar), 7 yay
+- Zorluk: araclar/kalibre.js, "ortalama oyuncu" botu %95 → %25 testere dişi
+- Mağaza metinleri: store/surum-1.1.md
+- Yeni sefer eklemek: mantik.js'te SEFERLER'e 1, REGIONS'a 5 bölge, POOLS/ARCHER/BASE_FOE'ya 1 satır; oyun.js THEMES'e 5 tema; sonra `node araclar/kalibre.js 201`
+
 ## Sıradakiler
 - Apple ve Google'ın inceleme yanıtlarını bekle.
 - 12+ test kullanıcısının Gmail adresini "Hisar Testçileri" listesine ekle, 14 gün sonra üretim başvurusu.
