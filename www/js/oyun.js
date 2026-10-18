@@ -29,6 +29,7 @@ function audio() {
   return AC;
 }
 function unlockAudio() { if (!S.sound) return; const a = audio(); if (a && a.state === 'suspended') a.resume(); }
+window.SesKurtarici && SesKurtarici.yenidenKur(() => { AC = null; });
 function tone(f, d = 0.12, type = 'square', v = 0.04, slide = 0, delay = 0) {
   if (!S.sound || !audio()) return; const t0 = AC.currentTime + delay; const o = AC.createOscillator(), g = AC.createGain();
   o.type = type; o.frequency.setValueAtTime(f, t0); if (slide) o.frequency.exponentialRampToValueAtTime(f * slide, t0 + d);
