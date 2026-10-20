@@ -109,7 +109,43 @@ const THEMES = [
   { sky: 0xcfe3ec, ground: 0xb3b685, hill: [0x93a26c, 0xa2ac78, 0x86965f, 0xaeb482], mt: 0x7f8a96, bush: 0x5a7440, sun: 0xfff6ea, hemiG: 0x667a62, lake: 0x2f88b8 },
   { sky: 0xdde4ea, ground: 0xa9a27e, hill: [0x8f9278, 0x9a9c82, 0x84886e, 0xa4a48a], mt: 0x8a8c94, bush: 0x5f6e48, sun: 0xfff6ee, hemiG: 0x6a6e66, mtN: 46, cliff: 1 },
   { sky: 0xd8d8d0, ground: 0x9e9474, hill: [0x8f877a, 0x9a9184, 0x847c70, 0xa49a8c], mt: 0x77726a, bush: 0x5f6a48, sun: 0xfff0e0, hemiG: 0x6a645a, mtN: 52, cliff: 2 },
-  { sky: 0xf0b890, ground: 0xc9a070, hill: [0xb88e60, 0xc29868, 0xae8458, 0xcca272], mt: 0x8a6a5a, bush: 0x7a6a3a, sun: 0xffd2a0, hemiG: 0x8a5a40, cliff: 1 }
+  { sky: 0xf0b890, ground: 0xc9a070, hill: [0xb88e60, 0xc29868, 0xae8458, 0xcca272], mt: 0x8a6a5a, bush: 0x7a6a3a, sun: 0xffd2a0, hemiG: 0x8a5a40, cliff: 1 },
+  // 5. sefer: Erzurum, Erzincan, Kösedağ, Sivas, Uçlar
+  { sky: 0xdfe6ec, ground: 0xb6b08a, hill: [0x9aa078, 0xa8ac84, 0x8c946e, 0xb4b48e], mt: 0x8a8e98, bush: 0x5f6e48, sun: 0xfff6ee, hemiG: 0x6a6e66, mtN: 40 },
+  { sky: 0xe6e0c8, ground: 0xc4b07a, hill: [0xb49c66, 0xc0a870, 0xa8905c, 0xc8b07c], mt: 0x9a8a78, bush: 0x7a7a42, sun: 0xfff2dc, hemiG: 0x8a7650, river: 0x4d94bb },
+  { sky: 0xc8ccc8, ground: 0x8e9a6e, hill: [0x76845c, 0x84906a, 0x6a7852, 0x8e9a74], mt: 0x6a6e72, bush: 0x4a5e36, sun: 0xf0ece0, hemiG: 0x5a6252, mtN: 50, cliff: 1, forest: 0.5 },
+  { sky: 0xe8dcc0, ground: 0xc8b484, hill: [0xb8a070, 0xc4ac7a, 0xac9466, 0xccb684], mt: 0x9a8a7a, bush: 0x7e7a46, sun: 0xfff0d8, hemiG: 0x8a7654, river: 0x5a9cc0 },
+  { sky: 0xf0c69a, ground: 0xd0b07a, hill: [0xc49e66, 0xceaa70, 0xb8925c, 0xd6b47c], mt: 0x9a7462, bush: 0x7a7a42, sun: 0xffdcae, hemiG: 0x8a6244 },
+  // 6. sefer: Söğüt, Karacahisar, İnegöl, Yarhisar, Bilecik
+  { sky: 0xd8e6d0, ground: 0x94ae68, hill: [0x709a50, 0x80a65c, 0x648c48, 0x8cb066], mt: 0x6e7a6a, bush: 0x3f6a32, sun: 0xfff6e2, hemiG: 0x50703c, forest: 1 },
+  { sky: 0xe4e0c8, ground: 0xbcae7c, hill: [0xa89a6a, 0xb4a674, 0x9c8e60, 0xc0b282], mt: 0x8e8478, bush: 0x6a7440, sun: 0xfff4e0, hemiG: 0x7a7050, river: 0x4d94bb },
+  { sky: 0xd4e2d4, ground: 0x8eaa66, hill: [0x6c9650, 0x7ca25a, 0x608846, 0x88ac64], mt: 0x6a786c, bush: 0x3a6630, sun: 0xfff4e4, hemiG: 0x4c6a3a, forest: 0.8, cliff: 1 },
+  { sky: 0xe2e6d4, ground: 0xa6ae78, hill: [0x8a9a62, 0x98a66c, 0x7e8e58, 0xa2ae76], mt: 0x7c8278, bush: 0x557040, sun: 0xfff6ea, hemiG: 0x627454, forest: 0.5, river: 0x4a8fb5 },
+  { sky: 0xf0c49a, ground: 0xbca872, hill: [0xa69060, 0xb29c6a, 0x9a8656, 0xbea878], mt: 0x86705e, bush: 0x6a6a3a, sun: 0xffd8a8, hemiG: 0x7e5e42, forest: 0.4, cliff: 1 },
+  // 7. sefer: Yenişehir, Sakarya, İzmit, Koyunhisar, Bafeus
+  { sky: 0xdee6d2, ground: 0xa8b07a, hill: [0x8c9c64, 0x9aa86e, 0x80905a, 0xa6b078], mt: 0x7e8478, bush: 0x56703e, sun: 0xfff6e6, hemiG: 0x627452 },
+  { sky: 0xd4e4d0, ground: 0x92ac68, hill: [0x709850, 0x7ea45a, 0x648a48, 0x8aae64], mt: 0x6c7a6c, bush: 0x3e6832, sun: 0xfff4e2, hemiG: 0x4e6c3c, forest: 1, river: 0x4d94bb },
+  { sky: 0xcfe2ec, ground: 0xb4b688, hill: [0x96a270, 0xa4ac7c, 0x8a9864, 0xb0b486], mt: 0x84909a, bush: 0x5a7442, sun: 0xfff6ec, hemiG: 0x667a64, lake: 0x2a7aac },
+  { sky: 0xd8dcd4, ground: 0xa0a678, hill: [0x868e66, 0x949a70, 0x7a8460, 0x9ea47a], mt: 0x787c78, bush: 0x56683e, sun: 0xfff0e4, hemiG: 0x606856, forest: 0.4 },
+  { sky: 0xf2c098, ground: 0xc8a674, hill: [0xb89462, 0xc29e6c, 0xac8858, 0xcca876], mt: 0x8c6c5c, bush: 0x76703c, sun: 0xffd4a4, hemiG: 0x865c42, river: 0x5a9cc0 },
+  // 8. sefer: Uludağ, Mudanya, Ulubat, Surlar, Bursa
+  { sky: 0xd6e2dc, ground: 0x8ea868, hill: [0x6c9452, 0x7aa05c, 0x60884a, 0x86aa66], mt: 0x7a8690, bush: 0x3c6632, sun: 0xfff4e6, hemiG: 0x4c6a40, forest: 1, mtN: 44 },
+  { sky: 0xcfe4ee, ground: 0xbab688, hill: [0x9ca472, 0xa8ae7e, 0x909a66, 0xb4b48a], mt: 0x86909a, bush: 0x5e7644, sun: 0xfff6ee, hemiG: 0x6a7c66, lake: 0x2470a8 },
+  { sky: 0xd4e6e8, ground: 0xaab27e, hill: [0x8c9e68, 0x9aa874, 0x80925e, 0xa6b07e], mt: 0x7e8a92, bush: 0x547040, sun: 0xfff6ea, hemiG: 0x627860, lake: 0x3a86b0, forest: 0.3 },
+  { sky: 0xdcd8cc, ground: 0xa49c78, hill: [0x8c8670, 0x98907a, 0x807a66, 0xa29a84], mt: 0x7a7670, bush: 0x5a6644, sun: 0xfff0e2, hemiG: 0x66625a, cliff: 1, forest: 0.4 },
+  { sky: 0xf0c2a0, ground: 0xa8a874, hill: [0x8c9462, 0x9aa06c, 0x808a58, 0xa6aa76], mt: 0x7e7064, bush: 0x4a6a36, sun: 0xffd6aa, hemiG: 0x705a44, forest: 0.7 },
+  // 9. sefer: Edirne, Filibe, Niş, Priştine, Kosova
+  { sky: 0xdde6d0, ground: 0xa6b07a, hill: [0x8a9c62, 0x98a86c, 0x7e9058, 0xa4b076], mt: 0x7c8478, bush: 0x54703e, sun: 0xfff6e6, hemiG: 0x607452, river: 0x4d94bb },
+  { sky: 0xd8e2d4, ground: 0x9cac72, hill: [0x7e9a5a, 0x8ca464, 0x728e52, 0x98aa6e], mt: 0x727e7c, bush: 0x46683a, sun: 0xfff4e4, hemiG: 0x56704a, river: 0x4a8fb5, mtN: 40 },
+  { sky: 0xd2dcd4, ground: 0x8aa064, hill: [0x6a8a50, 0x78965a, 0x5e8048, 0x849e62], mt: 0x667270, bush: 0x3a5e30, sun: 0xfff0e4, hemiG: 0x4c6440, forest: 1, cliff: 1 },
+  { sky: 0xe0e0d0, ground: 0xb0ac7c, hill: [0x96946a, 0xa4a074, 0x8a8860, 0xaeaa7e], mt: 0x84847a, bush: 0x5e6c42, sun: 0xfff2e2, hemiG: 0x6c6c54, river: 0x5a9cc0 },
+  { sky: 0xf0bc96, ground: 0xc4ac72, hill: [0xb09662, 0xbaa06c, 0xa48a58, 0xc4aa76], mt: 0x886c5e, bush: 0x72703c, sun: 0xffd2a2, hemiG: 0x825c42 },
+  // 10. sefer: Tuna, Niğbolu Kalesi, Tırnova, Kazık Hattı, Niğbolu
+  { sky: 0xd0e2ea, ground: 0xa8b07e, hill: [0x8a9c68, 0x98a872, 0x7e905e, 0xa4b07c], mt: 0x808c96, bush: 0x547042, sun: 0xfff6ec, hemiG: 0x627862, lake: 0x3a7eaa },
+  { sky: 0xdcd8cc, ground: 0xaaa07a, hill: [0x928a70, 0x9e967a, 0x868068, 0xa8a082], mt: 0x7c7870, bush: 0x5c6844, sun: 0xfff0e2, hemiG: 0x68645a, cliff: 2 },
+  { sky: 0xd6e0d2, ground: 0x90a668, hill: [0x709450, 0x7ea05a, 0x648848, 0x8aa864], mt: 0x6c7872, bush: 0x3e6432, sun: 0xfff2e4, hemiG: 0x4e6a40, forest: 1, mtN: 46 },
+  { sky: 0xe6dcc4, ground: 0xb4a474, hill: [0x9c8e64, 0xa89a6e, 0x90845a, 0xb2a478], mt: 0x8a7e70, bush: 0x6a6a3e, sun: 0xfff0d8, hemiG: 0x7a6c50, cliff: 1 },
+  { sky: 0xf2b88e, ground: 0xc4a46e, hill: [0xb08e5e, 0xba9868, 0xa48454, 0xc4a272], mt: 0x866a5a, bush: 0x70683a, sun: 0xffd0a0, hemiG: 0x805a40, river: 0x5a9cc0 }
 ];
 
 /* geometri yardımcıları: renkli parçaları tek geometriye birleştir (az çizim çağrısı) */
@@ -249,8 +285,63 @@ const kalkanliG = merge([
   P(BOX(.08, .7, .07), 0xe3a92b, Mx(0, .66, -.29)),
   P(BOX(.04, 1.6, .04), 0x5b3a1e, Mx(.3, .95, -.1))
 ]);
-const FOE_GEO = { piyade: piyadeG(), okcu: okcuG, katafrakt: katafraktG, varang: varangG, akrit: akritG, frank: frankG, arbalet: arbaletG, sovalye: sovalyeG, kalkanli: kalkanliG };
-const ATLI_GEO = { katafrakt: katafraktG, akrit: akritG, sovalye: sovalyeG };
+// Moğol atlısı: küçük bozkır atı, kürklü börk, koyu kaftan, yay
+function bozkirAtliG(at = 0x6a4a2e, kaftan = 0x2f3e5a, zirh = null, mizrak = false) {
+  return merge([
+    P(BOX(.4, .44, 1.05), at, Mx(0, .86, 0)),
+    ...[[-.14, .4], [.14, .4], [-.14, -.4], [.14, -.4]].map(([x, z]) => P(BOX(.11, .64, .11), 0x2b1f18, Mx(x, .32, z))),
+    P(BOX(.22, .44, .26), at, Mx(0, 1.22, -.56, 1, 1, 1, -.5, 0, 0)),
+    P(BOX(.17, .19, .38), at, Mx(0, 1.43, -.72, 1, 1, 1, -.2, 0, 0)),
+    ...(zirh ? [P(BOX(.46, .3, 1.1), zirh, Mx(0, .95, 0))] : []),
+    P(CYL(.15, .21, .5, 7), kaftan, Mx(0, 1.42, .05)),
+    P(BOX(.34, .08, .26), 0xb8892e, Mx(0, 1.24, .05)),
+    ...(zirh ? [P(BOX(.32, .26, .24), zirh, Mx(0, 1.52, .05))] : []),
+    P(SPH(.13, 7, 5), 0xd8a47a, Mx(0, 1.78, .05)),
+    P(CYL(.17, .17, .08, 8), 0x6b4a2b, Mx(0, 1.86, .05)),
+    P(CONE(.13, .28, 7), zirh ? 0x7a7a72 : 0x8e2a2a, Mx(0, 2.0, .05)),
+    ...(mizrak ? [P(BOX(.035, .035, 1.7), 0x6b4a2b, Mx(.22, 1.5, -.45)), P(CONE(.04, .18, 4), 0xd5dbe0, Mx(.22, 1.5, -1.38, 1, 1, 1, -Math.PI / 2, 0, 0)), P(BOX(.02, .14, .1), 0x2a2a2a, Mx(.22, 1.64, -1.2))]
+      : [P(new THREE.TorusGeometry(.3, .025, 4, 10, Math.PI), 0x4a2a14, Mx(-.24, 1.5, -.06, 1, 1, 1, 0, -Math.PI / 2, Math.PI / 2))])
+  ]);
+}
+const mogolG = bozkirAtliG(), mogolagirG = bozkirAtliG(0x4a3624, 0x3a3a3a, 0x5a5a52, true);
+const mogolokcuG = merge([
+  P(BOX(.28, .42, .2), 0x2e2a26, Mx(0, .21, 0)),
+  P(CYL(.16, .25, .52, 7), 0x2f3e5a, Mx(0, .66, 0)),
+  P(CYL(.2, .2, .06, 7), 0xb8892e, Mx(0, .5, 0)),
+  P(SPH(.14, 7, 5), 0xd8a47a, Mx(0, 1.03, 0)),
+  P(CYL(.17, .17, .08, 8), 0x6b4a2b, Mx(0, 1.12, 0)),
+  P(CONE(.13, .28, 7), 0x8e2a2a, Mx(0, 1.26, 0)),
+  P(new THREE.TorusGeometry(.32, .025, 4, 10, Math.PI), 0x4a2a14, Mx(.25, .8, -.12, 1, 1, 1, 0, Math.PI / 2, Math.PI / 2))
+]);
+// Balkan piyadesi: kırmızı-beyaz tunik, şapka miğfer, uzun kalkan
+const balkanG = merge([
+  P(BOX(.3, .42, .2), 0x2a2226, Mx(0, .21, 0)),
+  P(CYL(.18, .27, .52, 7), 0x9b2a2a, Mx(0, .66, 0)),
+  P(BOX(.36, .3, .24), 0x8a949e, Mx(0, .82, 0)),
+  P(SPH(.14, 7, 5), 0xe0b08a, Mx(0, 1.03, 0)),
+  P(CYL(.24, .24, .03, 10), 0x7a828a, Mx(0, 1.12, 0)),
+  P(new THREE.SphereGeometry(.15, 7, 5, 0, Math.PI * 2, 0, Math.PI / 2), 0x7a828a, Mx(0, 1.1, 0)),
+  P(BOX(.06, .62, .34), 0xe8e2d2, Mx(.3, .62, -.04)),
+  P(BOX(.065, .62, .12), 0x9b2a2a, Mx(.33, .62, -.04))
+]);
+// Sırp süvarisi: kırmızı örtülü at, kapalı miğfer, mızrak
+const sirpatliG = merge([
+  P(BOX(.48, .52, 1.25), 0x4a3020, Mx(0, .96, 0)),
+  P(BOX(.56, .5, 1.34), 0x9b2a2a, Mx(0, .9, 0)),
+  ...[[-.17, .46], [.17, .46], [-.17, -.46], [.17, -.46]].map(([x, z]) => P(BOX(.12, .66, .12), 0x2b1f18, Mx(x, .33, z))),
+  P(BOX(.24, .5, .3), 0x9b2a2a, Mx(0, 1.36, -.64, 1, 1, 1, -.5, 0, 0)),
+  P(BOX(.2, .22, .44), 0x8a949e, Mx(0, 1.6, -.82, 1, 1, 1, -.2, 0, 0)),
+  P(CYL(.16, .21, .52, 7), 0xe8e2d2, Mx(0, 1.58, .05)),
+  P(BOX(.3, .26, .24), 0x9aa3ad, Mx(0, 1.68, .05)),
+  P(SPH(.14, 7, 5), 0x9aa3ad, Mx(0, 1.96, .05)),
+  P(CONE(.05, .2, 4), 0xc8303a, Mx(0, 2.14, .05)),
+  P(BOX(.06, .5, .34), 0x9b2a2a, Mx(-.27, 1.55, -.02)),
+  P(BOX(.04, .04, 1.8), 0x6b4a2b, Mx(.24, 1.6, -.55)),
+  P(CONE(.045, .2, 4), 0xd5dbe0, Mx(.24, 1.6, -1.5, 1, 1, 1, -Math.PI / 2, 0, 0))
+]);
+const FOE_GEO = { piyade: piyadeG(), okcu: okcuG, katafrakt: katafraktG, varang: varangG, akrit: akritG, frank: frankG, arbalet: arbaletG, sovalye: sovalyeG, kalkanli: kalkanliG,
+  mogol: mogolG, mogolagir: mogolagirG, mogolokcu: mogolokcuG, balkan: balkanG, sirpatli: sirpatliG };
+const ATLI_GEO = { katafrakt: katafraktG, akrit: akritG, sovalye: sovalyeG, mogol: mogolG, mogolagir: mogolagirG, sirpatli: sirpatliG };
 
 const armyMat = new THREE.MeshLambertMaterial({ vertexColors: true });
 const goldMat = new THREE.MeshPhongMaterial({ color: 0xe8b33a, specular: 0xfff2b0, shininess: 90, emissive: 0x3d2800 });
@@ -437,7 +528,7 @@ function buildLevelView(G) {
     } else if (o.t === 'boss') {
       const B = M.BOSSES[o.id];
       const atli = !!M.FOES[B.tip].atli;
-      const geo = atli ? ATLI_GEO[B.tip] : B.tip === 'varang' ? varangG : B.tip === 'kalkanli' ? kalkanliG : B.tip === 'frank' ? frankG : piyadeG(B.renk, 0xc9a24a);
+      const geo = atli ? ATLI_GEO[B.tip] : B.tip === 'varang' ? varangG : B.tip === 'kalkanli' ? kalkanliG : B.tip === 'frank' ? frankG : B.tip === 'balkan' ? balkanG : piyadeG(B.renk, 0xc9a24a);
       const m = new THREE.Mesh(geo, armyMat); const sc = atli ? 2.6 : 3.4; m.scale.set(sc, sc, sc); m.rotation.y = Math.PI; m.castShadow = true;
       const g = new THREE.Group(); g.add(m);
       const crown = new THREE.Mesh(CYL(.5, .4, .3, 8), capMat); crown.position.y = (atli ? 2.3 : 1.55) * sc; g.add(crown);
@@ -591,7 +682,7 @@ function renderLevels() {
   if (seferSel >= NSF) {     // yakında
     $('sName').textContent = M.SOON.ad; $('sSub').textContent = 'Sıradaki sefer';
     $('regionHead').textContent = '';
-    grid.innerHTML = '<div class="soon" style="grid-column:1/-1"><h3>Pek yakında</h3><p>Kösedağ, Ankara, İstanbul ve daha fazlası. Yeni seferler güncellemelerle geliyor. Bu arada eski bölümleri yıldızla, Ordugâh\'ı güçlendir.</p></div>';
+    grid.innerHTML = '<div class="soon" style="grid-column:1/-1"><h3>Pek yakında</h3><p>İstanbul ve daha fazlası. Yeni seferler güncellemelerle geliyor. Bu arada eski bölümleri yıldızla, Ordugâh\'ı güçlendir.</p></div>';
     return;
   }
   const SF = M.SEFERLER[seferSel];

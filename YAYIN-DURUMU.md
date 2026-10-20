@@ -40,6 +40,14 @@
 - Mağaza metinleri: store/surum-1.1.md
 - Yeni sefer eklemek: mantik.js'te SEFERLER'e 1, REGIONS'a 5 bölge, POOLS/ARCHER/BASE_FOE'ya 1 satır; oyun.js THEMES'e 5 tema; sonra `node araclar/kalibre.js 201`
 
+## 1.2.0 (surum-1.2 dalı): 500 bölüm, 10 sefer
+- Yeni seferler: Moğol Fırtınası (201–250), Uç Beyliği (251–300), Bafeus (301–350), Bursa (351–400), Kosova (401–450), Niğbolu (451–500)
+- Yeni düşmanlar: Moğol atlısı, Moğol ağır süvarisi, Moğol okçusu, Balkan piyadesi, Sırp süvarisi · 18 yeni dev
+- 2 yeni yay (Akıncı Beyi Yayı 301+, Yıldırım Yayı 401+), Ordugâh 40 seviye
+- İlk 200 bölüm birebir aynı (eski kayıtlar bozulmaz); 201–500 araclar/kalibre.js ile ayarlandı (hedef ilk denemede ~%35 → ~%25)
+- Mağaza metinleri: store/surum-1.2.md
+- Yol haritası: 1071 bölüm = 21 sefer × 50 + 21 bölümlük final seferi (Malazgirt'e dönüş)
+
 ## Sıradakiler
 - Apple ve Google'ın inceleme yanıtlarını bekle.
 - 12+ test kullanıcısının Gmail adresini "Hisar Testçileri" listesine ekle, 14 gün sonra üretim başvurusu.

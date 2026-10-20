@@ -11,7 +11,8 @@ const { bot } = require('./bot.js');
 const NL = M.NL;
 function target(i) {
   const k = i % 10, li = i % 50;
-  let t = 0.95 - 0.62 * Math.pow(i / 199, 0.65) - 0.08 * (k / 9);
+  let t = i < 200 ? 0.95 - 0.62 * Math.pow(i / 199, 0.65) - 0.08 * (k / 9)
+                  : 0.36 - 0.08 * ((i - 200) / 299) - 0.08 * (k / 9);   // 200 sonrası: zor ama oynanabilir, sefer başları nefes aldırır
   if (li < 3) t += 0.06;                       // yeni sefer: ilk bölümler nefes aldırır
   return Math.min(0.97, Math.max(0.15, t));
 }
