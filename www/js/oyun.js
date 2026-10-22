@@ -109,7 +109,43 @@ const THEMES = [
   { sky: 0xcfe3ec, ground: 0xb3b685, hill: [0x93a26c, 0xa2ac78, 0x86965f, 0xaeb482], mt: 0x7f8a96, bush: 0x5a7440, sun: 0xfff6ea, hemiG: 0x667a62, lake: 0x2f88b8 },
   { sky: 0xdde4ea, ground: 0xa9a27e, hill: [0x8f9278, 0x9a9c82, 0x84886e, 0xa4a48a], mt: 0x8a8c94, bush: 0x5f6e48, sun: 0xfff6ee, hemiG: 0x6a6e66, mtN: 46, cliff: 1 },
   { sky: 0xd8d8d0, ground: 0x9e9474, hill: [0x8f877a, 0x9a9184, 0x847c70, 0xa49a8c], mt: 0x77726a, bush: 0x5f6a48, sun: 0xfff0e0, hemiG: 0x6a645a, mtN: 52, cliff: 2 },
-  { sky: 0xf0b890, ground: 0xc9a070, hill: [0xb88e60, 0xc29868, 0xae8458, 0xcca272], mt: 0x8a6a5a, bush: 0x7a6a3a, sun: 0xffd2a0, hemiG: 0x8a5a40, cliff: 1 }
+  { sky: 0xf0b890, ground: 0xc9a070, hill: [0xb88e60, 0xc29868, 0xae8458, 0xcca272], mt: 0x8a6a5a, bush: 0x7a6a3a, sun: 0xffd2a0, hemiG: 0x8a5a40, cliff: 1 },
+  // 5. sefer: Antalya, Sinop, Alanya, Kervan Yolları, Suğdak
+  { sky: 0xd8ecf4, ground: 0xd8c08a, hill: [0xb8a870, 0xc4b27a, 0xa89a66, 0xcabc88], mt: 0x9a9488, bush: 0x5f7a3e, sun: 0xfff6e8, hemiG: 0x7a7a5a, lake: 0x2a86c0, forest: 0.4 },
+  { sky: 0xd0dce0, ground: 0x8fa868, hill: [0x6f9450, 0x7ea25c, 0x628a48, 0x8aac66], mt: 0x6a786a, bush: 0x3f6a32, sun: 0xfff4e4, hemiG: 0x4f6a40, lake: 0x2a5a80, forest: 1 },
+  { sky: 0xe0eef4, ground: 0xc8a878, hill: [0xb89a6a, 0xc4a474, 0xae8e60, 0xcab07e], mt: 0x9a7a62, bush: 0x5a7a3a, sun: 0xfff6ea, hemiG: 0x7a6a50, lake: 0x2a90c8, cliff: 1 },
+  { sky: 0xeedcb0, ground: 0xd4bc84, hill: [0xc8ae74, 0xd2b880, 0xbea468, 0xdac288], mt: 0xae9070, bush: 0x8a8a4a, sun: 0xfff0d0, hemiG: 0x957a4a },
+  { sky: 0xd4e0e8, ground: 0xa8b47a, hill: [0x96a26a, 0xa4ae76, 0x8a9660, 0xb0b882], mt: 0x84888e, bush: 0x5a7040, sun: 0xfff4e6, hemiG: 0x6a7058, lake: 0x2a6a98, cliff: 0.5 },
+  // 6. sefer: Söğüt, Sakarya, Bursa Ovası, İznik Yolu, Koyunhisar
+  { sky: 0xdbe8d4, ground: 0x98b06a, hill: [0x7a9c56, 0x88a862, 0x6e904c, 0x94b06c], mt: 0x7a8070, bush: 0x46703a, sun: 0xfff6e2, hemiG: 0x56723e, forest: 0.6 },
+  { sky: 0xd6e4d2, ground: 0x94ae6a, hill: [0x709850, 0x80a45c, 0x648c48, 0x8cae68], mt: 0x6f7c6e, bush: 0x3f6a32, sun: 0xfff4e0, hemiG: 0x52703c, forest: 1, river: 0x4d94bb },
+  { sky: 0xd8e6ee, ground: 0x9cb46c, hill: [0x7a9e58, 0x88aa62, 0x6e924e, 0x94b06e], mt: 0x8a96a0, bush: 0x46703a, sun: 0xfff6ea, hemiG: 0x5a7448, mtN: 44, forest: 0.5 },
+  { sky: 0xd0e4ec, ground: 0xb4b880, hill: [0x98a46c, 0xa6ae78, 0x8c9862, 0xb0b682], mt: 0x8a9096, bush: 0x5a7440, sun: 0xfff4e8, hemiG: 0x667a5a, lake: 0x3a86b0, forest: 0.4 },
+  { sky: 0xf2c896, ground: 0xd2b06c, hill: [0xc49c5c, 0xceaa66, 0xb89052, 0xd6b272], mt: 0x9a7460, bush: 0x7d7a3e, sun: 0xffdcaa, hemiG: 0x8a603e },
+  // 7. sefer: Bursa, Pelekanon, İznik ve İzmit, Gelibolu, Edirne
+  { sky: 0xd8e6ee, ground: 0x9cb46c, hill: [0x7a9e58, 0x88aa62, 0x6e924e, 0x94b06e], mt: 0x8a96a0, bush: 0x46703a, sun: 0xfff6ea, hemiG: 0x5a7448, mtN: 40, forest: 0.7 },
+  { sky: 0xd2e6ee, ground: 0xc4be8c, hill: [0xa8b07a, 0xb4b884, 0x9aa46c, 0xbebe8e], mt: 0x8a919a, bush: 0x5f7a42, sun: 0xfff6ea, hemiG: 0x6a7a62, lake: 0x2a74a8 },
+  { sky: 0xcfe2ea, ground: 0xa8b47c, hill: [0x8a9e66, 0x98a872, 0x7e925c, 0xa4ae7c], mt: 0x7f8a92, bush: 0x4f7040, sun: 0xfff4e8, hemiG: 0x5e7254, lake: 0x3580b0, forest: 0.8 },
+  { sky: 0xd4e6ee, ground: 0xc8bc88, hill: [0xb0a874, 0xbcb27e, 0xa49c6a, 0xc4b888], mt: 0x8e8a86, bush: 0x6a7a44, sun: 0xfff6ea, hemiG: 0x707a5a, lake: 0x2a78b0, cliff: 0.5 },
+  { sky: 0xe6e2c4, ground: 0xc4b87c, hill: [0xb0a46a, 0xbcae74, 0xa49860, 0xc4b67e], mt: 0x9a907a, bush: 0x6a7a40, sun: 0xfff2d8, hemiG: 0x7a7248, river: 0x5a9cc0 },
+  // 8. sefer: Trakya, Balkan Dağları, Makedonya, Sırp Toprakları, Kosova
+  { sky: 0xeee2bc, ground: 0xcab878, hill: [0xbaa868, 0xc6b272, 0xae9c60, 0xceba7c], mt: 0x9e8e72, bush: 0x7a7a40, sun: 0xfff0d0, hemiG: 0x857448, river: 0x5a9cc0 },
+  { sky: 0xd6e2ea, ground: 0x8ea46c, hill: [0x6e8c56, 0x7c9860, 0x62804e, 0x88a26a], mt: 0x7a8088, bush: 0x3f6036, sun: 0xfff4e8, hemiG: 0x56684a, mtN: 52, cliff: 1, forest: 0.8 },
+  { sky: 0xd2e4ec, ground: 0xa4ae7a, hill: [0x8a9a66, 0x98a672, 0x7e8e5c, 0xa2ac7c], mt: 0x84888e, bush: 0x56703e, sun: 0xfff4e8, hemiG: 0x667058, lake: 0x2f7fb0, mtN: 40 },
+  { sky: 0xd8e4d4, ground: 0x92ac68, hill: [0x709850, 0x7ea45c, 0x648c48, 0x8aae66], mt: 0x6f7c6e, bush: 0x3f6a32, sun: 0xfff4e0, hemiG: 0x52703c, forest: 0.9, river: 0x4d94bb },
+  { sky: 0xf0bf92, ground: 0xc8a46c, hill: [0xb8925c, 0xc29c66, 0xae8854, 0xcca670], mt: 0x8e6e5c, bush: 0x7a6e3a, sun: 0xffd4a0, hemiG: 0x8a5c40 },
+  // 9. sefer: Tuna Boyu, Eflak, Haçlı Ordusu, Niğbolu Kuşatması, Niğbolu Meydanı
+  { sky: 0xd6e4e8, ground: 0xa8b07c, hill: [0x8e9e68, 0x9caa74, 0x82925e, 0xa6ae7e], mt: 0x84888a, bush: 0x56703e, sun: 0xfff4e8, hemiG: 0x667058, lake: 0x4a8ab0 },
+  { sky: 0xcfdcd0, ground: 0x7a9658, hill: [0x5e8044, 0x6c8c4e, 0x547840, 0x789652], mt: 0x667060, bush: 0x34582c, sun: 0xfff0dc, hemiG: 0x4a6038, forest: 1.2, river: 0x4a7a90 },
+  { sky: 0xe4e0c8, ground: 0xbcb27a, hill: [0xa8a068, 0xb4aa72, 0x9c9460, 0xbcb27c], mt: 0x948a78, bush: 0x6a7240, sun: 0xfff2dc, hemiG: 0x787048 },
+  { sky: 0xd8e2e6, ground: 0xb0aa7e, hill: [0x9a9a6c, 0xa6a476, 0x8e8e62, 0xaeac80], mt: 0x868684, bush: 0x5e6c42, sun: 0xfff2e4, hemiG: 0x6c6a54, river: 0x4d8cb0, cliff: 0.5 },
+  { sky: 0xf2c48e, ground: 0xceaa6a, hill: [0xbe965a, 0xc8a064, 0xb28a50, 0xd0aa6e], mt: 0x94705a, bush: 0x7a6e3a, sun: 0xffd6a2, hemiG: 0x8a5e3e },
+  // 10. sefer: İzladi (kış), Barış Bozuluyor (güz), Boğazlar, Karadeniz Kıyısı, Varna
+  { sky: 0xe6edf4, ground: 0xeef2f6, hill: [0xdde4ec, 0xe6ecf2, 0xd2dae4, 0xeaeff4], mt: 0xc8d0dc, bush: 0x5a6a5a, sun: 0xf6f8ff, hemiG: 0xb8c2cc, mtN: 50, forest: 0.7 },
+  { sky: 0xe8d8b8, ground: 0xc0a070, hill: [0xb08a58, 0xbc9662, 0xa47e4e, 0xc49e6a], mt: 0x8a7462, bush: 0x9a6a2a, sun: 0xffe8c4, hemiG: 0x8a6440, forest: 0.6 },
+  { sky: 0xd2e6ee, ground: 0xc4be8c, hill: [0xa8b07a, 0xb4b884, 0x9aa46c, 0xbebe8e], mt: 0x8a919a, bush: 0x5f7a42, sun: 0xfff6ea, hemiG: 0x6a7a62, lake: 0x2a70a8, cliff: 0.4 },
+  { sky: 0xd4e2ea, ground: 0xb8b47e, hill: [0x9ea46c, 0xaaae78, 0x929a62, 0xb2b482], mt: 0x868c92, bush: 0x5a7040, sun: 0xfff4e8, hemiG: 0x687058, lake: 0x2a6aa0 },
+  { sky: 0xeeb08a, ground: 0xc29a6a, hill: [0xb08a5c, 0xba9466, 0xa48052, 0xc29c6e], mt: 0x86665a, bush: 0x6a5e36, sun: 0xffcc98, hemiG: 0x84563c, lake: 0x2a6098 }
 ];
 
 /* geometri yardımcıları: renkli parçaları tek geometriye birleştir (az çizim çağrısı) */
@@ -187,56 +223,70 @@ const katafraktG = merge([
   P(BOX(.04, .04, 1.6), 0x6b4a2b, Mx(.24, 1.55, -.5)),
   P(CONE(.04, .18, 4), 0xd5dbe0, Mx(.24, 1.55, -1.38, 1, 1, 1, -Math.PI / 2, 0, 0))
 ]);
-// Akrit: Bizans sınır süvarisi (hafif atlı, mızrak, yuvarlak kalkan)
-const akritG = merge([
-  P(BOX(.42, .46, 1.15), 0x7a4a2a, Mx(0, .92, 0)),
-  ...[[-.15, .43], [.15, .43], [-.15, -.43], [.15, -.43]].map(([x, z]) => P(BOX(.11, .7, .11), 0x4a2e1c, Mx(x, .35, z))),
-  P(BOX(.22, .46, .28), 0x7a4a2a, Mx(0, 1.3, -.6, 1, 1, 1, -.5, 0, 0)),
-  P(BOX(.18, .2, .4), 0x6a3e22, Mx(0, 1.52, -.78, 1, 1, 1, -.2, 0, 0)),
-  P(BOX(.5, .1, .5), 0xa83a2e, Mx(0, 1.2, .05)),
-  P(CYL(.15, .2, .5, 7), 0xa83a2e, Mx(0, 1.5, .05)),
-  P(SPH(.13, 7, 5), 0xe0b08a, Mx(0, 1.85, .05)),
-  P(CYL(.1, .15, .16, 7), 0x8a949e, Mx(0, 1.98, .05)),
-  P(CYL(.24, .24, .05, 10), 0xd8b040, Mx(-.24, 1.5, .05, 1, 1, 1, 0, 0, Math.PI / 2)),
-  P(BOX(.035, .035, 1.7), 0x6b4a2b, Mx(.22, 1.55, -.45)),
-  P(CONE(.04, .18, 4), 0xd5dbe0, Mx(.22, 1.55, -1.38, 1, 1, 1, -Math.PI / 2, 0, 0))
-]);
-// Şövalye: beyaz örtülü at, kova miğfer, uzun kalkan, mızrak
-const sovalyeG = merge([
-  P(BOX(.48, .52, 1.25), 0x4a3020, Mx(0, .96, 0)),
-  P(BOX(.56, .5, 1.34), 0xe8e2d2, Mx(0, .9, 0)),
-  ...[[-.17, .46], [.17, .46], [-.17, -.46], [.17, -.46]].map(([x, z]) => P(BOX(.12, .66, .12), 0x2b1f18, Mx(x, .33, z))),
-  P(BOX(.24, .5, .3), 0xe8e2d2, Mx(0, 1.36, -.64, 1, 1, 1, -.5, 0, 0)),
-  P(BOX(.2, .22, .44), 0xe8e2d2, Mx(0, 1.6, -.82, 1, 1, 1, -.2, 0, 0)),
-  P(CYL(.16, .21, .52, 7), 0x2c4f8f, Mx(0, 1.58, .05)),
-  P(BOX(.3, .26, .24), 0x9aa3ad, Mx(0, 1.68, .05)),
-  P(BOX(.26, .3, .26), 0xaab3bb, Mx(0, 1.98, .05)),
-  P(BOX(.27, .04, .04), 0x1a1a1a, Mx(0, 2.0, -.08)),
-  P(BOX(.06, .5, .34), 0x2c4f8f, Mx(-.27, 1.55, -.02)),
-  P(BOX(.065, .2, .1), 0xf0b232, Mx(-.3, 1.62, -.02)),
-  P(BOX(.04, .04, 1.8), 0x6b4a2b, Mx(.24, 1.6, -.55)),
-  P(CONE(.045, .2, 4), 0xd5dbe0, Mx(.24, 1.6, -1.5, 1, 1, 1, -Math.PI / 2, 0, 0))
-]);
-// Haçlı piyadesi: mavi tunik, örme zırh, burun korumalı miğfer, uzun kalkan
-const frankG = merge([
-  P(BOX(.3, .42, .2), 0x2a2226, Mx(0, .21, 0)),
-  P(CYL(.18, .27, .52, 7), 0x2c4f8f, Mx(0, .66, 0)),
-  P(BOX(.36, .3, .24), 0x9aa3ad, Mx(0, .82, 0)),
-  P(SPH(.14, 7, 5), 0xe6c09a, Mx(0, 1.03, 0)),
-  P(CONE(.17, .28, 7), 0x9aa3ad, Mx(0, 1.2, 0)),
-  P(BOX(.03, .12, .03), 0x9aa3ad, Mx(0, 1.04, -.14)),
-  P(BOX(.06, .62, .34), 0xe8e2d2, Mx(.3, .62, -.04)),
-  P(BOX(.065, .16, .1), 0xc8303a, Mx(.33, .7, -.04))
-]);
-// Arbaletçi
-const arbaletG = merge([
-  P(BOX(.28, .42, .2), 0x2e2a26, Mx(0, .21, 0)),
-  P(CYL(.16, .25, .52, 7), 0x3a5a8a, Mx(0, .66, 0)),
-  P(SPH(.14, 7, 5), 0xe6c09a, Mx(0, 1.03, 0)),
-  P(new THREE.SphereGeometry(.16, 7, 5, 0, Math.PI * 2, 0, Math.PI / 2), 0x8a949e, Mx(0, 1.06, 0)),
-  P(BOX(.1, .1, .6), 0x5b3a1e, Mx(0, .86, -.3)),
-  P(BOX(.62, .05, .05), 0x3a2a1a, Mx(0, .88, -.56))
-]);
+// Hafif süvari (Akrit ve benzerleri): at, tunik, yuvarlak kalkan, mızrak
+function hafifAtliG(c) {
+  c = Object.assign({ at: 0x7a4a2a, bacak: 0x4a2e1c, bas: 0x6a3e22, tunik: 0xa83a2e, kalkan: 0xd8b040, mig: 0x8a949e }, c);
+  return merge([
+    P(BOX(.42, .46, 1.15), c.at, Mx(0, .92, 0)),
+    ...[[-.15, .43], [.15, .43], [-.15, -.43], [.15, -.43]].map(([x, z]) => P(BOX(.11, .7, .11), c.bacak, Mx(x, .35, z))),
+    P(BOX(.22, .46, .28), c.at, Mx(0, 1.3, -.6, 1, 1, 1, -.5, 0, 0)),
+    P(BOX(.18, .2, .4), c.bas, Mx(0, 1.52, -.78, 1, 1, 1, -.2, 0, 0)),
+    P(BOX(.5, .1, .5), c.tunik, Mx(0, 1.2, .05)),
+    P(CYL(.15, .2, .5, 7), c.tunik, Mx(0, 1.5, .05)),
+    P(SPH(.13, 7, 5), 0xe0b08a, Mx(0, 1.85, .05)),
+    P(CYL(.1, .15, .16, 7), c.mig, Mx(0, 1.98, .05)),
+    P(CYL(.24, .24, .05, 10), c.kalkan, Mx(-.24, 1.5, .05, 1, 1, 1, 0, 0, Math.PI / 2)),
+    P(BOX(.035, .035, 1.7), 0x6b4a2b, Mx(.22, 1.55, -.45)),
+    P(CONE(.04, .18, 4), 0xd5dbe0, Mx(.22, 1.55, -1.38, 1, 1, 1, -Math.PI / 2, 0, 0))
+  ]);
+}
+// Ağır süvari (Şövalye ve benzerleri): örtülü at, kova miğfer, uzun kalkan, mızrak
+function agirAtliG(c) {
+  c = Object.assign({ ortu: 0xe8e2d2, tunik: 0x2c4f8f, kalkan: 0x2c4f8f, arma: 0xf0b232 }, c);
+  return merge([
+    P(BOX(.48, .52, 1.25), 0x4a3020, Mx(0, .96, 0)),
+    P(BOX(.56, .5, 1.34), c.ortu, Mx(0, .9, 0)),
+    ...[[-.17, .46], [.17, .46], [-.17, -.46], [.17, -.46]].map(([x, z]) => P(BOX(.12, .66, .12), 0x2b1f18, Mx(x, .33, z))),
+    P(BOX(.24, .5, .3), c.ortu, Mx(0, 1.36, -.64, 1, 1, 1, -.5, 0, 0)),
+    P(BOX(.2, .22, .44), c.ortu, Mx(0, 1.6, -.82, 1, 1, 1, -.2, 0, 0)),
+    P(CYL(.16, .21, .52, 7), c.tunik, Mx(0, 1.58, .05)),
+    P(BOX(.3, .26, .24), 0x9aa3ad, Mx(0, 1.68, .05)),
+    P(BOX(.26, .3, .26), 0xaab3bb, Mx(0, 1.98, .05)),
+    P(BOX(.27, .04, .04), 0x1a1a1a, Mx(0, 2.0, -.08)),
+    P(BOX(.06, .5, .34), c.kalkan, Mx(-.27, 1.55, -.02)),
+    P(BOX(.065, .2, .1), c.arma, Mx(-.3, 1.62, -.02)),
+    P(BOX(.04, .04, 1.8), 0x6b4a2b, Mx(.24, 1.6, -.55)),
+    P(CONE(.045, .2, 4), 0xd5dbe0, Mx(.24, 1.6, -1.5, 1, 1, 1, -Math.PI / 2, 0, 0))
+  ]);
+}
+// Batılı piyade (Haçlı, Latin, Katalan, Sırp): tunik, örme zırh, burun korumalı miğfer, uzun kalkan
+function batiPiyadeG(c) {
+  c = Object.assign({ tunik: 0x2c4f8f, zirh: 0x9aa3ad, kalkan: 0xe8e2d2, arma: 0xc8303a, mig: 0x9aa3ad }, c);
+  return merge([
+    P(BOX(.3, .42, .2), 0x2a2226, Mx(0, .21, 0)),
+    P(CYL(.18, .27, .52, 7), c.tunik, Mx(0, .66, 0)),
+    P(BOX(.36, .3, .24), c.zirh, Mx(0, .82, 0)),
+    P(SPH(.14, 7, 5), 0xe6c09a, Mx(0, 1.03, 0)),
+    c.sapka ? P(CYL(.24, .24, .04, 10), c.mig, Mx(0, 1.14, 0)) : P(CONE(.17, .28, 7), c.mig, Mx(0, 1.2, 0)),
+    c.sapka ? P(CYL(.13, .15, .14, 8), c.mig, Mx(0, 1.2, 0)) : P(BOX(.03, .12, .03), c.mig, Mx(0, 1.04, -.14)),
+    P(BOX(.06, .62, .34), c.kalkan, Mx(.3, .62, -.04)),
+    P(BOX(.065, .16, .1), c.arma, Mx(.33, .7, -.04))
+  ]);
+}
+// Uzaktan atıcı (arbaletçi, tüfekçi)
+function aticiG(c) {
+  c = Object.assign({ tunik: 0x3a5a8a, silah: 'arbalet' }, c);
+  return merge([
+    P(BOX(.28, .42, .2), 0x2e2a26, Mx(0, .21, 0)),
+    P(CYL(.16, .25, .52, 7), c.tunik, Mx(0, .66, 0)),
+    P(SPH(.14, 7, 5), 0xe6c09a, Mx(0, 1.03, 0)),
+    P(new THREE.SphereGeometry(.16, 7, 5, 0, Math.PI * 2, 0, Math.PI / 2), 0x8a949e, Mx(0, 1.06, 0)),
+    ...(c.silah === 'tufek'
+      ? [P(CYL(.035, .045, .9, 6), 0x3a3a40, Mx(0, .9, -.35, 1, 1, 1, Math.PI / 2, 0, 0)), P(BOX(.08, .1, .3), 0x5b3a1e, Mx(0, .86, .05))]
+      : [P(BOX(.1, .1, .6), 0x5b3a1e, Mx(0, .86, -.3)), P(BOX(.62, .05, .05), 0x3a2a1a, Mx(0, .88, -.56))])
+  ]);
+}
+const akritG = hafifAtliG({}), sovalyeG = agirAtliG({}), frankG = batiPiyadeG({}), arbaletG = aticiG({});
 // Kalkanlı ağır piyade: büyük dikdörtgen kalkan, uzun mızrak
 const kalkanliG = merge([
   P(BOX(.32, .44, .22), 0x24262b, Mx(0, .22, 0)),
@@ -249,8 +299,16 @@ const kalkanliG = merge([
   P(BOX(.08, .7, .07), 0xe3a92b, Mx(0, .66, -.29)),
   P(BOX(.04, 1.6, .04), 0x5b3a1e, Mx(.3, .95, -.1))
 ]);
-const FOE_GEO = { piyade: piyadeG(), okcu: okcuG, katafrakt: katafraktG, varang: varangG, akrit: akritG, frank: frankG, arbalet: arbaletG, sovalye: sovalyeG, kalkanli: kalkanliG };
-const ATLI_GEO = { katafrakt: katafraktG, akrit: akritG, sovalye: sovalyeG };
+const alanG = hafifAtliG({ at: 0x5a4030, tunik: 0x4a6a3a, kalkan: 0x8a6a3a, mig: 0x6a6a70 });
+const macarG = hafifAtliG({ at: 0x3a2a20, tunik: 0x2a7a3a, kalkan: 0xc8303a, mig: 0x9aa3ad });
+const sirpSovalyeG = agirAtliG({ ortu: 0xa02a2a, tunik: 0xe8e2d2, kalkan: 0xa02a2a, arma: 0xe8e2d2 });
+const latinG = batiPiyadeG({ tunik: 0x8a2a2a, kalkan: 0xd8b040, arma: 0x8a2a2a, sapka: 1 });
+const katalanG = batiPiyadeG({ tunik: 0xd8a020, zirh: 0x7a7a80, kalkan: 0xd8a020, arma: 0xb02020 });
+const sirpPiyadeG = batiPiyadeG({ tunik: 0xb02a2a, kalkan: 0xa02a2a, arma: 0xe8e2d2, mig: 0x8a949e });
+const tufekciG = aticiG({ tunik: 0x5a4a3a, silah: 'tufek' });
+const FOE_GEO = { piyade: piyadeG(), okcu: okcuG, katafrakt: katafraktG, varang: varangG, akrit: akritG, frank: frankG, arbalet: arbaletG, sovalye: sovalyeG, kalkanli: kalkanliG,
+  latin: latinG, alan: alanG, katalan: katalanG, sirppiyade: sirpPiyadeG, sirpsovalye: sirpSovalyeG, macar: macarG, tufekci: tufekciG };
+const ATLI_GEO = { katafrakt: katafraktG, akrit: akritG, sovalye: sovalyeG, alan: alanG, sirpsovalye: sirpSovalyeG, macar: macarG };
 
 const armyMat = new THREE.MeshLambertMaterial({ vertexColors: true });
 const goldMat = new THREE.MeshPhongMaterial({ color: 0xe8b33a, specular: 0xfff2b0, shininess: 90, emissive: 0x3d2800 });
@@ -306,11 +364,14 @@ function enemyFlag(bg, fg, kind) {
   const L = makeLabel(128, 192), { ctx } = L; ctx.fillStyle = bg; ctx.fillRect(0, 0, 128, 192);
   ctx.fillStyle = fg;
   if (kind === 'parti') { ctx.fillRect(0, 0, 64, 96); ctx.fillRect(64, 96, 64, 96); }
+  else if (kind === 'serit') { for (let k = 0; k < 4; k++) ctx.fillRect(0, 24 + k * 44, 128, 22); }
   else { ctx.beginPath(); ctx.moveTo(64, 34); ctx.lineTo(100, 84); ctx.lineTo(64, 134); ctx.lineTo(28, 84); ctx.closePath(); ctx.fill(); ctx.fillStyle = bg; ctx.beginPath(); ctx.moveTo(64, 58); ctx.lineTo(82, 84); ctx.lineTo(64, 110); ctx.lineTo(46, 84); ctx.closePath(); ctx.fill(); }
   ctx.strokeStyle = fg; ctx.lineWidth = 8; ctx.strokeRect(4, 4, 120, 184); L.tex.needsUpdate = true; return L.tex;
 }
 const flagTex = flagTexture('#1fa3a8', '#f0b232');
-const ENEMY_FLAG = [enemyFlag('#8e1f2a', '#e7c56a'), enemyFlag('#6a1b5a', '#e7c56a'), enemyFlag('#2c4f8f', '#ece6d6', 'parti'), enemyFlag('#7a1b2a', '#e7c56a')];
+const ENEMY_FLAG = [enemyFlag('#8e1f2a', '#e7c56a'), enemyFlag('#6a1b5a', '#e7c56a'), enemyFlag('#2c4f8f', '#ece6d6', 'parti'), enemyFlag('#7a1b2a', '#e7c56a'),
+  enemyFlag('#8a2a2a', '#d8b040', 'parti'), enemyFlag('#8e1f2a', '#e7c56a'), enemyFlag('#5a1b4a', '#e7c56a'), enemyFlag('#a02a2a', '#ece6d6', 'serit'),
+  enemyFlag('#2c4f8f', '#ece6d6', 'parti'), enemyFlag('#b02030', '#ece6d6', 'serit')];
 
 /* ================= DÜNYA ================= */
 const world = new THREE.Group(); scene.add(world);
@@ -402,6 +463,24 @@ function buildLevelView(G) {
         const h = new THREE.Mesh(hilalGeo, capMat); h.position.y = 2.7; h.rotation.z = Math.PI * 0.82; item.add(h);
       }
       g.position.set(o.x, 0, o.z); levelGroup.add(g); VIEW.objs.set(o, { g, L, item, shown: o.hp });
+    } else if (o.t === 'barricade' && o.araba) {     // araba tabyası
+      const g = new THREE.Group(), tente = new THREE.MeshLambertMaterial({ color: 0x8a7a5a }), teker = new THREE.MeshLambertMaterial({ color: 0x3a2a1a });
+      for (let k = 0; k < 3; k++) { const x = -o.w / 2 + 1 + k * 2;
+        const body = new THREE.Mesh(BOX(1.8, .8, 1.1), woodMat); body.position.set(x, .85, 0); body.castShadow = true; g.add(body);
+        const kalkan = new THREE.Mesh(BOX(1.9, .7, .12), tente); kalkan.position.set(x, 1.5, .5); g.add(kalkan);
+        [-.65, .65].forEach(dx => { const w = new THREE.Mesh(CYL(.4, .4, .14, 10), teker); w.rotation.x = Math.PI / 2; w.position.set(x + dx, .42, .58); g.add(w); }); }
+      const ch = new THREE.Mesh(BOX(o.w, .06, .06), new THREE.MeshLambertMaterial({ color: 0x55585e })); ch.position.set(0, .6, .6); g.add(ch);
+      const L = makeLabel(256, 128); drawBig(L, fmt(o.hp), '#ffd9a0'); const lab = labelSprite(L, 2.2, 1.1); lab.position.set(0, 2.6, 0); g.add(lab);
+      g.position.set(o.x, 0, o.z); levelGroup.add(g); VIEW.objs.set(o, { g, L, shown: o.hp });
+    } else if (o.t === 'hendek') {      // hendek ve köprü
+      const g = new THREE.Group(), hm = new THREE.MeshLambertMaterial({ color: 0x3a2e22 });
+      const l = o.bx - o.bw, r = o.bx + o.bw;
+      [[-M.ROAD - .2, l], [r, M.ROAD + .2]].forEach(([a, b]) => { if (b - a < .05) return; const t = new THREE.Mesh(BOX(b - a, .08, 2.6), hm); t.position.set((a + b) / 2, .03, 0); g.add(t);
+        const su = new THREE.Mesh(BOX(b - a, .02, 2.2), new THREE.MeshPhongMaterial({ color: 0x3a6a80, shininess: 60 })); su.position.set((a + b) / 2, .09, 0); g.add(su); });
+      const kopru = new THREE.Mesh(BOX(o.bw * 2, .18, 3.0), woodMat); kopru.position.set(o.bx, .12, 0); kopru.receiveShadow = true; g.add(kopru);
+      [-1, 1].forEach(sd => { const rl = new THREE.Mesh(BOX(.1, .5, 3.0), woodMat); rl.position.set(o.bx + sd * o.bw, .4, 0); g.add(rl); });
+      const L = makeLabel(256, 128); drawBig(L, 'KÖPRÜ', '#ffe08a', '#16202e', 80); const lab = labelSprite(L, 2.0, 1.0); lab.position.set(o.bx, 1.6, 0); g.add(lab);
+      g.position.set(0, 0, o.z); levelGroup.add(g); VIEW.objs.set(o, { g });
     } else if (o.t === 'barricade') {
       const g = new THREE.Group(); const beam = new THREE.Mesh(BOX(o.w, .35, .35), woodMat); beam.position.y = .5; beam.castShadow = true; g.add(beam);
       for (let x = -o.w / 2 + .3; x <= o.w / 2 - .2; x += .55) {
@@ -437,7 +516,7 @@ function buildLevelView(G) {
     } else if (o.t === 'boss') {
       const B = M.BOSSES[o.id];
       const atli = !!M.FOES[B.tip].atli;
-      const geo = atli ? ATLI_GEO[B.tip] : B.tip === 'varang' ? varangG : B.tip === 'kalkanli' ? kalkanliG : B.tip === 'frank' ? frankG : piyadeG(B.renk, 0xc9a24a);
+      const geo = atli ? ATLI_GEO[B.tip] : B.tip === 'piyade' ? piyadeG(B.renk, 0xc9a24a) : FOE_GEO[B.tip];
       const m = new THREE.Mesh(geo, armyMat); const sc = atli ? 2.6 : 3.4; m.scale.set(sc, sc, sc); m.rotation.y = Math.PI; m.castShadow = true;
       const g = new THREE.Group(); g.add(m);
       const crown = new THREE.Mesh(CYL(.5, .4, .3, 8), capMat); crown.position.y = (atli ? 2.3 : 1.55) * sc; g.add(crown);
@@ -522,7 +601,7 @@ function handleEvents() {
       case 'weapon': popup(M.WEAPONS[e.w].ad + '!', e.x, 3, e.z, 'gold'); SFX.weapon(); updateWeapon(); break;
       case 'hero': popup('Altın Alp katıldı!', e.x, 3.2, e.z, 'gold'); SFX.hero(); break;
       case 'troops': popup('+' + e.v + ' akıncı', e.x, 3, e.z, 'gold'); SFX.good(); break;
-      case 'crash': popup((e.gecit ? 'Sıkıştı −' : '−') + e.v, e.x, 2.4, e.z, 'bad'); SFX.crash(); if (navigator.vibrate) try { navigator.vibrate(30); } catch (x) {} break;
+      case 'crash': popup((e.gecit ? 'Sıkıştı −' : e.hendek ? 'Hendek −' : '−') + e.v, e.x, 2.4, e.z, 'bad'); SFX.crash(); if (navigator.vibrate) try { navigator.vibrate(30); } catch (x) {} break;
       case 'break': { const v = VIEW.objs.get(e.o); if (v) v.die = 0.3; puff(e.o.x, 1, e.o.z, 2.4); puff(e.o.x + .6, 1.4, e.o.z, 1.8); SFX.break(); break; }
       case 'hit': SFX.tick(); if (Math.random() < .4) puff(e.x + (Math.random() - .5) * 2, .8, e.z, .9); break;
       case 'clash': SFX.tick(); if (Math.random() < .5) puff(e.x + (Math.random() - .5) * 2.5, .9, e.z, 1.4); break;
@@ -591,7 +670,7 @@ function renderLevels() {
   if (seferSel >= NSF) {     // yakında
     $('sName').textContent = M.SOON.ad; $('sSub').textContent = 'Sıradaki sefer';
     $('regionHead').textContent = '';
-    grid.innerHTML = '<div class="soon" style="grid-column:1/-1"><h3>Pek yakında</h3><p>Kösedağ, Ankara, İstanbul ve daha fazlası. Yeni seferler güncellemelerle geliyor. Bu arada eski bölümleri yıldızla, Ordugâh\'ı güçlendir.</p></div>';
+    grid.innerHTML = '<div class="soon" style="grid-column:1/-1"><h3>Pek yakında</h3><p>İstanbul, Mohaç, Preveze ve daha fazlası: toplam 1071 bölüme doğru. Yeni seferler güncellemelerle geliyor. Bu arada eski bölümleri yıldızla, Ordugâh\'ı güçlendir.</p></div>';
     return;
   }
   const SF = M.SEFERLER[seferSel];
@@ -605,6 +684,7 @@ function renderLevels() {
     tabs.appendChild(b);
   }
   $('regionHead').textContent = M.REGIONS[regionSel].alt;
+  const selTab = tabs.querySelector('[aria-selected="true"]'); if (selTab) tabs.scrollLeft = Math.max(0, selTab.offsetLeft - (tabs.clientWidth - selTab.offsetWidth) / 2);
   for (let k = 0; k < 10; k++) {
     const i = regionSel * 10 + k, L = M.LEVELS[i], lock = i + 1 > S.unlocked;
     const b = document.createElement('button'); b.className = 'lv' + (lock ? ' lock' : '') + (i === nextLevel() && !lock ? ' cur' : '');

@@ -1,6 +1,6 @@
 // Her bölümün zorluk katsayısını (CAL) ayarlar. Ölçüt: "ortalama" oyuncuların (ara sıra hata yapan botlar)
 // ilk denemede kazanma oranı. Eğri testere dişi: her bölge içinde zorlaşır, yeni sefer biraz nefes aldırır,
-// genel çizgi 1. bölümde ~%95'ten 200. bölümde ~%25'e iner.
+// genel çizgi 1. bölümde ~%95'ten 200. bölümde ~%25'e iner; 201–500 arası %56'dan %20'ye.
 // Oyuncu kazandığı akçenin %85'ini Ordugâh'a harcar, sefer tavanını aşamaz.
 // Çalıştır: node araclar/kalibre.js [başlangıç bölümü, 1'den]   (≈10 dakika)
 const fs = require('fs'), path = require('path');
@@ -11,7 +11,8 @@ const { bot } = require('./bot.js');
 const NL = M.NL;
 function target(i) {
   const k = i % 10, li = i % 50;
-  let t = 0.95 - 0.62 * Math.pow(i / 199, 0.65) - 0.08 * (k / 9);
+  let t = i < 200 ? 0.95 - 0.62 * Math.pow(i / 199, 0.65) - 0.08 * (k / 9)
+                  : 0.50 - 0.22 * ((i - 200) / 299) - 0.08 * (k / 9);   // 201–500: her sefer nefesle başlar, yavaşça sertleşir
   if (li < 3) t += 0.06;                       // yeni sefer: ilk bölümler nefes aldırır
   return Math.min(0.97, Math.max(0.15, t));
 }
@@ -36,8 +37,17 @@ function shop(cap) {
     if (!bu || coins < bc) break; coins -= bc; up[bu.k]++; }
 }
 const out = M.CAL.slice(0, NL);
-const from = Math.max(0, (+process.argv[2] || 1) - 1);
-for (let i = 0; i < NL; i++) {
+// yalnız [a, b) aralığını dosyaya yazar: paralel çalışan başka bir kalibrasyonun sonuçlarını ezmez
+function yaz(a, b) {
+  let src = fs.readFileSync(P, 'utf8');
+  const cur = src.match(/const CAL = \[([^\]]*)\];/)[1].split(',').map(x => +x || 1);
+  for (let k = a; k < b; k++) cur[k] = out[k] || 1;
+  for (let k = 0; k < cur.length; k++) if (!cur[k]) cur[k] = 1;
+  src = src.replace(/const CAL = \[[^\]]*\];/, 'const CAL = [' + cur.join(',') + '];');
+  fs.writeFileSync(P, src);
+}
+const from = Math.max(0, (+process.argv[2] || 1) - 1), to = Math.min(NL, +process.argv[3] || NL);   // [başlangıç, bitiş] 1'den; iki işlem paralel koşabilir
+for (let i = 0; i < to; i++) {
   if (i >= from) {
     const tg = target(i);
     let lo = Math.log(0.2), hi = Math.log(6);
@@ -46,9 +56,7 @@ for (let i = 0; i < NL; i++) {
     process.stdout.write(`B${i + 1}:${out[i]}(%${Math.round(100 * winRate(i, out[i], up))}/%${Math.round(100 * tg)}) `);
     if ((i + 1) % 10 === 0) {
       console.log(' up=' + JSON.stringify(up));
-      let src = fs.readFileSync(P, 'utf8');   // ara kayıt
-      src = src.replace(/const CAL = \[[^\]]*\];/, 'const CAL = [' + out.map(x => x || 1).join(',') + '];');
-      fs.writeFileSync(P, src);
+      yaz(from, i + 1);   // ara kayıt
     }
   }
   const G = game(i, out[i] || 1, up, ACEMI(4242 + i));
@@ -56,7 +64,5 @@ for (let i = 0; i < NL; i++) {
   coins += Math.round(r * 0.85); shop(M.upCap(M.seferOf(i)));
 }
 console.log();
-let src = fs.readFileSync(P, 'utf8');
-src = src.replace(/const CAL = \[[^\]]*\];/, 'const CAL = [' + out.join(',') + '];');
-fs.writeFileSync(P, src);
+yaz(from, to);
 console.log('CAL yazıldı', JSON.stringify(up));

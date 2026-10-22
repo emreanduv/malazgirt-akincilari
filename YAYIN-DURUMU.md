@@ -40,6 +40,14 @@
 - Mağaza metinleri: store/surum-1.1.md
 - Yeni sefer eklemek: mantik.js'te SEFERLER'e 1, REGIONS'a 5 bölge, POOLS/ARCHER/BASE_FOE'ya 1 satır; oyun.js THEMES'e 5 tema; sonra `node araclar/kalibre.js 201`
 
+## 1.2.0 (22 Ekim 2026): 500 bölüm, 10 sefer
+- Yeni seferler: Selçuklu'nun Zirvesi (201–250), Uç Beylikleri (251–300), Rumeli'ye Geçiş (301–350), Kosova (351–400), Niğbolu (401–450), Varna (451–500)
+- Yeni birlikler: Latin, Alan, Katalan, Sırp piyade/ağır süvari, Macar süvari, araba tüfekçisi; yeni mekanikler: hendek+köprü (303+), araba tabyası (453+)
+- 10 yay, Ordugâh 60 seviye tavanı (her sefer +5; 10. seferde 55)
+- Zorluk: 201–500 ortalama oyuncu %56 → %20; kalibrasyon iki işlemle paralel: `node araclar/kalibre.js 201 350` ve `node araclar/kalibre.js 351 500`
+- Mağaza metinleri: store/surum-1.2.md · Ekran görüntüleri yenilendi (03: Haçlı Kralı, 04: Niğbolu haritası)
+- Yol haritası: 200 → 500 → 1071 bölüm
+
 ## Sıradakiler
 - Apple ve Google'ın inceleme yanıtlarını bekle.
 - 12+ test kullanıcısının Gmail adresini "Hisar Testçileri" listesine ekle, 14 gün sonra üretim başvurusu.

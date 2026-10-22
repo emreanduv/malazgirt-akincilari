@@ -2,7 +2,7 @@
 // Gerekenler: npm i -D playwright && npx playwright install chromium
 // Önce proje kökünde yerel sunucu aç:  npx http-server . -p 8765 -c-1
 // Sonra:  node araclar/magaza-gorselleri.js [ikon|ekran]
-const { chromium } = require('playwright');
+const { chromium } = require(process.env.PW || 'playwright');
 const path = require('path');
 const ROOT = path.join(__dirname, '..');
 const URL = 'http://localhost:8765';
@@ -24,8 +24,8 @@ const which = process.argv[2] || 'hepsi';
     const scenes = [
       ['01-sefer', '/www/index.html?kare=7&ileri=34', 3500],
       ['02-dev', '/www/index.html?kare=19&ileri=40', 4000],
-      ['03-katafrakt', '/www/index.html?kare=28&ileri=40', 3500],
-      ['04-harita', '/www/index.html?kare=24&ekran=levels&bolge=2', 2500],
+      ['03-hacli-krali', '/www/index.html?kare=449&ileri=40', 4000],
+      ['04-harita', '/www/index.html?kare=480&ekran=levels&bolge=44', 2500],
       ['05-menu', '/www/index.html?kare=0&ekran=menu', 3000]
     ];
     const devices = [
