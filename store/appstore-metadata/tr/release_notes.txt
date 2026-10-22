@@ -1,0 +1,6 @@
+Dev güncelleme: 500 bölüm, 10 sefer!
+• 6 yeni sefer: Selçuklu'nun Zirvesi (Antalya, Sinop, Alanya, Suğdak), Uç Beylikleri (Koyunhisar 1302), Rumeli'ye Geçiş (Bursa, Gelibolu, Edirne), Kosova 1389, Niğbolu 1396, Varna 1444
+• 30 yeni bölge, 20 yeni dev
+• Yeni düşmanlar: Latin, Alan, Katalan, Sırp, Macar birlikleri, araba tabyası tüfekçileri
+• Yeni mekanikler: hendek ve köprü, araba tabyası
+• 3 yeni yay, Ordugâh'ta 55 seviye

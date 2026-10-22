@@ -1,0 +1,36 @@
+name: App Store sürümü hazırla
+# Yeni App Store sürümünü açar (yoksa), Türkçe metinleri (store/appstore-metadata/tr) ve
+# ekran görüntülerini (store/screenshots-ios) yükler. İncelemeye GÖNDERMEZ: derleme seçimi ve
+# "Add for Review / Submit" App Store Connect'te elle yapılır.
+on:
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: "App Store sürümü (ör. 1.2.0)"
+        required: true
+env:
+  ASC_KEY_ID: DJSHKK6T3P
+  ASC_ISSUER_ID: f4943ef8-df6f-42c8-a561-58554097ea35
+jobs:
+  deliver:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Metin ve görselleri hazırla
+        run: |
+          mkdir -p fastlane/screenshots/tr fastlane/metadata/tr
+          echo '# deliver ayarları komut satırından veriliyor' > fastlane/Deliverfile
+          cp store/screenshots-ios/*.png fastlane/screenshots/tr/
+          cp store/appstore-metadata/tr/*.txt fastlane/metadata/tr/
+          ls -la fastlane/screenshots/tr fastlane/metadata/tr
+      - name: App Store Connect anahtarı
+        env: { P8: "${{ secrets.ASC_KEY_P8 }}" }
+        run: |
+          python3 -c "import json,os; json.dump({'key_id':os.environ['ASC_KEY_ID'],'issuer_id':os.environ['ASC_ISSUER_ID'],'key':os.environ['P8'],'in_house':False}, open('api_key.json','w'))"
+      - name: Sürümü aç ve yükle
+        env: { CI: "true", FASTLANE_SKIP_UPDATE_CHECK: "1", FASTLANE_HIDE_CHANGELOG: "1" }
+        run: |
+          fastlane deliver --api_key_path api_key.json --app_identifier com.anduv.malazgirt \
+            --app_version "${{ inputs.version_name }}" --skip_binary_upload true --skip_app_version_update false \
+            --screenshots_path fastlane/screenshots --metadata_path fastlane/metadata --overwrite_screenshots true \
+            --precheck_include_in_app_purchases false --force true --run_precheck_before_submit false --submit_for_review false

@@ -11,6 +11,9 @@ html = html.replace('</head>', '').replace('<body>', '').replace('</body>', '').
 html = re.sub(r'@font-face\{[^}]*\}\s*', '', html)
 html = html.replace('<style>', '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap">\n<style>', 1)
 html = html.replace('<script src="lib/three.min.js"></script>', '<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>')
+ses = root / 'ses-kurtarici.js'
+if ses.exists():
+    html = html.replace('<script src="ses-kurtarici.js"></script>', '<script>\n' + ses.read_text(encoding='utf-8') + '\n</script>')
 for name in ['mantik', 'oyun']:
     js = (root / 'js' / f'{name}.js').read_text(encoding='utf-8')
     html = html.replace(f'<script src="js/{name}.js"></script>', '<script>\n' + js + '\n</script>')
