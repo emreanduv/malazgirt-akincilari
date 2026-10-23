@@ -59,6 +59,16 @@
 - Yol haritası: 750 → 1071 (1.4) → 1453 → 1923
 - Derlemeler: iOS 1.3.0 (9) TestFlight'a yüklendi; Android 6 (1.3.0) imzalı, `imza-anahtari/malazgirt-1.3.0-6-imzali.aab`, Play kapalı test Alpha'ya eklendi; App Store 1.3.0 sürümü metin ve görsellerle açıldı
 
+## 1.4.0 (hazırlanıyor): 1071 bölümlük özel sürüm, 22 sefer
+- Yeni seferler: Zigetvar (751–800), Kıbrıs (801–850), Haçova (851–900), Girit (901–950), Uyvar ve Kamaniçe (951–1000), Prut (1001–1050), Malazgirt'e Dönüş (1051–1071, 3 bölge: 10+10+1)
+- Yapı değişti: seferler `nb` bölgeden, bölgeler `n` bölümden oluşabilir (mantik.js: levelPos, SEF0, SEFR0, REG0)
+- Yol: 1–300 2 şerit, 301–700 3 şerit, 701+ 4 şerit (lanesOf/roadOf); kapılar şerit sayısı kadar seçenek (`gate.opts`)
+- Hız: speedOf(i) = 9 × (1 + 0,5 × i/1922) → 1923. bölümde %50 daha hızlı
+- Zorluk: yeni hedef eğrisi (kalibre.js target): 15. bölümden sonra belirgin biçimde sertleşir; 1071 bölümün hepsi yeniden kalibre edildi
+- Görsel: her bölümde gün saati / hava / mevsim (oyun.js MOODS, moodOf; `?hava=gece` ile zorlanabilir), yağmur ve kar parçacıkları, gece meşaleleri, düşen akıncılar ve kayıp sayıları
+- 7 yeni birlik (kürasiyer, tüfekçi, stradiot, kanatlı süvari, Kazak, Rus piyadesi, grenadiyer), 2 yeni yay (Köprülü, Alparslan)
+- Mağaza metinleri: store/surum-1.4.md
+
 ## Sıradakiler
 - Apple ve Google'ın inceleme yanıtlarını bekle.
 - 12+ test kullanıcısının Gmail adresini "Hisar Testçileri" listesine ekle, 14 gün sonra üretim başvurusu.

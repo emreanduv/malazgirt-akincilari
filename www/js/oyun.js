@@ -177,6 +177,16 @@ const THEMES = [
   { sky: 0xe2e0cc, ground: 0xb8ae7c, hill: [0xa69e6c, 0xb2a876, 0x9a9262, 0xbaae80], mt: 0x8e887a, bush: 0x626c40, sun: 0xfff2de, hemiG: 0x746c4c, river: 0x4a86b0 },
   { sky: 0xf2c494, ground: 0xc8a66c, hill: [0xb8965c, 0xc2a066, 0xac8a54, 0xcaa870], mt: 0x92725e, bush: 0x76683a, sun: 0xffd4a4, hemiG: 0x8a5e40, river: 0x4a7aa0, sur: 0.8 }
 ];
+// 16–22. seferler: önceki paletlerden türetilir (her bölümde gün saati / hava / mevsim ayrıca değişir: MOODS)
+const BATAKLIK = { sky: 0xd2dcd4, ground: 0x7e9a64, hill: [0x6a8a52, 0x76945a, 0x5e7e4a, 0x82a062], mt: 0x6a746c, bush: 0x3e5e34, sun: 0xfff0e0, hemiG: 0x4a6040, lake: 0x4a6a5e, forest: 0.6, river: 0x4a6a5e };
+[[60], [66], [-1], [61], [69, { sur: 0.8 }],                       // Zigetvar
+ [62], [13, { sur: 0.7 }], [56, { lake: 0x2a8ac4 }], [63], [64],     // Kıbrıs
+ [65], [71, { sur: 0.5 }], [-1], [68], [69],                        // Haçova
+ [62, { cliff: 0.6 }], [56], [63], [62], [64],                       // Girit
+ [73], [61], [67], [18, { river: 0x4a86a8 }], [19],                  // Uyvar ve Kamaniçe
+ [45], [46], [48, { river: 0x4a86a8 }], [47], [49],                  // Prut
+ [30], [2], [4]                                                      // Malazgirt'e Dönüş
+].forEach(([k, o]) => THEMES.push(Object.assign({}, k < 0 ? BATAKLIK : THEMES[k], o || {})));
 
 /* geometri yardımcıları: renkli parçaları tek geometriye birleştir (az çizim çağrısı) */
 const _q = new THREE.Quaternion(), _e = new THREE.Euler();
@@ -286,7 +296,8 @@ function agirAtliG(c) {
     P(BOX(.06, .5, .34), c.kalkan, Mx(-.27, 1.55, -.02)),
     P(BOX(.065, .2, .1), c.arma, Mx(-.3, 1.62, -.02)),
     P(BOX(.04, .04, 1.8), 0x6b4a2b, Mx(.24, 1.6, -.55)),
-    P(CONE(.045, .2, 4), 0xd5dbe0, Mx(.24, 1.6, -1.5, 1, 1, 1, -Math.PI / 2, 0, 0))
+    P(CONE(.045, .2, 4), 0xd5dbe0, Mx(.24, 1.6, -1.5, 1, 1, 1, -Math.PI / 2, 0, 0)),
+    ...(c.kanat ? [P(BOX(.05, 1.0, .12), 0x6b4a2b, Mx(0, 2.15, .24, 1, 1, 1, .25, 0, 0)), P(BOX(.12, .9, .26), 0xf4f0e6, Mx(0, 2.25, .34, 1, 1, 1, .25, 0, 0))] : [])
   ]);
 }
 // Batılı piyade (Haçlı, Latin, Katalan, Sırp): tunik, örme zırh, burun korumalı miğfer, uzun kalkan
@@ -344,10 +355,19 @@ const rodosG = batiPiyadeG({ tunik: 0x8a1a24, zirh: 0xaab3bb, kalkan: 0x8a1a24, 
 const landsknechtG = batiPiyadeG({ tunik: 0xd8b040, zirh: 0x2a2a2a, kalkan: 0x2a2a2a, arma: 0xd8b040, sapka: 1, mig: 0xb02030 });
 const zirhliG = agirAtliG({ ortu: 0x9aa3ad, tunik: 0x2a7a3a, kalkan: 0xb02030, arma: 0xe8e2d2 });
 const husarG = hafifAtliG({ at: 0x5a3a20, tunik: 0x2a6a3a, kalkan: 0xb02030, mig: 0xc8a040 });
+const kirasiyerG = agirAtliG({ ortu: 0x3a3a40, tunik: 0xd8b040, kalkan: 0x1a1a1a, arma: 0xd8b040 });
+const muskeciG = aticiG({ tunik: 0x2a3a5a, silah: 'tufek' });
+const stradiotG = hafifAtliG({ at: 0x6a4a2a, tunik: 0xa0202a, kalkan: 0xd8b040, mig: 0x8a949e });
+const kanatliG = agirAtliG({ ortu: 0xa02a2a, tunik: 0xe8e2d2, kalkan: 0xe8e2d2, arma: 0xa02a2a, kanat: 1 });
+const kazakG = hafifAtliG({ at: 0x4a3020, tunik: 0x2a4a8a, kalkan: 0x6a4a2a, mig: 0x2a2a2a });
+const rusaskerG = batiPiyadeG({ tunik: 0x2a5a3a, zirh: 0x2a5a3a, kalkan: 0x2a5a3a, arma: 0xb02030, sapka: 1, mig: 0x1a1a1a });
+const grenadiyerG = batiPiyadeG({ tunik: 0x2a4a2a, zirh: 0xb02030, kalkan: 0x2a4a2a, arma: 0xd8b040, mig: 0xb02030 });
 const FOE_GEO = { piyade: piyadeG(), okcu: okcuG, katafrakt: katafraktG, varang: varangG, akrit: akritG, frank: frankG, arbalet: arbaletG, sovalye: sovalyeG, kalkanli: kalkanliG,
   latin: latinG, alan: alanG, katalan: katalanG, sirppiyade: sirpPiyadeG, sirpsovalye: sirpSovalyeG, macar: macarG, tufekci: tufekciG,
-  ceneviz: cenevizG, venedik: venedikG, arkebuz: arkebuzG, hirvat: hirvatG, rodos: rodosG, landsknecht: landsknechtG, zirhli: zirhliG, husar: husarG };
-const ATLI_GEO = { katafrakt: katafraktG, akrit: akritG, sovalye: sovalyeG, alan: alanG, sirpsovalye: sirpSovalyeG, macar: macarG, zirhli: zirhliG, husar: husarG };
+  ceneviz: cenevizG, venedik: venedikG, arkebuz: arkebuzG, hirvat: hirvatG, rodos: rodosG, landsknecht: landsknechtG, zirhli: zirhliG, husar: husarG,
+  kirasiyer: kirasiyerG, muskeci: muskeciG, stradiot: stradiotG, kanatlihusar: kanatliG, kazak: kazakG, rusasker: rusaskerG, grenadiyer: grenadiyerG };
+const ATLI_GEO = { katafrakt: katafraktG, akrit: akritG, sovalye: sovalyeG, alan: alanG, sirpsovalye: sirpSovalyeG, macar: macarG, zirhli: zirhliG, husar: husarG,
+  kirasiyer: kirasiyerG, stradiot: stradiotG, kanatlihusar: kanatliG, kazak: kazakG };
 
 const armyMat = new THREE.MeshLambertMaterial({ vertexColors: true });
 const goldMat = new THREE.MeshPhongMaterial({ color: 0xe8b33a, specular: 0xfff2b0, shininess: 90, emissive: 0x3d2800 });
@@ -412,21 +432,76 @@ const ENEMY_FLAG = [enemyFlag('#8e1f2a', '#e7c56a'), enemyFlag('#6a1b5a', '#e7c5
   enemyFlag('#8a2a2a', '#d8b040', 'parti'), enemyFlag('#8e1f2a', '#e7c56a'), enemyFlag('#5a1b4a', '#e7c56a'), enemyFlag('#a02a2a', '#ece6d6', 'serit'),
   enemyFlag('#2c4f8f', '#ece6d6', 'parti'), enemyFlag('#b02030', '#ece6d6', 'serit'),
   enemyFlag('#7a1b2a', '#e7c56a'), enemyFlag('#2a4a8a', '#e7c56a', 'parti'), enemyFlag('#a01a24', '#ece6d6', 'serit'),
-  enemyFlag('#2a6a3a', '#ece6d6', 'serit'), enemyFlag('#e0c040', '#1a1a1a', 'parti')];
+  enemyFlag('#2a6a3a', '#ece6d6', 'serit'), enemyFlag('#e0c040', '#1a1a1a', 'parti'),
+  enemyFlag('#e0c040', '#1a1a1a', 'parti'), enemyFlag('#a01a24', '#e7c56a'), enemyFlag('#1a1a1a', '#e0c040', 'serit'), enemyFlag('#a01a24', '#e7c56a', 'parti'),
+  enemyFlag('#b02030', '#ece6d6', 'serit'), enemyFlag('#2a5a3a', '#ece6d6', 'parti'), enemyFlag('#6a1b5a', '#e7c56a')];
+
+/* ================= HAVA, GÜN SAATİ, MEVSİM ================= */
+const MOODS = {
+  ogle: {},
+  sabah: { sky: 0xf4d8c4, tint: 0xffe2cc, t: .2, sun: 0xffd6b0, light: .9, fog: [55, 175] },
+  ikindi: { sky: 0xf2d6a2, tint: 0xffe4a8, t: .18, sun: 0xffe2a0, light: .95 },
+  aksam: { sky: 0xf0a474, tint: 0xff9a60, t: .3, sun: 0xff9a58, light: .82, fog: [50, 165] },
+  gece: { sky: 0x22305a, tint: 0x2a3a6a, t: .55, sun: 0x9ab0f0, light: .5, hemi: .5, fog: [40, 140], torch: 1 },
+  bulut: { sky: 0xbcc2c8, tint: 0xa0a6ae, t: .22, sun: 0xe0e6ec, light: .66, fog: [50, 155] },
+  yagmur: { sky: 0x939ba4, tint: 0x6a7480, t: .32, sun: 0xc8d0d8, light: .55, hemi: .7, fog: [35, 125], rain: 1 },
+  sis: { sky: 0xd8dcdc, tint: 0xd4d8d8, t: .3, sun: 0xf0f0f0, light: .7, fog: [14, 85] },
+  bahar: { tint: 0x7ac050, t: .16, bush: 0x5aa03a, crown: 0x3a7a2e, flower: 1 },
+  guz: { tint: 0xd08a3a, t: .24, bush: 0xc0702a, crown: 0xb8601e, sky: 0xeedcc0 },
+  kis: { sky: 0xdfe6ee, tint: 0xf2f5f8, t: .62, sun: 0xf4f8ff, light: .9, bush: 0x6a7a6a, crown: 0x3a5a4a, snow: 1, fog: [45, 160] }
+};
+const MOOD_W = [['ogle', 3], ['sabah', 1.1], ['ikindi', 1.1], ['aksam', 1], ['gece', .8, 25], ['bulut', 1, 15], ['yagmur', .8, 20], ['sis', .6, 40], ['bahar', .9, 10], ['guz', .9, 40], ['kis', .7, 60]];
+function moodOf(i, T) {
+  if (Q.get('hava')) return Q.get('hava');
+  if (i === M.NL - 1) return 'aksam';
+  if (i < 8) return 'ogle';
+  if (T.ground === 0xeef2f6) return 'kis';                     // karlı bölgeler
+  const kum = ((T.ground >> 16) & 255) - ((T.ground >> 8) & 255) > 22;   // kumlu, sıcak bölgeler: kar yok
+  const opts = MOOD_W.filter(o => i >= (o[2] || 0) && !(kum && (o[0] === 'kis' || o[0] === 'yagmur')));
+  const r = mulberry(i * 9973 + 5)() * opts.reduce((a, o) => a + o[1], 0);
+  let x = r; for (const o of opts) { x -= o[1]; if (x <= 0) return o[0]; }
+  return 'ogle';
+}
+const _ca = new THREE.Color(), _cb = new THREE.Color();
+const mix = (a, b, t) => b === undefined || !t ? a : _ca.set(a).lerp(_cb.set(b), t).getHex();
+// yağmur çizgileri ve kar taneleri: kameranın etrafında döner
+const PN = 900, precipPos = new Float32Array(PN * 6), precipSeed = [];
+for (let k = 0; k < PN; k++) precipSeed.push({ x: (Math.random() - .5) * 60, y: Math.random() * 26, z: -Math.random() * 80 + 14, v: .8 + Math.random() * .4, ph: Math.random() * 6 });
+const precipGeo = new THREE.BufferGeometry(); precipGeo.setAttribute('position', new THREE.BufferAttribute(precipPos, 3));
+const rainLines = new THREE.LineSegments(precipGeo, new THREE.LineBasicMaterial({ color: 0xb8c8dc, transparent: true, opacity: .55 }));
+const snowPts = new THREE.Points(precipGeo, new THREE.PointsMaterial({ color: 0xffffff, size: .32, transparent: true, opacity: .9, depthWrite: false }));
+[rainLines, snowPts].forEach(o => { o.frustumCulled = false; o.visible = false; scene.add(o); });
+let curMood = 'ogle';
+function updatePrecip(dt, cx, cz) {
+  const rain = rainLines.visible, snow = snowPts.visible; if (!rain && !snow) return;
+  for (let k = 0; k < PN; k++) {
+    const p = precipSeed[k]; p.y -= (rain ? 34 : 2.6) * p.v * dt; if (p.y < 0) p.y += 26;
+    if (snow) p.ph += dt;
+    const x = cx + p.x + (snow ? Math.sin(p.ph) * .6 : 0), z = cz + p.z, o = k * 6;
+    precipPos[o] = x; precipPos[o + 1] = p.y; precipPos[o + 2] = z;
+    precipPos[o + 3] = x + (rain ? .15 : 0); precipPos[o + 4] = p.y + (rain ? .9 : .01); precipPos[o + 5] = z + (rain ? .3 : 0);
+  }
+  precipGeo.attributes.position.needsUpdate = true;
+}
 
 /* ================= DÜNYA ================= */
 const world = new THREE.Group(); scene.add(world);
 const levelGroup = new THREE.Group(); scene.add(levelGroup);
 let curTheme = -1;
-function buildWorld(ti) {
-  if (ti === curTheme) return; curTheme = ti;
+function buildWorld(ti, mood, road) {
+  const key = ti + '|' + mood + '|' + road; if (key === curTheme) return; curTheme = key; curMood = mood;
   while (world.children.length) { const c = world.children.pop(); if (c.geometry) c.geometry.dispose(); }
-  const T = THEMES[ti];
+  const B = THEMES[ti], Mo = MOODS[mood] || {}, tt = Mo.t || 0, ro = road - 6;
+  const T = Object.assign({}, B, { sky: Mo.sky ? mix(B.sky, Mo.sky, .8) : B.sky, ground: mix(B.ground, Mo.tint, tt), hill: B.hill.map(c => mix(c, Mo.tint, tt)),
+    mt: mix(B.mt, Mo.tint, tt * .8), bush: Mo.bush !== undefined ? Mo.bush : mix(B.bush, Mo.tint, tt * .6), sun: Mo.sun || B.sun, hemiG: mix(B.hemiG, Mo.tint, tt) });
   scene.background.set(T.sky); scene.fog.color.set(T.sky); sun.color.set(T.sun); hemi.groundColor.set(T.hemiG);
+  const fg = Mo.fog || [70, 200]; scene.fog.near = fg[0]; scene.fog.far = fg[1];
+  sun.intensity = 0.82 * (Mo.light || 1); hemi.intensity = 0.78 * (Mo.hemi || Mo.light || 1);
+  rainLines.visible = !!Mo.rain; snowPts.visible = !!Mo.snow;
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(700, 1600), new THREE.MeshLambertMaterial({ color: T.ground }));
   ground.rotation.x = -Math.PI / 2; ground.position.set(0, -0.05, -650); world.add(ground);
   if (T.lake) { const lake = new THREE.Mesh(new THREE.PlaneGeometry(260, 1500), new THREE.MeshPhongMaterial({ color: T.lake, shininess: 80, specular: 0x9fd8ff })); lake.rotation.x = -Math.PI / 2; lake.position.set(-170, 0, -650); world.add(lake); }
-  if (T.river) { const riv = new THREE.Mesh(new THREE.PlaneGeometry(14, 1500), new THREE.MeshPhongMaterial({ color: T.river, shininess: 60 })); riv.rotation.x = -Math.PI / 2; riv.position.set(24, 0, -650); world.add(riv); }
+  if (T.river) { const riv = new THREE.Mesh(new THREE.PlaneGeometry(14, 1500), new THREE.MeshPhongMaterial({ color: T.river, shininess: 60 })); riv.rotation.x = -Math.PI / 2; riv.position.set(24 + ro, 0, -650); world.add(riv); }
   const rnd = mulberry(42 + ti * 11);
   const hillGeo = SPH(1, 12, 8);
   for (let i = 0; i < 70; i++) {
@@ -437,14 +512,14 @@ function buildWorld(ti) {
   for (let i = 0; i < (T.mtN || 26); i++) { const side = rnd() < .5 ? -1 : 1; const r = 40 + rnd() * 50; const m = new THREE.Mesh(mtGeo, new THREE.MeshLambertMaterial({ color: T.mt })); m.scale.set(r, r * (0.5 + rnd() * 0.6), r); m.position.set(side * (160 + rnd() * 160), 0, -100 - rnd() * 1300); world.add(m); }
   if (T.peri) {   // peri bacaları / kaya kuleleri
     const coneM = new THREE.MeshLambertMaterial({ color: T.hill[3] }), capM = new THREE.MeshLambertMaterial({ color: T.mt });
-    for (let i = 0; i < 46 * T.peri; i++) { const side = rnd() < .5 ? -1 : 1, h = 5 + rnd() * 9, x = side * (14 + rnd() * 60), z = 20 - rnd() * 1300;
+    for (let i = 0; i < 46 * T.peri; i++) { const side = rnd() < .5 ? -1 : 1, h = 5 + rnd() * 9, x = side * (14 + ro + rnd() * 60), z = 20 - rnd() * 1300;
       const c = new THREE.Mesh(CONE(1.6 + rnd(), h, 8), coneM); c.position.set(x, h / 2, z); world.add(c);
       const k = new THREE.Mesh(CONE(1.3, 1.4, 8), capM); k.position.set(x, h + 0.3, z); world.add(k); }
   }
   if (T.forest) {   // çam ormanı
     const n = Math.round(260 * T.forest), trunk = new THREE.InstancedMesh(CYL(.18, .22, 1.4, 5), new THREE.MeshLambertMaterial({ color: 0x5a3a22 }), n);
-    const crown = new THREE.InstancedMesh(CONE(1.3, 3.4, 7), new THREE.MeshLambertMaterial({ color: 0x2f5a2c }), n);
-    for (let i = 0; i < n; i++) { const side = rnd() < .5 ? -1 : 1; if (T.lake && side < 0) continue; const x = side * (10 + rnd() * 70), z = 30 - rnd() * 1300, s = 0.8 + rnd() * 0.9;
+    const crown = new THREE.InstancedMesh(CONE(1.3, 3.4, 7), new THREE.MeshLambertMaterial({ color: Mo.crown || mix(0x2f5a2c, Mo.tint, tt * .5) }), n);
+    for (let i = 0; i < n; i++) { const side = rnd() < .5 ? -1 : 1; if (T.lake && side < 0) continue; const x = side * (10 + ro + rnd() * 70), z = 30 - rnd() * 1300, s = 0.8 + rnd() * 0.9;
       dummy.position.set(x, .7 * s, z); dummy.scale.set(s, s, s); dummy.updateMatrix(); trunk.setMatrixAt(i, dummy.matrix);
       dummy.position.set(x, 2.6 * s, z); dummy.updateMatrix(); crown.setMatrixAt(i, dummy.matrix); }
     world.add(trunk); world.add(crown); dummy.scale.set(1, 1, 1);
@@ -452,19 +527,24 @@ function buildWorld(ti) {
   if (T.cliff) {   // yol kenarında kayalıklar
     const rockM = new THREE.MeshLambertMaterial({ color: T.mt });
     for (let i = 0; i < 70 * T.cliff; i++) { const side = rnd() < .5 ? -1 : 1, s = 3 + rnd() * 7; const r = new THREE.Mesh(new THREE.DodecahedronGeometry(1, 0), rockM);
-      r.scale.set(s, s * (0.8 + rnd() * 1.2), s); r.rotation.set(rnd(), rnd() * 6, rnd()); r.position.set(side * (11 + s * 0.6 + rnd() * 30), s * 0.4, 20 - rnd() * 1300); world.add(r); }
+      r.scale.set(s, s * (0.8 + rnd() * 1.2), s); r.rotation.set(rnd(), rnd() * 6, rnd()); r.position.set(side * (11 + ro + s * 0.6 + rnd() * 30), s * 0.4, 20 - rnd() * 1300); world.add(r); }
   }
   if (T.sur) {   // uzakta şehir surları ve burçlar
     const wm = new THREE.MeshLambertMaterial({ color: 0xb8a88a }), tm = new THREE.MeshLambertMaterial({ color: 0xa8987a });
-    const sx = -(17 + 12 * (1 - T.sur)), n = 26;
+    const sx = -(17 + ro + 12 * (1 - T.sur)), n = 26;
     const w = new THREE.Mesh(BOX(2.5, 9, 1300), wm); w.position.set(sx, 4.5, -630); w.receiveShadow = true; world.add(w);
     const w2 = new THREE.Mesh(BOX(2, 6, 1300), wm); w2.position.set(sx + 5, 3, -630); world.add(w2);
     for (let k = 0; k < n; k++) { const z = 30 - k * 50 - rnd() * 8, t = new THREE.Mesh(BOX(5, 14, 5), tm); t.position.set(sx, 7, z); t.castShadow = true; world.add(t);
       for (let c = -1; c <= 1; c += 2) { const m = new THREE.Mesh(BOX(1.2, 1.2, 1.2), tm); m.position.set(sx + c * 1.9, 14.6, z); world.add(m); } }
   }
   const bush = new THREE.InstancedMesh(SPH(.6, 6, 4), new THREE.MeshLambertMaterial({ color: T.bush }), 220);
-  for (let i = 0; i < 220; i++) { const side = rnd() < .5 ? -1 : 1; dummy.position.set(side * (8 + rnd() * 26), 0.15, 30 - rnd() * 1300); const s = 0.5 + rnd() * 1.1; dummy.scale.set(s * 1.3, s * 0.6, s); dummy.rotation.set(0, rnd() * 6, 0); dummy.updateMatrix(); bush.setMatrixAt(i, dummy.matrix); }
+  for (let i = 0; i < 220; i++) { const side = rnd() < .5 ? -1 : 1; dummy.position.set(side * (8 + ro + rnd() * 26), 0.15, 30 - rnd() * 1300); const s = 0.5 + rnd() * 1.1; dummy.scale.set(s * 1.3, s * 0.6, s); dummy.rotation.set(0, rnd() * 6, 0); dummy.updateMatrix(); bush.setMatrixAt(i, dummy.matrix); }
   world.add(bush); dummy.scale.set(1, 1, 1); dummy.rotation.set(0, 0, 0);
+  if (Mo.flower) {   // bahar çiçekleri
+    const fl = new THREE.InstancedMesh(SPH(.18, 5, 3), new THREE.MeshLambertMaterial({ color: 0xffffff }), 260), cols = [0xf2d23a, 0xe8505a, 0xf4f0f6, 0xb070e0];
+    for (let i = 0; i < 260; i++) { const side = rnd() < .5 ? -1 : 1; dummy.position.set(side * (7.5 + ro + rnd() * 20), .12, 30 - rnd() * 1300); dummy.updateMatrix(); fl.setMatrixAt(i, dummy.matrix); fl.setColorAt(i, new THREE.Color(cols[i % 4])); }
+    world.add(fl);
+  }
 }
 function mulberry(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 
@@ -489,7 +569,7 @@ const VIEW = { objs: new Map(), gates: [] };
 function buildLevelView(G) {
   while (levelGroup.children.length) levelGroup.remove(levelGroup.children[0]);
   VIEW.objs.clear(); VIEW.gates = [];
-  buildWorld(G.L.reg);
+  const mood = moodOf(G.L.i, THEMES[G.L.reg]); buildWorld(G.L.reg, mood, G.road);
   for (const o of G.objs) {
     if (o.t === 'block') {
       const g = new THREE.Group(); const b = new THREE.Mesh(blockGeo, blockMat); b.position.y = .55; b.castShadow = true; b.receiveShadow = true; g.add(b);
@@ -524,7 +604,7 @@ function buildLevelView(G) {
     } else if (o.t === 'hendek') {      // hendek ve köprü
       const g = new THREE.Group(), hm = new THREE.MeshLambertMaterial({ color: 0x3a2e22 });
       const l = o.bx - o.bw, r = o.bx + o.bw;
-      [[-M.ROAD - .2, l], [r, M.ROAD + .2]].forEach(([a, b]) => { if (b - a < .05) return; const t = new THREE.Mesh(BOX(b - a, .08, 2.6), hm); t.position.set((a + b) / 2, .03, 0); g.add(t);
+      [[-G.road - .2, l], [r, G.road + .2]].forEach(([a, b]) => { if (b - a < .05) return; const t = new THREE.Mesh(BOX(b - a, .08, 2.6), hm); t.position.set((a + b) / 2, .03, 0); g.add(t);
         const su = new THREE.Mesh(BOX(b - a, .02, 2.2), new THREE.MeshPhongMaterial({ color: 0x3a6a80, shininess: 60 })); su.position.set((a + b) / 2, .09, 0); g.add(su); });
       const kopru = new THREE.Mesh(BOX(o.bw * 2, .18, 3.0), woodMat); kopru.position.set(o.bx, .12, 0); kopru.receiveShadow = true; g.add(kopru);
       [-1, 1].forEach(sd => { const rl = new THREE.Mesh(BOX(.1, .5, 3.0), woodMat); rl.position.set(o.bx + sd * o.bw, .4, 0); g.add(rl); });
@@ -568,7 +648,7 @@ function buildLevelView(G) {
       g.position.set(o.x, 0, o.z); levelGroup.add(g); VIEW.objs.set(o, { g, lane, ball });
     } else if (o.t === 'gecit') {      // dar geçit: iki yanda kaya duvarı
       const g = new THREE.Group(), rockM = new THREE.MeshLambertMaterial({ color: 0x8a7e6e });
-      [-1, 1].forEach(sd => { const w = new THREE.Mesh(BOX(4, 4.5, o.len), rockM); w.position.set(sd * (o.w + 2), 2.25, -o.len / 2); w.castShadow = true; w.receiveShadow = true; g.add(w);
+      const ww = G.road - o.w + 2.5; [-1, 1].forEach(sd => { const w = new THREE.Mesh(BOX(ww, 4.5, o.len), rockM); w.position.set(sd * (o.w + ww / 2), 2.25, -o.len / 2); w.castShadow = true; w.receiveShadow = true; g.add(w);
         for (let k = 0; k < 5; k++) { const r = new THREE.Mesh(new THREE.DodecahedronGeometry(1.4 + (k % 2) * .5, 0), stoneDark); r.position.set(sd * (o.w + .9 + (k % 2) * .5), 4.6 + (k % 3) * .3, -k * o.len / 4.5); g.add(r); } });
       const L = makeLabel(512, 128); drawBig(L, 'DAR GEÇİT · ' + M.gecitCap(o.w) + ' kişi sığar', '#ffd9a0', '#16202e', 64); const lab = labelSprite(L, 5.4, 1.35); lab.position.set(0, 5.2, 0); g.add(lab);
       g.position.set(0, 0, o.z); levelGroup.add(g); VIEW.objs.set(o, { g });
@@ -588,8 +668,9 @@ function buildLevelView(G) {
   }
   for (const gt of G.gates) {
     const g = new THREE.Group(); const panels = [];
-    [[gt.L, -3], [gt.R, 3]].forEach(([op, x]) => { const p = new THREE.Mesh(new THREE.PlaneGeometry(5.6, 2.6), new THREE.MeshBasicMaterial({ map: gateTex(op), transparent: true, depthWrite: false, side: THREE.DoubleSide })); p.position.set(x, 1.7, 0); g.add(p); panels.push(p); });
-    [-6, 0, 6].forEach(x => g.add(hilalPost(x)));
+    const n = gt.opts.length, lw = 2 * G.road / n;
+    gt.opts.forEach((op, k) => { const p = new THREE.Mesh(new THREE.PlaneGeometry(lw - .4, 2.6), new THREE.MeshBasicMaterial({ map: gateTex(op), transparent: true, depthWrite: false, side: THREE.DoubleSide })); p.position.set(-G.road + (k + .5) * lw, 1.7, 0); g.add(p); panels.push(p); });
+    for (let k = 0; k <= n; k++) g.add(hilalPost(-G.road + k * lw));
     g.position.z = gt.z; levelGroup.add(g); VIEW.gates.push({ gt, panels, anim: -1, t: 0 });
   }
   // Bizans kalesi (bölüm sonu)
@@ -603,11 +684,15 @@ function buildLevelView(G) {
   // yol ve kenar taşları
   const len = G.L.len + 60, cz = 20 - len / 2;
   roadTex.repeat.set(3, len / 4);
-  const road = new THREE.Mesh(new THREE.PlaneGeometry(M.ROAD * 2, len), new THREE.MeshLambertMaterial({ map: roadTex })); road.rotation.x = -Math.PI / 2; road.position.set(0, 0.01, cz); road.receiveShadow = true; levelGroup.add(road);
-  [-1, 1].forEach(s => { const w = new THREE.Mesh(BOX(.6, .7, len), stoneMat); w.position.set(s * (M.ROAD + .3), .35, cz); w.receiveShadow = true; levelGroup.add(w); });
+  roadTex.repeat.set(G.lanes * 1.5, len / 4);
+  const road = new THREE.Mesh(new THREE.PlaneGeometry(G.road * 2, len), new THREE.MeshLambertMaterial({ map: roadTex, color: mood === 'gece' ? 0x8a96b8 : mood === 'yagmur' ? 0xb8bcc4 : mood === 'kis' ? 0xf0f4f8 : 0xffffff })); road.rotation.x = -Math.PI / 2; road.position.set(0, 0.01, cz); road.receiveShadow = true; levelGroup.add(road);
+  [-1, 1].forEach(s => { const w = new THREE.Mesh(BOX(.6, .7, len), stoneMat); w.position.set(s * (G.road + .3), .35, cz); w.receiveShadow = true; levelGroup.add(w); });
   // yol boyu sancaklar
-  for (let z = -10; z > G.L.endZ; z -= 40) [-1, 1].forEach(s => { const p = new THREE.Group(); const pole = new THREE.Mesh(CYL(.07, .07, 4, 6), postMat); pole.position.y = 2; p.add(pole); const fl = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 1.6), new THREE.MeshLambertMaterial({ map: flagTex, side: THREE.DoubleSide })); fl.position.set(s * -.6, 3.1, 0); p.add(fl); p.position.set(s * (M.ROAD + 1.4), 0, z); levelGroup.add(p); });
+  for (let z = -10; z > G.L.endZ; z -= 40) [-1, 1].forEach(s => { const p = new THREE.Group(); const pole = new THREE.Mesh(CYL(.07, .07, 4, 6), postMat); pole.position.y = 2; p.add(pole); const fl = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 1.6), new THREE.MeshLambertMaterial({ map: flagTex, side: THREE.DoubleSide })); fl.position.set(s * -.6, 3.1, 0); p.add(fl);
+    if ((MOODS[mood] || {}).torch) { const fire = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xffa040, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending })); fire.scale.set(2.4, 2.4, 1); fire.position.y = 4.2; p.add(fire); }
+    p.position.set(s * (G.road + 1.4), 0, z); levelGroup.add(p); });
   arrowMat.color.set(M.WEAPONS[0].c);
+  DEAD.length = 0; lostSeen = G.lost; lossPop = 0;
 }
 const GULLE_SPIN = 14;
 const SYM = { '+': '+', 'x': '×', '-': '−', '/': '÷' };
@@ -659,13 +744,13 @@ function handleEvents() {
       case 'gain': popup('+' + e.v, e.x, 1.8, e.z); SFX.gain(); break;
       case 'loot': popup('+' + e.v + ' akçe', e.x, 3, e.z, 'gold'); SFX.buy(); break;
       case 'tas': { const v = VIEW.objs.get(e.o); if (v) { v.g.visible = false; } puff(e.o.x, .8, e.o.z, 3.4); puff(e.o.x + 1, 1.2, e.o.z, 2.4); noise(0.3, 0.2, 300); tone(90, 0.3, 'sine', 0.15, 0.5);
-        if (e.v) { popup('−' + e.v, G.x, 2.6, G.z, 'bad'); if (navigator.vibrate) try { navigator.vibrate(40); } catch (x) {} } break; }
-      case 'gate': { popup((e.d >= 0 ? '+' : '') + e.d, e.x, 2.5, e.z - 1, e.d >= 0 ? '' : 'bad'); e.d >= 0 ? SFX.good() : SFX.bad(); const v = VIEW.gates.find(v => v.gt === e.g); if (v) { v.anim = e.g.side < 0 ? 0 : 1; v.t = 0; } break; }
+        if (e.v) { lossShown += e.v; popup('−' + e.v, G.x, 2.6, G.z, 'bad'); if (navigator.vibrate) try { navigator.vibrate(40); } catch (x) {} } break; }
+      case 'gate': { popup((e.d >= 0 ? '+' : '') + e.d, e.x, 2.5, e.z - 1, e.d >= 0 ? '' : 'bad'); e.d >= 0 ? SFX.good() : SFX.bad(); const v = VIEW.gates.find(v => v.gt === e.g); if (v) { v.anim = e.g.idx; v.t = 0; } break; }
       case 'weapon': popup(M.WEAPONS[e.w].ad + '!', e.x, 3, e.z, 'gold'); SFX.weapon(); updateWeapon(); break;
       case 'hero': popup('Altın Alp katıldı!', e.x, 3.2, e.z, 'gold'); SFX.hero(); break;
       case 'troops': popup('+' + e.v + ' akıncı', e.x, 3, e.z, 'gold'); SFX.good(); break;
       case 'gulleWarn': tone(70, 0.25, 'sine', 0.12, 0.4); noise(0.2, 0.12, 200); break;
-      case 'crash': popup((e.gecit ? 'Sıkıştı −' : e.hendek ? 'Hendek −' : e.gulle ? 'Gülle −' : '−') + e.v, e.x, 2.4, e.z, 'bad'); SFX.crash(); if (navigator.vibrate) try { navigator.vibrate(30); } catch (x) {} break;
+      case 'crash': lossShown += e.v; popup((e.gecit ? 'Sıkıştı −' : e.hendek ? 'Hendek −' : e.gulle ? 'Gülle −' : '−') + e.v, e.x, 2.4, e.z, 'bad'); SFX.crash(); if (navigator.vibrate) try { navigator.vibrate(30); } catch (x) {} break;
       case 'break': { const v = VIEW.objs.get(e.o); if (v) v.die = 0.3; puff(e.o.x, 1, e.o.z, 2.4); puff(e.o.x + .6, 1.4, e.o.z, 1.8); SFX.break(); break; }
       case 'hit': SFX.tick(); if (Math.random() < .4) puff(e.x + (Math.random() - .5) * 2, .8, e.z, .9); break;
       case 'clash': SFX.tick(); if (Math.random() < .5) puff(e.x + (Math.random() - .5) * 2.5, .9, e.z, 1.4); break;
@@ -686,12 +771,12 @@ function finish(win) {
   persist();
   lastRes = { i, win, stars, gain };
   if (win) {
-    const SF = M.SEFERLER[M.seferOf(i)], last = i % 50 === 49;
+    const sfi = M.seferOf(i), SF = M.SEFERLER[sfi], last = i === M.SEF0[sfi] + SF.n - 1;
     $('wTitle').textContent = last ? SF.zafer : 'ZAFER!';
     $('wStars').innerHTML = starHtml(stars);
     $('wStats').innerHTML = (last ? '' : G.L.ad + ' geçildi.<br>') + 'Sağ kalan akıncı: <b>' + G.count + '</b>' + (G.heroes ? ' · Altın Alp: <b>' + G.heroes + '</b>' : '') + '<br>Dağıtılan düşman askeri: <b>' + fmt(G.kills) + '</b>' + (G.loot ? '<br>Kervan ganimeti: <b>' + G.loot + ' akçe</b>' : '') + (!last && canUpgrade() ? '<br><span class="hint">Ordugâh\'ta yeni geliştirme alabilirsin!</span>' : '');
     $('wEpi').hidden = !last;
-    if (last) $('wEpi').textContent = SF.epilog + (i < NL - 1 ? ' Sıradaki sefer: ' + M.SEFERLER[M.seferOf(i) + 1].ad + '!' : ' Yeni seferler pek yakında.');
+    if (last) $('wEpi').textContent = SF.epilog + (i < NL - 1 ? ' Sıradaki sefer: ' + M.SEFERLER[sfi + 1].ad + '!' : ' Yeni seferler pek yakında: hedef 1453 bölüm.');
     $('wGain').textContent = gain;
     $('wNext').textContent = i === NL - 1 ? 'SEFER HARİTASI' : last ? 'YENİ SEFER' : 'DEVAM';
     show('win'); fanfare(); for (let k = 0; k < stars; k++) setTimeout(() => SFX.star(k), 300 + k * 250);
@@ -725,32 +810,33 @@ function renderMenu() {
   $('bCamp').classList.toggle('notify', canUpgrade());
 }
 let regionSel = -1, seferSel = -1;
+const sefOfReg = r => M.seferOf(M.REG0[r]);
 function renderLevels() {
-  if (regionSel < 0) regionSel = Math.floor(nextLevel() / 10);
-  if (seferSel < 0) seferSel = Math.floor(regionSel / 5);
+  if (regionSel < 0) regionSel = M.regionOf(nextLevel());
+  if (seferSel < 0) seferSel = sefOfReg(regionSel);
   $('lStars').textContent = totalStars() + ' / ' + NL * 3;
   $('sPrev').disabled = seferSel === 0; $('sNext').disabled = seferSel >= NSF;
   const grid = $('grid'), tabs = $('tabs'); grid.innerHTML = ''; tabs.innerHTML = '';
   if (seferSel >= NSF) {     // yakında
     $('sName').textContent = M.SOON.ad; $('sSub').textContent = 'Sıradaki sefer';
     $('regionHead').textContent = '';
-    grid.innerHTML = '<div class="soon" style="grid-column:1/-1"><h3>Pek yakında</h3><p>Zigetvar, Kıbrıs, Bağdat ve daha fazlası: toplam 1071 bölüme doğru. Yeni seferler güncellemelerle geliyor. Bu arada eski bölümleri yıldızla, Ordugâh\'ı güçlendir.</p></div>';
+    grid.innerHTML = '<div class="soon" style="grid-column:1/-1"><h3>Pek yakında</h3><p>Bin yetmiş bir bölümün hepsini bitirdin! Yeni seferler güncellemelerle geliyor: hedef 1453, sonra 1923 bölüm. Bu arada eski bölümleri yıldızla, Ordugâh\'ı güçlendir.</p></div>';
     return;
   }
   const SF = M.SEFERLER[seferSel];
   $('sName').textContent = (seferSel + 1) + '. Sefer: ' + SF.ad; $('sSub').textContent = SF.yil + ' · ' + SF.alt;
-  if (Math.floor(regionSel / 5) !== seferSel) regionSel = seferSel * 5;
-  for (let r = seferSel * 5; r < seferSel * 5 + 5; r++) {
-    const R = M.REGIONS[r], lock = r * 10 + 1 > S.unlocked; let st = 0; for (let k = 0; k < 10; k++) st += S.stars[r * 10 + k] || 0;
+  if (sefOfReg(regionSel) !== seferSel) regionSel = M.SEFR0[seferSel];
+  for (let r = M.SEFR0[seferSel]; r < M.SEFR0[seferSel] + SF.nb; r++) {
+    const R = M.REGIONS[r], r0 = M.REG0[r], rn = M.regLen(r), lock = r0 + 1 > S.unlocked; let st = 0; for (let k = 0; k < rn; k++) st += S.stars[r0 + k] || 0;
     const b = document.createElement('button'); b.className = 'tab' + (lock ? ' locked' : ''); b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', r === regionSel);
-    b.innerHTML = R.ad + '<small>' + (lock ? 'Kilitli' : st + ' / 30 yıldız') + '</small>';
+    b.innerHTML = R.ad + '<small>' + (lock ? 'Kilitli' : st + ' / ' + rn * 3 + ' yıldız') + '</small>';
     b.addEventListener('click', () => { SFX.click(); regionSel = r; renderLevels(); });
     tabs.appendChild(b);
   }
   $('regionHead').textContent = M.REGIONS[regionSel].alt;
   const selTab = tabs.querySelector('[aria-selected="true"]'); if (selTab) tabs.scrollLeft = Math.max(0, selTab.offsetLeft - (tabs.clientWidth - selTab.offsetWidth) / 2);
-  for (let k = 0; k < 10; k++) {
-    const i = regionSel * 10 + k, L = M.LEVELS[i], lock = i + 1 > S.unlocked;
+  for (let k = 0; k < M.regLen(regionSel); k++) {
+    const i = M.REG0[regionSel] + k, L = M.LEVELS[i], lock = i + 1 > S.unlocked;
     const b = document.createElement('button'); b.className = 'lv' + (lock ? ' lock' : '') + (i === nextLevel() && !lock ? ' cur' : '');
     let inner = '';
     if (L.boss) { const bo = L.objs.find(o => o.t === 'boss'); inner += '<span class="tag">' + M.BOSSES[bo.id].ad.toLocaleUpperCase('tr') + '</span>'; }
@@ -792,8 +878,8 @@ function pause(on) { if (mode !== 'play') return; paused = on; drag = false; sho
 document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => { SFX.click(); const g = b.dataset.go; if (g === 'menu') { previewLevel(nextLevel()); } show(g); }));
 $('bPlay').addEventListener('click', () => { unlockAudio(); SFX.click(); openBrief(nextLevel()); });
 $('bLevels').addEventListener('click', () => { SFX.click(); regionSel = -1; seferSel = -1; show('levels'); });
-$('sPrev').addEventListener('click', () => { SFX.click(); seferSel = Math.max(0, seferSel - 1); regionSel = seferSel * 5; renderLevels(); });
-$('sNext').addEventListener('click', () => { SFX.click(); seferSel = Math.min(NSF, seferSel + 1); regionSel = Math.min(seferSel, NSF - 1) * 5; renderLevels(); });
+$('sPrev').addEventListener('click', () => { SFX.click(); seferSel = Math.max(0, seferSel - 1); regionSel = M.SEFR0[seferSel]; renderLevels(); });
+$('sNext').addEventListener('click', () => { SFX.click(); seferSel = Math.min(NSF, seferSel + 1); regionSel = M.SEFR0[Math.min(seferSel, NSF - 1)]; renderLevels(); });
 $('bCamp').addEventListener('click', () => { SFX.click(); openCamp('menu'); });
 $('brCamp').addEventListener('click', () => { SFX.click(); openCamp('brief'); });
 $('cBack').addEventListener('click', () => { SFX.click(); if (campFrom === 'brief') openBrief(briefI); else { previewLevel(nextLevel()); show('menu'); } });
@@ -808,6 +894,27 @@ $('wMenu').addEventListener('click', () => { SFX.click(); previewLevel(nextLevel
 $('lRetry').addEventListener('click', () => { SFX.click(); startGame(lastRes.i); });
 $('lCamp').addEventListener('click', () => { SFX.click(); briefI = lastRes.i; openCamp('brief'); });
 $('lMenu').addEventListener('click', () => { SFX.click(); previewLevel(nextLevel()); show('menu'); });
+
+/* ================= DÜŞEN AKINCILAR ================= */
+const MAXD = 70, deadMesh = inst(akinciG, armyMat, MAXD), DEAD = [];
+let lostSeen = 0, lossPop = 0, lossShown = 0, lossT = 0;
+function updateDead(dt) {
+  if (!G) return;
+  const nw = G.lost - lostSeen; lostSeen = G.lost;
+  if (nw > 0 && mode !== 'menu') {
+    lossPop += nw;
+    const m = Math.min(G.count + nw, MAXC);
+    for (let k = 0; k < Math.min(nw, 5); k++) { if (DEAD.length >= MAXD) DEAD.shift(); const o = OFF[Math.max(0, m - 1 - Math.floor(Math.random() * Math.min(m, 25)))];
+      DEAD.push({ x: G.x + o.x, z: G.z + o.z, t: 0, ry: (Math.random() - .5) * 1.2, side: Math.random() < .5 ? -1 : 1 }); }
+  }
+  lossT += dt;
+  if (lossT > 0.7) { const v = lossPop - lossShown; if (v >= 2 && G.state === 'play') popup('−' + v, G.x + (Math.random() - .5) * 2, 2.2, G.z - G.Rz, 'bad small'); lossPop = 0; lossShown = 0; lossT = 0; }
+  let n = 0;
+  for (let k = DEAD.length - 1; k >= 0; k--) { const d = DEAD[k]; d.t += dt; if (d.t > 1.6) { DEAD.splice(k, 1); continue; } }
+  for (const d of DEAD) { const f = Math.min(1, d.t / .35), sink = Math.max(0, d.t - 1.0) * .8;
+    dummy.position.set(d.x, -sink, d.z); dummy.rotation.set(0, d.ry, d.side * f * 1.45); dummy.updateMatrix(); deadMesh.setMatrixAt(n++, dummy.matrix); }
+  deadMesh.count = n; deadMesh.instanceMatrix.needsUpdate = true; dummy.rotation.set(0, 0, 0);
+}
 
 /* ================= ÇİZİM ================= */
 function renderCrowd(t) {
@@ -875,11 +982,12 @@ function frame(now) {
       if (G.state === 'win' && mode === 'play') finish(true);
       else if (G.state === 'lose' && mode === 'play') { mode = 'dying'; setTimeout(() => finish(false), 700); }
     } else $('hint').hidden = true;
-    renderCrowd(T); renderFoes(T); renderArrows(); renderObjs(dt, T);
+    renderCrowd(T); renderFoes(T); renderArrows(); renderObjs(dt, T); updateDead(dt);
     const tx = G.x * 0.55, tz = G.z;
     camX += (tx - camX) * Math.min(1, dt * 5); camZ += (tz - camZ) * Math.min(1, dt * 8);
-    const far = mode === 'menu' ? 1 : 0;
-    camera.position.set(camX + (far ? Math.sin(T * 0.25) * 1.5 : 0), 12.5 + far * 1.5, camZ + 12.5 + far * 2); camera.lookAt(camX * 0.7, 0, camZ - 12);
+    const far = mode === 'menu' ? 1 : 0, ck = 1 + (G.road - 6) * 0.075;   // geniş yolda kamera geri çekilir
+    camera.position.set(camX + (far ? Math.sin(T * 0.25) * 1.5 : 0), (12.5 + far * 1.5) * ck, camZ + (12.5 + far * 2) * ck); camera.lookAt(camX * 0.7, 0, camZ - 12 * ck);
+    updatePrecip(dt, camX, camZ - 20);
     sun.position.set(G.x + 8, 24, G.z + 8); sun.target.position.set(G.x, 0, G.z - 8);
     const showBubble = (mode === 'play' || mode === 'menu' || mode === 'dying') && G.count + G.heroes > 0 && $('scrLevels').hidden && $('scrCamp').hidden;
     const b = $('bubble');
@@ -895,7 +1003,7 @@ const Q = new URLSearchParams(location.search);
 function autoSteer() {
   if (!G || mode !== 'play') return;
   const g = G.gates.find(g => !g.passed && G.z - g.z < 30 && G.z - g.z > -1);
-  if (g) { G.tx = M.applyOp(G.count, g.L) >= M.applyOp(G.count, g.R) ? -3 : 3; return; }
+  if (g) { const v = g.opts.map(o => M.applyOp(G.count, o)); G.tx = M.laneX(G, v.indexOf(Math.max(...v)), v.length); return; }
   const o = G.objs.filter(o => o.alive && o.z < G.z && G.z - o.z < 30 && o.t !== 'barricade' && o.t !== 'block').sort((a, b) => b.z - a.z)[0];
   G.tx = o ? o.x : 0;
 }
@@ -904,7 +1012,7 @@ function boot() {
     S.sound = false; S.unlocked = NL; const kq = +Q.get('kare') || 0, uq = Math.round(kq < 50 ? Math.max(8, kq * 0.2 + 2) : Math.min(M.upCap(M.seferOf(kq)), 12 + (kq - 50) * 0.1)); S.up = { start: uq, dmg: uq, rate: uq, zirh: uq }; S.coins = 1840;
     S.stars = [3, 3, 3, 2, 3, 3, 3, 3, 2, 3, 3, 3, 2, 3, 3, 1, 3, 3]; persist = () => {};
     const sc = +Q.get('hiz') || 1, ekran = Q.get('ekran');
-    if (ekran) { previewLevel(+Q.get('kare') || 0); if (ekran === 'brief') openBrief(+Q.get('kare')); else { regionSel = +(Q.get('bolge') || 0); seferSel = Math.floor(regionSel / 5); show(ekran); } }
+    if (ekran) { previewLevel(+Q.get('kare') || 0); if (ekran === 'brief') openBrief(+Q.get('kare')); else { regionSel = +(Q.get('bolge') || 0); seferSel = sefOfReg(regionSel); show(ekran); } }
     else {
       startGame(+Q.get('kare')); $('banner') && $('banner').remove(); hintT = 0;
       if (Q.has('ileri')) { const stopZ = G.L.endZ + (+Q.get('ileri')); let n = 0; while (G.z > stopZ && G.state === 'play' && n++ < 20000) { autoSteer(); M.step(G, 1 / 30); handleEvents(); } $('pops').innerHTML = ''; updateWeapon(); }

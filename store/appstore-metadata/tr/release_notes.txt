@@ -1,6 +1,7 @@
-Dev güncelleme: 750 bölüm, 15 sefer!
-• 5 yeni sefer: İstanbul'un Fethi 1453, Fatih'in Seferleri (Mora, Trabzon, Bosna, Otranto), Belgrad ve Rodos 1521–1522, Mohaç 1526, Budin 1541
-• 25 yeni bölge, 19 yeni dev
-• Yeni düşmanlar: Ceneviz, Venedik, Hırvat ve Alman birlikleri, arkebüzcü, Rodos Şövalyesi, Macar süvarileri
-• Yeni mekanikler: yolu kesen sur duvarları ve top gülleleri
-• 2 yeni yay: Fatih Yayı ve Kanuni Yayı, Ordugâh'ta 60 seviye
+1071 bölümlük özel sürüm!
+• 7 yeni sefer: Zigetvar 1566, Kıbrıs 1571, Haçova 1596, Girit 1669, Uyvar ve Kamaniçe 1672, Prut 1711 ve 1071. bölümde Malazgirt'e Dönüş
+• Yol genişliyor: 301. bölümden 3, 701. bölümden 4 şerit
+• Akıncılar bölüm geçtikçe hızlanıyor, zorluk yeniden ayarlandı
+• Her bölümde farklı gün saati, hava ve mevsim
+• Düşen akıncılar artık görünüyor
+• 7 yeni düşman, 2 yeni yay
