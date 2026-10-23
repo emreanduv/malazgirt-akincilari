@@ -24,8 +24,8 @@ const which = process.argv[2] || 'hepsi';
     const scenes = [
       ['01-sefer', '/www/index.html?kare=7&ileri=130', 3500],
       ['02-dev', '/www/index.html?kare=19&ileri=40', 4000],
-      ['03-fetih', '/www/index.html?kare=549&ileri=40', 4000],
-      ['04-harita', '/www/index.html?kare=740&ekran=levels&bolge=52', 2500],
+      ['03-gece', '/www/index.html?kare=720&ileri=330&hava=gece', 3500],
+      ['04-harita', '/www/index.html?kare=1060&ekran=levels&bolge=105', 2500],
       ['05-menu', '/www/index.html?kare=0&ekran=menu', 3000]
     ];
     const devices = [
