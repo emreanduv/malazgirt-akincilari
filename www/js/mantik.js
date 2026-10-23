@@ -8,8 +8,8 @@ function rng(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = M
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
 /* ---------- sabitler ---------- */
-const ROAD = 6;            // yolun yarı genişliği
-const SPEED = 9;           // ileri yürüyüş hızı
+const ROAD = 6;            // 2 şeritli yolun yarı genişliği (şerit sayısı arttıkça genişler: roadOf)
+const SPEED = 9;           // ilk bölümdeki ileri yürüyüş hızı (speedOf ile bölüm bölüm artar)
 const ARROW_V = 44, ARROW_LIFE = 0.75;   // ok menzili ≈ 33
 const HERO_POW = 20, HERO_HP = 15, MAX_HERO = 3;
 const MAX_COUNT = 999;
@@ -27,10 +27,12 @@ const WEAPONS = [
   { ad: 'Gazi Yayı', m: 14, c: 0x7dffb0 },
   { ad: 'Yıldırım Yayı', m: 18, c: 0xfff15a },
   { ad: 'Fatih Yayı', m: 23, c: 0xffb04a },
-  { ad: 'Kanuni Yayı', m: 29, c: 0xb8f0ff }
+  { ad: 'Kanuni Yayı', m: 29, c: 0xb8f0ff },
+  { ad: 'Köprülü Yayı', m: 36, c: 0xff8a5a },
+  { ad: 'Alparslan Yayı', m: 45, c: 0xfff6c8 }
 ];
-const TIER_CAP = [4, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 11];
-const maxTier = i => TIER_CAP[Math.min(TIER_CAP.length - 1, Math.floor(i / 50))];
+const TIER_CAP = [4, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 11, 11, 12, 12, 12, 13, 13, 13];
+const maxTier = i => TIER_CAP[Math.min(TIER_CAP.length - 1, seferOf(i))];
 
 /* Düşman birlikleri. p = çatışmada bir erin kaç akıncı götürdüğü, hp = kaç ok gücüyle düştüğü, atli = süvari */
 const FOES = {
@@ -57,7 +59,14 @@ const FOES = {
   zirhli:    { ad: 'Zırhlı Macar Şövalyesi', hp: 4.2, p: 3.8, v: 6.5, atli: 1 },
   rodos:     { ad: 'Rodos Şövalyesi',     hp: 3.8, p: 3.2, v: 3.0 },
   husar:     { ad: 'Macar Hafif Süvarisi', hp: 2.4, p: 2.2, v: 10.5, atli: 1 },
-  landsknecht:{ ad: 'Alman Paralı Askeri', hp: 2.6, p: 2.3, v: 4.2 }
+  landsknecht:{ ad: 'Alman Paralı Askeri', hp: 2.6, p: 2.3, v: 4.2 },
+  kirasiyer: { ad: 'Habsburg Kürasiyeri',  hp: 4.6, p: 4.0, v: 7,   atli: 1 },
+  muskeci:   { ad: 'Tüfekçi',             hp: 1.4, p: 0.9, v: 0,   ates: 0.1 },
+  stradiot:  { ad: 'Stradiot Süvarisi',   hp: 2.4, p: 2.2, v: 11,  atli: 1 },
+  kanatlihusar:{ ad: 'Kanatlı Süvari',    hp: 5.0, p: 4.4, v: 8,   atli: 1 },
+  kazak:     { ad: 'Kazak Süvarisi',      hp: 2.2, p: 2.0, v: 11.5, atli: 1 },
+  rusasker:  { ad: 'Rus Piyadesi',        hp: 2.6, p: 2.2, v: 4.2 },
+  grenadiyer:{ ad: 'Rus Grenadiyeri',     hp: 3.4, p: 3.0, v: 4.0 }
 };
 /* her seferde sahaya çıkan birlikler: [birlik, ilk bölüm (genel sıra)] */
 const POOLS = [
@@ -75,10 +84,19 @@ const POOLS = [
   [['venedik', 550], ['sirppiyade', 550], ['macar', 550], ['ceneviz', 550], ['sirpsovalye', 555]],
   [['hirvat', 600], ['macar', 600], ['zirhli', 603], ['rodos', 630]],
   [['hirvat', 650], ['husar', 650], ['zirhli', 650], ['landsknecht', 655]],
-  [['landsknecht', 700], ['husar', 700], ['zirhli', 700], ['hirvat', 700]]
+  [['landsknecht', 700], ['husar', 700], ['zirhli', 700], ['hirvat', 700]],
+  [['hirvat', 750], ['landsknecht', 750], ['kirasiyer', 753]],
+  [['venedik', 800], ['ceneviz', 800], ['stradiot', 803]],
+  [['landsknecht', 850], ['kirasiyer', 850], ['hirvat', 850], ['husar', 850]],
+  [['venedik', 900], ['ceneviz', 900], ['stradiot', 900], ['landsknecht', 930]],
+  [['landsknecht', 950], ['kirasiyer', 950, 970], ['hirvat', 950, 970], ['kazak', 970], ['kanatlihusar', 973]],
+  [['rusasker', 1000], ['kazak', 1000], ['grenadiyer', 1005]],
+  [['piyade', 1050], ['katafrakt', 1050], ['varang', 1050], ['sovalye', 1052], ['zirhli', 1054], ['kirasiyer', 1056], ['kanatlihusar', 1058], ['grenadiyer', 1060]]
 ];
-const ARCHER = ['okcu', 'okcu', 'arbalet', 'okcu', 'arbalet', 'okcu', 'okcu', 'okcu', 'arbalet', 'tufekci', 'arbalet', 'arbalet', 'arkebuz', 'arkebuz', 'arkebuz'];
-const BASE_FOE = ['piyade', 'akrit', 'frank', 'kalkanli', 'latin', 'piyade', 'piyade', 'sirppiyade', 'frank', 'frank', 'piyade', 'venedik', 'hirvat', 'hirvat', 'landsknecht'];
+const ARCHER = ['okcu', 'okcu', 'arbalet', 'okcu', 'arbalet', 'okcu', 'okcu', 'okcu', 'arbalet', 'tufekci', 'arbalet', 'arbalet', 'arkebuz', 'arkebuz', 'arkebuz',
+  'muskeci', 'muskeci', 'muskeci', 'muskeci', 'muskeci', 'muskeci', 'okcu'];
+const BASE_FOE = ['piyade', 'akrit', 'frank', 'kalkanli', 'latin', 'piyade', 'piyade', 'sirppiyade', 'frank', 'frank', 'piyade', 'venedik', 'hirvat', 'hirvat', 'landsknecht',
+  'hirvat', 'venedik', 'landsknecht', 'venedik', 'landsknecht', 'rusasker', 'piyade'];
 
 const UPG = [
   { k: 'start', ad: 'Akıncı Ocağı',  base: 45, desc: l => (3 + 2 * l) + ' akıncıyla yola çık' },
@@ -125,9 +143,23 @@ const SEFERLER = [
   { ad: 'Mohaç', yil: '1526', alt: 'Kanuni\'nin Macaristan seferi', zafer: 'MOHAÇ!',
     epilog: '29 Ağustos 1526. Mohaç Ovası\'nda Macar ordusu iki saat içinde dağıldı. Kral kaçarken bataklıkta can verdi; Budin\'in kapıları açıldı.' },
   { ad: 'Budin', yil: '1529–1541', alt: 'Tuna boyunda on beş yıl', zafer: 'BUDİN!',
-    epilog: '29 Ağustos 1541. Mohaç\'tan tam on beş yıl sonra Sultan Süleyman Budin\'e girdi. Budin artık bir eyaletin merkezi; Tuna boyu Türk sancaklarıyla doldu.' }
+    epilog: '29 Ağustos 1541. Mohaç\'tan tam on beş yıl sonra Sultan Süleyman Budin\'e girdi. Budin artık bir eyaletin merkezi; Tuna boyu Türk sancaklarıyla doldu.' },
+  { ad: 'Zigetvar', yil: '1566', alt: 'Kanuni\'nin son seferi', zafer: 'ZİGETVAR!',
+    epilog: '7 Eylül 1566. Zigetvar Kalesi düştü. Sultan Süleyman zaferi göremeden, kuşatmanın son gecesi ordugâhında vefat etti; ölümü günlerce ordudan gizlendi.' },
+  { ad: 'Kıbrıs', yil: '1570–1571', alt: 'Lala Mustafa Paşa\'nın seferi', zafer: 'MAĞUSA!',
+    epilog: '1 Ağustos 1571. Aylarca süren kuşatmadan sonra Mağusa teslim oldu. Kıbrıs adası artık bir Osmanlı eyaleti.' },
+  { ad: 'Haçova', yil: '1596', alt: 'Sultan III. Mehmed\'in seferi', zafer: 'HAÇOVA!',
+    epilog: '26 Ekim 1596. Haçova bataklığında Habsburg ordusu dağıldı. Eğri Kalesi\'nden sonra kazanılan bu meydan savaşı Tuna boyunda dengeyi yeniden kurdu.' },
+  { ad: 'Girit', yil: '1645–1669', alt: 'Kandiye\'nin uzun kuşatması', zafer: 'KANDİYE!',
+    epilog: '6 Eylül 1669. Yirmi dört yıl süren kuşatmanın sonunda Kandiye teslim oldu. Girit adası Osmanlı topraklarına katıldı.' },
+  { ad: 'Uyvar ve Kamaniçe', yil: '1663–1672', alt: 'Köprülüler devri', zafer: 'KAMANİÇE!',
+    epilog: '27 Ağustos 1672. Kayalık bir burnun üstündeki Kamaniçe Kalesi teslim oldu. Uyvar\'dan sonra Lehistan seferi de zaferle bitti; devlet en geniş sınırlarına ulaştı.' },
+  { ad: 'Prut', yil: '1711', alt: 'Baltacı Mehmed Paşa\'nın seferi', zafer: 'PRUT!',
+    epilog: '22 Temmuz 1711. Prut kıyısında kuşatılan Rus ordusu barış istemek zorunda kaldı. Azak geri alındı.' },
+  { ad: 'Malazgirt\'e Dönüş', yil: '1071', alt: 'Her şeyin başladığı ova', zafer: 'MALAZGİRT!', nb: 3,
+    epilog: '26 Ağustos 1071\'de bir avuç akıncıyla başlayan yol, 1071 bölüm sonra yine Malazgirt Ovası\'nda tamamlandı. Asırlar boyu taşınan sancak artık senin elinde, Akıncı Bey.' }
 ];
-const SOON = { ad: 'Zigetvar', alt: 'Yeni seferler pek yakında' };
+const SOON = { ad: 'Yeni Seferler', alt: 'Pek yakında' };
 
 const REGIONS = [
   { ad: 'Fırat Boyları', alt: 'Halep\'ten kuzeye',
@@ -593,7 +625,210 @@ const REGIONS = [
     bosses: ['budinkomutani', 'avusturyakomutani'],
     lines: ['Mohaç\'ın yıl dönümü. Ordu Budin\'in kapısında.',
             'Kale yokuşu dik, surlar kalın. Gediği okla aç.',
-            'Budin alınırsa Tuna boyu yüz elli yıl Türk sancağı taşıyacak.'] }
+            'Budin alınırsa Tuna boyu yüz elli yıl Türk sancağı taşıyacak.'] },
+  /* ---- 16. sefer: Zigetvar ---- */
+  { ad: 'Sefere Çıkış', alt: '1566 · İstanbul\'dan Belgrad\'a',
+    names: ['Davutpaşa Ordugâhı', 'Edirne Konağı', 'Filibe', 'Sofya', 'Niş', 'Belgrad Ordugâhı', 'Zemun Köprüsü', 'Sava Geçişi', 'Tuna Kıyısı', 'Sefer Yolu'],
+    bosses: ['hirvatbani', 'kirasiyerbasi'],
+    lines: ['Yetmiş iki yaşındaki Sultan Süleyman on üçüncü seferine çıktı. Akıncılar yine ordunun önünde.',
+            'Habsburg kürasiyerleri baştan aşağı zırhlı. Okun gücü yetmezse çarpışmaya girme.',
+            'Tüfekçiler uzaktan ateş açar. Menzile girmeden sayılarını erit.'] },
+  { ad: 'Drava Boyu', alt: 'Siklós ve Peçuy',
+    names: ['Ösek Köprüsü', 'Drava Kıyısı', 'Siklós Kalesi', 'Harsány Dağı', 'Peçuy Ovası', 'Peçuy Çarşısı', 'Mohaç Hatırası', 'Baranya Bağları', 'Bataklık Kenarı', 'Zigetvar Yolu'],
+    bosses: ['landsknechtbasi', 'muskecibasi'],
+    lines: ['Drava\'nın kıyısında yol uzun. Ordu kırk yıl önceki Mohaç ovasından geçiyor.',
+            'Peçuy\'un çarşısından geçen ordu bataklıklara yaklaşıyor. Tüfekçilere dikkat.',
+            'Bataklık yaklaşıyor. Hendeklerde köprüyü kaçırma.'] },
+  { ad: 'Zigetvar Bataklıkları', alt: 'Kale gölün ortasında',
+    names: ['Almás Deresi', 'Saz Bataklığı', 'Yeni Şehir', 'Eski Şehir', 'Bent Yıkılıyor', 'Su Çekiliyor', 'Hendek Doluyor', 'Lağım Kazılıyor', 'Top Mevzileri', 'Dış Kale'],
+    bosses: ['kirasiyerbasi', 'hirvatbani'],
+    lines: ['Zigetvar bataklıkların ortasında bir ada gibi. Bentler yıkılınca sular çekiliyor.',
+            'Yeni şehir düştü, sırada eski şehir var.',
+            'Hendekleri doldurmadan surlara ulaşılmaz. Köprüyü bul.'] },
+  { ad: 'Zigetvar Surları', alt: 'Ağustos 1566',
+    names: ['İç Kale Önü', 'Burç Gediği', 'Kale Kapısı', 'Hırvat Muhafızlar', 'Barut Kulesi', 'Gece Hücumu', 'Ateş Yağmuru', 'Surlar Yanıyor', 'Son Burç', 'Kuşatma Sürüyor'],
+    bosses: ['muskecibasi', 'avusturyakomutani'],
+    lines: ['Hırvat komutan iç kaleye çekildi. Surların üstünden tüfekler patlıyor.',
+            'Gece hücumu başladı. Meşalelerin ışığında yolunu bul.',
+            'Sur duvarlarını okla yık, gediği aç.'] },
+  { ad: 'Zigetvar', alt: '7 Eylül 1566',
+    names: ['Son Gece', 'Sultanın Çadırı', 'Sessiz Ordugâh', 'Sabah Hücumu', 'Komutan Çıkıyor', 'Son Çıkış', 'İç Kale Düşüyor', 'Barut Patlıyor', 'Sancak Burçta', 'Zigetvar Fethi'],
+    bosses: ['kirasiyerbasi', 'zigetvarkomutani'],
+    lines: ['Ordugâh sessiz. Sultanın çadırından haber yok, ama hücum emri verildi.',
+            'Kale komutanı son çıkışı yapıyor. Ok yağmurunu kesme.',
+            'Zigetvar düştüğünde ordu yasını tutacak, ama önce zafer.'] },
+  /* ---- 17. sefer: Kıbrıs ---- */
+  { ad: 'Donanma Yolda', alt: '1570 · Akdeniz',
+    names: ['Haliç Tersanesi', 'Çanakkale Boğazı', 'Ege Adaları', 'Rodos Limanı', 'Finike Açıkları', 'Kıbrıs Ufukta', 'Tuzla Kıyısı', 'Karaya Çıkış', 'Tuzla Gölü', 'Ordugâh Kuruluyor'],
+    bosses: ['venedikkaptani', 'stradiotbasi'],
+    lines: ['Donanma ve ordu birlikte Kıbrıs\'a yelken açtı. Tuzla kıyısına çıkılacak.',
+            'Venedik\'in Stradiot süvarileri kıyıyı kolluyor. Hızlı gelirler.',
+            'Kıyıya çıktık. Ordugâhı kurmadan önce öncüleri dağıt.'] },
+  { ad: 'Lefkoşa', alt: 'Eylül 1570',
+    names: ['Lefkoşa Ovası', 'Yeni Surlar', 'On Bir Burç', 'Podocataro Burcu', 'Hendek Başı', 'Top Atışı', 'Burç Gediği', 'Şehir Kapısı', 'Kale İçi', 'Lefkoşa Fethi'],
+    bosses: ['venedikkomutani', 'muskecibasi'],
+    lines: ['Lefkoşa\'nın yepyeni surları on bir burçla çevrili.',
+            'Venedik tüfekçileri burçlarda. Menzile girmeden erit.',
+            'Gedik açıldı. Şehre giren yol bu kapıdan geçiyor.'] },
+  { ad: 'Girne ve Beşparmak', alt: 'Kuzey kıyısı',
+    names: ['Beşparmak Dağları', 'Dağ Geçidi', 'Girne Kalesi', 'Liman Önü', 'Kıyı Yolu', 'Mesarya Ovası', 'Köy Yolları', 'Pınar Başı', 'Ova Konağı', 'Mağusa Yolu'],
+    bosses: ['stradiotbasi', 'cenevizkomutani'],
+    lines: ['Lefkoşa düşünce Girne savaşmadan kapılarını açtı. Ordu doğuya dönüyor.',
+            'Beşparmak\'ın geçitleri dar. Kalabalık ordu sıkışır.',
+            'Mesarya ovası sıcak ve tozlu. Mağusa ufukta.'] },
+  { ad: 'Mağusa Kuşatması', alt: 'Kış 1570–1571',
+    names: ['Mağusa Surları', 'Tersane Burcu', 'Kara Kapısı', 'Martinengo Burcu', 'Lağımlar', 'Hendek Doluyor', 'Top Bataryaları', 'Kış Geçiyor', 'Bahar Hücumu', 'Gedik Açıldı'],
+    bosses: ['muskecibasi', 'venedikkomutani'],
+    lines: ['Mağusa\'nın surları adanın en sağlamları. Kuşatma kışa uzadı.',
+            'Lağımcılar surların altına iniyor. Yukarıdan ok yağdır.',
+            'Bahar geldi, toplar susmuyor. Gedik her gün biraz daha genişliyor.'] },
+  { ad: 'Mağusa', alt: '1 Ağustos 1571',
+    names: ['Son Hücum', 'Ravelin', 'Deniz Kapısı', 'Kale Muhafızları', 'Venedik Sancağı', 'Barut Bitti', 'Teslim Görüşmesi', 'Kapı Açılıyor', 'Liman Bizim', 'Kıbrıs Fethi'],
+    bosses: ['stradiotbasi', 'magusakomutani'],
+    lines: ['Kalede barut da ekmek de bitti. Son direniş başlıyor.',
+            'Venedik sancağı burçta dalgalanıyor. İndirmek sana düşüyor.',
+            'Mağusa düşerse bütün ada bizim.'] },
+  /* ---- 18. sefer: Haçova ---- */
+  { ad: 'Belgrad\'dan Kuzeye', alt: '1596',
+    names: ['Belgrad Ordugâhı', 'Tuna Köprüsü', 'Varadin', 'Segedin Yolu', 'Tisza Kıyısı', 'Solnok', 'Macar Ovası', 'Sınır Hisarları', 'Akıncı Öncüleri', 'Eğri Yolu'],
+    bosses: ['erdelprensi', 'landsknechtbasi'],
+    lines: ['Sultan III. Mehmed ordusunun başında. Hedef, Eğri Kalesi.',
+            'Erdel prensinin süvarileri yolu kesiyor. Okla erken karşıla.',
+            'Tisza\'nın kıyısı düz ve geniş. Kapılarda acele etme.'] },
+  { ad: 'Eğri', alt: 'Ekim 1596',
+    names: ['Eğri Kalesi', 'Burç Önü', 'Top Mevzileri', 'Kale Hendeği', 'Kale Kapısı', 'İç Kale', 'Eğri Teslim', 'Bükk Dağları', 'Orman Yolu', 'Haçova Kenarı'],
+    bosses: ['muskecibasi', 'kirasiyerbasi'],
+    lines: ['Kırk dört yıl önce alınamayan Eğri Kalesi bu kez düşecek.',
+            'Surları yık, hendeği köprüden geç.',
+            'Eğri düştü, ama Habsburg ordusu yardıma geliyor.'] },
+  { ad: 'Haçova Bataklığı', alt: 'Habsburg ordusu geliyor',
+    names: ['Bataklık Yolu', 'Saz Kıyısı', 'Köprü Başı', 'Habsburg Öncüleri', 'Tüfekçi Hattı', 'Top Arabaları', 'Sol Kanat', 'Sağ Kanat', 'Sis İçinde', 'Ordu Saflaşıyor'],
+    bosses: ['landsknechtbasi', 'erdelprensi'],
+    lines: ['Habsburg ve Erdel orduları bataklığın öbür yakasında saf tuttu.',
+            'Sis ovayı kapladı. Kapılara dikkat et.',
+            'Toplar ve tüfekler ateşte. Gülle şeritlerinden çekil.'] },
+  { ad: 'İlk Gün', alt: '24–25 Ekim 1596',
+    names: ['Sabah Çatışması', 'Bataklık Geçidi', 'Ateş Hattı', 'Geri Çekiliş', 'Habsburg Ordugâhı', 'Ganimet Arabaları', 'Ordu Dağıldı Sanılıyor', 'Aşçılar ve Seyisler', 'Karşı Hücum', 'Gece Bekleyişi'],
+    bosses: ['kirasiyerbasi', 'muskecibasi'],
+    lines: ['Düşman ordugâha girdi, savaş bitti sanıp yağmaya daldı.',
+            'Aşçılar ve seyisler ellerindeki baltalarla ordugâhı savunuyor.',
+            'Karşı hücum zamanı. Ganimet arabalarını okla durdur.'] },
+  { ad: 'Haçova', alt: '26 Ekim 1596',
+    names: ['Son Gün', 'Sultanın Sancağı', 'Cığalazade Hücumu', 'Kanatlar Kapanıyor', 'Bataklığa Sürülüyor', 'Kürasiyerler Dağılıyor', 'Habsburg Merkezi', 'Toplar Bırakıldı', 'Ova Bizim', 'Haçova Zaferi'],
+    bosses: ['erdelprensi', 'habsburgkomutani'],
+    lines: ['Cığalazade Sinan Paşa\'nın süvarileri düşmanın arkasından çıktı.',
+            'Habsburg ordusu bataklığa sürülüyor. Kanatları kapat.',
+            'Kürasiyerler dağılırsa ova bizim.'] },
+  /* ---- 19. sefer: Girit ---- */
+  { ad: 'Hanya', alt: '1645',
+    names: ['Donanma Çıkıyor', 'Ege Geçişi', 'Girit Ufukta', 'Kıyıya Çıkış', 'Hanya Surları', 'Liman Kulesi', 'Hanya Fethi', 'Resmo Yolu', 'Resmo Kalesi', 'Kıyı Boyu'],
+    bosses: ['venedikkaptani', 'venedikkomutani'],
+    lines: ['Donanma Girit\'e çıktı. İlk hedef Hanya.',
+            'Venedik Girit\'i dört yüz yıldır elinde tutuyor. Kıyı kaleleri sağlam.',
+            'Hanya alındı. Sırada Resmo var.'] },
+  { ad: 'Girit Dağları', alt: 'İda\'nın eteği',
+    names: ['İda Dağı', 'Zeytinlikler', 'Dağ Köyleri', 'Vadi Yolu', 'Venedik Öncüleri', 'Kayalık Geçit', 'Pınar Başı', 'Ova Konağı', 'Kandiye Ovası', 'Kandiye Önleri'],
+    bosses: ['stradiotbasi', 'muskecibasi'],
+    lines: ['İda Dağı\'nın eteklerinde zeytinlikler. Yollar dar ve kayalık.',
+            'Stradiot süvarileri dağ yollarında pusu kuruyor.',
+            'Kandiye\'nin surları ovanın ucunda yükseliyor.'] },
+  { ad: 'Kandiye Surları', alt: 'Yıllar süren kuşatma',
+    names: ['Martinengo Burcu', 'Pantokrator Burcu', 'Sabionera Burcu', 'Hendek Başı', 'Lağımcılar', 'Karşı Lağım', 'Top Düellosu', 'Kış Mevzisi', 'Venedik Yardımı', 'Surlar Sarsılıyor'],
+    bosses: ['venedikkomutani', 'muskecibasi'],
+    lines: ['Kandiye\'nin burçları birbirini koruyor. Kuşatma yıllardır sürüyor.',
+            'Lağımcılar yerin altında savaşıyor. Sen yukarıda dimdik dur.',
+            'Sur duvarlarını okla yık, gülle şeritlerinden çekil.'] },
+  { ad: 'Avrupa\'dan Yardım', alt: '1669 · Fransız gemileri',
+    names: ['Fransız Çıkarması', 'Gece Baskını', 'Barut Deposu', 'Çıkarma Dağıldı', 'Gemiler Çekiliyor', 'Liman Ablukası', 'Son Yardım', 'Venedik Yalnız', 'Sur Dibi', 'Teslim Yakın'],
+    bosses: ['fransizgeneral', 'venedikkaptani'],
+    lines: ['Fransız gemileri yardım getirdi. Gece çıkarma yaptılar.',
+            'Barut deposu havaya uçunca çıkarma dağıldı. Peşlerini bırakma.',
+            'Venedik yalnız kaldı. Sur dibine yaklaş.'] },
+  { ad: 'Kandiye', alt: '6 Eylül 1669',
+    names: ['Son Hücum', 'Sabionera Gediği', 'İç Hendek', 'Kale Kapısı', 'Teslim Görüşmesi', 'Venedik Çekiliyor', 'Liman Kapısı', 'Şehre Giriş', 'Sancak Burçta', 'Girit Fethi'],
+    bosses: ['fransizgeneral', 'kandiyekomutani'],
+    lines: ['Yirmi dört yıllık kuşatmanın son günleri. Köprülüzade Fazıl Ahmed Paşa surların önünde.',
+            'Kandiye komutanı teslim görüşmesine razı. Önce son burcu al.',
+            'Girit düşerse Ege\'de son büyük Venedik kalesi de bizim.'] },
+  /* ---- 20. sefer: Uyvar ve Kamaniçe ---- */
+  { ad: 'Uyvar Yolu', alt: '1663 · Köprülüzade Fazıl Ahmed Paşa',
+    names: ['Budin Ordugâhı', 'Estergon', 'Tuna Köprüsü', 'Ciğerdelen', 'Nitra Ovası', 'Vag Kıyısı', 'Habsburg Öncüleri', 'Bataklık Yolu', 'Uyvar Önleri', 'Ordugâh Kuruluyor'],
+    bosses: ['landsknechtbasi', 'kirasiyerbasi'],
+    lines: ['Sadrazam ordusunu Tuna\'nın kuzeyine, Uyvar\'a yürütüyor.',
+            'Nitra ovası geniş. Kapılarda dört seçenek var; en iyisini bul.',
+            'Habsburg öncüleri bataklıkta pusu kurmuş.'] },
+  { ad: 'Uyvar', alt: 'Eylül 1663',
+    names: ['Uyvar Kalesi', 'Altı Burç', 'Kale Hendeği', 'Top Bataryaları', 'Lağımlar', 'Gedik', 'Kale Muhafızları', 'Teslim Çağrısı', 'Kale Kapısı', 'Uyvar Fethi'],
+    bosses: ['muskecibasi', 'uyvarkomutani'],
+    lines: ['Uyvar altı burçlu yıldız biçimli bir kale. Her burç ötekini koruyor.',
+            'Toplar surları dövüyor. Gediği okla genişlet.',
+            'Uyvar düşerse Viyana\'nın yolu yeniden açılır.'] },
+  { ad: 'Podolya', alt: '1672 · Lehistan seferi',
+    names: ['Tuna Geçişi', 'İsakçı Köprüsü', 'Turla Kıyısı', 'Hotin Kalesi', 'Podolya Ovası', 'Buğday Tarlaları', 'Kazak Öncüleri', 'Leh Süvarisi', 'Ladijin', 'Kamaniçe Yolu'],
+    bosses: ['kazakatamani', 'lehhatmani'],
+    lines: ['Sultan IV. Mehmed Lehistan seferinde. Kazak atlıları ordunun yanında.',
+            'Podolya\'nın buğday tarlaları uçsuz bucaksız. Ova geniş, yol uzun.',
+            'Kanatlı Leh süvarileri ağır ve hızlı. En güçlü yayını hazırla.'] },
+  { ad: 'Kamaniçe Kuşatması', alt: 'Ağustos 1672',
+    names: ['Smotriç Vadisi', 'Kayalık Burun', 'Yeni Kale', 'Eski Kale', 'Köprü Başı', 'Lağımlar', 'Top Atışı', 'Kale Kulesi', 'Leh Muhafızları', 'Gedik Açıldı'],
+    bosses: ['muskecibasi', 'lehhatmani'],
+    lines: ['Kamaniçe derin bir vadinin kıvrımında, kayalık bir burnun üstünde.',
+            'Tek yol köprüden geçiyor. Köprüyü kaçırma.',
+            'Lağımlar patladı, gedik açıldı.'] },
+  { ad: 'Kamaniçe', alt: '27 Ağustos 1672',
+    names: ['Son Hücum', 'Kanatlı Süvari', 'Kale Kapısı', 'Kale Muhafızları', 'Barut Kulesi', 'Teslim', 'Sancak Burçta', 'Bucaş Yolu', 'Bucaş Antlaşması', 'Kamaniçe Fethi'],
+    bosses: ['lehhatmani', 'kamanicekomutani'],
+    lines: ['Leh muhafızları kalenin son kapısında. Hücum!',
+            'Kanatlı süvarilerin son hücumunu okla karşıla.',
+            'Kamaniçe düşünce Podolya bizim.'] },
+  /* ---- 21. sefer: Prut ---- */
+  { ad: 'Tuna\'dan Kuzeye', alt: '1711',
+    names: ['Edirne Ordugâhı', 'Babadağ', 'İsakçı', 'Tuna Köprüsü', 'Kartal', 'Buğdan Yolu', 'Yaş Yolu', 'Tatar Atlıları', 'Bozkır', 'Prut Kıyısı'],
+    bosses: ['kazakatamani', 'ruskomutani'],
+    lines: ['Rus Çarı ordusuyla Buğdan\'a girdi. Baltacı Mehmed Paşa karşılamaya yürüyor.',
+            'Kırım Tatarlarının atlıları ordunun öncüsü.',
+            'Bozkır geniş, Rus piyadesi kalabalık. Kapılardan büyük çık.'] },
+  { ad: 'Buğdan', alt: 'Rus ordusu Yaş\'ta',
+    names: ['Yaş', 'Buğdan Ormanı', 'Kazak Öncüleri', 'Rus Öncüleri', 'Köy Yolları', 'Prut Vadisi', 'Falçi', 'Bataklık Kıyısı', 'Köprü Kuruluyor', 'Prut\'u Geçiş'],
+    bosses: ['ruskomutani', 'kazakatamani'],
+    lines: ['Rus ordusu Yaş\'ta. Kazak atlıları ormanlardan çıkıyor.',
+            'Prut\'un üstüne köprü kuruldu. Ordu karşıya geçiyor.',
+            'Bataklık kıyısında yol dar. Hendeklerde köprüyü bul.'] },
+  { ad: 'Prut Kıyısı', alt: 'Temmuz 1711',
+    names: ['Stanileşti', 'Rus Ordugâhı', 'Arabalar Diziliyor', 'Tüfekçi Hattı', 'Grenadiyer Hücumu', 'Yeniçeri Hattı', 'Top Bataryaları', 'Kuşatma Kapanıyor', 'Su Yolu Kesildi', 'Rus Ordusu Sıkıştı'],
+    bosses: ['muskecibasi', 'ruskomutani'],
+    lines: ['Rus ordusu nehrin kıvrımında araba tabyası kurdu.',
+            'Grenadiyerler el bombası atar gibi sert gelir. Okla erken karşıla.',
+            'Su yolu kesildi. Kuşatma kapanıyor.'] },
+  { ad: 'Kuşatma', alt: 'Üç gün üç gece',
+    names: ['Gece Ateşi', 'Rus Çıkışı', 'Karşı Hücum', 'Tatar Süvarisi', 'Nehir Kıyısı', 'Barut Azalıyor', 'İkinci Gece', 'Son Çıkış', 'Elçi Geliyor', 'Barış Çadırı'],
+    bosses: ['kazakatamani', 'carmuhafizi'],
+    lines: ['Rus ordusu gece gündüz çıkış deniyor. Hattı tut.',
+            'Çar\'ın muhafızları kuşatmayı yarmak istiyor.',
+            'Barış elçisi geliyor. Ama önce son çıkışı geri püskürt.'] },
+  { ad: 'Prut', alt: '22 Temmuz 1711',
+    names: ['Antlaşma Sabahı', 'Rus Muhafızları', 'Çar\'ın Sancağı', 'Son Hat', 'Ordu Çekiliyor', 'Azak Geri Alındı', 'Dönüş Yolu', 'Tuna Kıyısı', 'Zafer Alayı', 'Prut Zaferi'],
+    bosses: ['ruskomutani', 'carmuhafizi'],
+    lines: ['Çar barış istedi. Azak geri verilecek.',
+            'Rus muhafızları sancaklarıyla çekiliyor. Son hattı dağıt.',
+            'Zafer alayı Tuna\'ya dönüyor.'] },
+  /* ---- 22. sefer: Malazgirt'e Dönüş (21 bölüm) ---- */
+  { ad: 'Akıncı Yolu', alt: 'Asırların hatırası',
+    names: ['Söğüt', 'Bursa', 'Edirne', 'Kosova', 'İstanbul', 'Mohaç', 'Rodos', 'Zigetvar', 'Kandiye', 'Prut'],
+    bosses: ['sonsancak', 'carmuhafizi'],
+    lines: ['Asırlar boyu açılan yol bir kez daha önünde. Her konakta eski bir zaferin hatırası.',
+            'Bütün ordular yeniden karşında: Bizans\'tan Rus\'a, Haçlı\'dan Habsburg\'a.',
+            'Sancak doğuya, her şeyin başladığı ovaya dönüyor.'] },
+  { ad: 'Doğuya Dönüş', alt: 'Fırat\'tan Van\'a',
+    names: ['Halep Kapısı', 'Fırat Geçidi', 'Urfa Ovası', 'Diyarbekir Önleri', 'Ahlat Kümbetleri', 'Van Kalesi Önü', 'Süphan Eteği', 'Murat Kıyısı', 'Muş Ovası', 'Malazgirt Kalesi'],
+    bosses: ['duka', 'varangbasi'],
+    lines: ['Fırat\'ın suyu yine bulanık, yollar yine uzun. Ama artık arkanda koca bir ordu var.',
+            'Ahlat\'ın kümbetleri, Van\'ın kalesi: her şey ilk günkü gibi.',
+            'Malazgirt Kalesi ufukta. Ova seni bekliyor.'] },
+  { ad: 'Malazgirt Ovası', alt: '26 Ağustos 1071', n: 1,
+    names: ['Malazgirt'],
+    bosses: ['imparator', 'malazgirtfinal'],
+    lines: ['Sultan beyaz giydi. Bin yetmiş birinci bölüm: bu ovada her şey başladı, bu ovada tamamlanacak.'] }
 ];
 const BOSSES = {
   kumandan:      { ad: 'Öncü Kumandanı',     tip: 'piyade',    renk: 0xb8323a },
@@ -651,7 +886,24 @@ const BOSSES = {
   topcubasi:     { ad: 'Topçu Başı',           tip: 'arkebuz',   renk: 0x3a3a40 },
   macarkral:     { ad: 'Macar Kralının Sancağı', tip: 'zirhli',  renk: 0xb02030 },
   avusturyakomutani:{ ad: 'Avusturya Kumandanı', tip: 'zirhli',  renk: 0xd8b040 },
-  budinkomutani: { ad: 'Budin Kale Komutanı',  tip: 'landsknecht', renk: 0x1a1a1a }
+  budinkomutani: { ad: 'Budin Kale Komutanı',  tip: 'landsknecht', renk: 0x1a1a1a },
+  zigetvarkomutani:{ ad: 'Zigetvar Kale Komutanı', tip: 'hirvat', renk: 0x8a1a24 },
+  kirasiyerbasi: { ad: 'Kürasiyer Başı',       tip: 'kirasiyer', renk: 0x3a3a40 },
+  muskecibasi:   { ad: 'Tüfekçi Başı',         tip: 'muskeci',   renk: 0x2a3a5a },
+  avusturyakomutani2: { ad: 'Avusturya Kumandanı', tip: 'kirasiyer', renk: 0xd8b040 },
+  stradiotbasi:  { ad: 'Stradiot Başı',        tip: 'stradiot',  renk: 0xa0202a },
+  magusakomutani:{ ad: 'Mağusa Komutanı',      tip: 'venedik',   renk: 0x7a1a24 },
+  erdelprensi:   { ad: 'Erdel Prensi',         tip: 'husar',     renk: 0x2a4a8a },
+  habsburgkomutani:{ ad: 'Habsburg Başkomutanı', tip: 'kirasiyer', renk: 0xe0c040 },
+  fransizgeneral:{ ad: 'Fransız Komutanı',     tip: 'landsknecht', renk: 0x2a3a9a },
+  kandiyekomutani:{ ad: 'Kandiye Komutanı',    tip: 'venedik',   renk: 0xa0202a },
+  uyvarkomutani: { ad: 'Uyvar Komutanı',       tip: 'landsknecht', renk: 0x1a1a1a },
+  kazakatamani:  { ad: 'Kazak Atamanı',        tip: 'kazak',     renk: 0x2a4a8a },
+  lehhatmani:    { ad: 'Leh Hatmanı',          tip: 'kanatlihusar', renk: 0xa02a2a },
+  kamanicekomutani:{ ad: 'Kamaniçe Komutanı',  tip: 'landsknecht', renk: 0xb02030 },
+  ruskomutani:   { ad: 'Rus Generali',         tip: 'rusasker',  renk: 0x2a5a3a },
+  carmuhafizi:   { ad: 'Çar Muhafızı',         tip: 'grenadiyer', renk: 0x2a4a2a },
+  malazgirtfinal:{ ad: 'Bizans İmparatorluk Ordusu', tip: 'katafrakt', renk: 0x6a1b7a }
 };
 const BOSS_TXT = {
   kumandan: 'Bölümün sonunda Öncü Kumandanı bekliyor. Dev gibi; ok yağmuruyla erit.',
@@ -709,7 +961,24 @@ const BOSS_TXT = {
   topcubasi: 'Topçu Başı topların ve arkebüzcülerin başında. Menzile girmeden erit.',
   macarkral: 'Macar Kralının Sancağı ve muhafızları karşında. Mohaç\'ın son hamlesi.',
   avusturyakomutani: 'Avusturya Kumandanı zırhlı süvarisiyle karşında. En güçlü yayını hazırla.',
-  budinkomutani: 'Budin Kale Komutanı son burçta. Budin\'in son hamlesi.'
+  budinkomutani: 'Budin Kale Komutanı son burçta. Budin\'in son hamlesi.',
+  zigetvarkomutani: 'Zigetvar\'ın komutanı muhafızlarıyla son çıkışı yapıyor. Zigetvar\'ın son hamlesi.',
+  kirasiyerbasi: 'Kürasiyer Başı baştan aşağı zırhlı süvarisiyle geliyor. En güçlü yayını hazırla.',
+  muskecibasi: 'Tüfekçi Başı tüfekçilerini sıraya dizdi. Menzile girmeden erit.',
+  avusturyakomutani2: 'Avusturya Kumandanı kürasiyerlerinin başında.',
+  stradiotbasi: 'Stradiot Başı hafif süvarisiyle rüzgâr gibi geliyor. Okla erken karşıla.',
+  magusakomutani: 'Mağusa Komutanı son burçta. Kıbrıs\'ın son hamlesi.',
+  erdelprensi: 'Erdel Prensi süvarilerinin başında. Hızlı gelir, okla karşıla.',
+  habsburgkomutani: 'Habsburg Başkomutanı kürasiyerleriyle merkezde. Haçova\'nın son hamlesi.',
+  fransizgeneral: 'Fransız Komutanı çıkarma askerlerinin başında. Kalabalığı erit.',
+  kandiyekomutani: 'Kandiye Komutanı son burçta. Girit\'in son hamlesi.',
+  uyvarkomutani: 'Uyvar Komutanı kalesinin kapısında. Askerlerini dağıt.',
+  kazakatamani: 'Kazak Atamanı atlılarıyla bozkırdan çıktı. Hızlı gelir.',
+  lehhatmani: 'Leh Hatmanı kanatlı süvarilerinin başında. Ağır ve hızlı; en güçlü yayını hazırla.',
+  kamanicekomutani: 'Kamaniçe Komutanı son kapıda. Lehistan seferinin son hamlesi.',
+  ruskomutani: 'Rus Generali piyadesini sıraya dizdi. Önce kalabalığı erit.',
+  carmuhafizi: 'Çar Muhafızı grenadiyerleriyle karşında. Prut\'un son hamlesi.',
+  malazgirtfinal: 'Bizans İmparatorluk Ordusu bütün görkemiyle karşında. Bin yetmiş bir bölümün son hamlesi, Akıncı Bey.'
 };
 const UNLOCK_TXT = {
   2: 'Kaidelerin üstündeki sayıyı okla sıfırla: yeni yay, tuğ ya da Altın Alp senin olur.',
@@ -745,12 +1014,44 @@ const UNLOCK_TXT = {
   650: 'Yeni sefer: Mohaç! Macar hafif süvarileri sahada.',
   652: 'Toplar ateşte! Yolda kırmızı şerit beliren hattan gülle yuvarlanır: şeritten çekil.',
   655: 'Alman paralı askerleri sahada: uzun mızraklı, kalabalık ve sert.',
-  700: 'Yeni sefer: Budin! Tuna boyunda son hesaplaşma.'
+  700: 'Yeni sefer: Budin! Tuna boyunda son hesaplaşma.',
+  750: 'Yeni sefer: Zigetvar! Habsburg kürasiyerleri ve tüfekçileri sahada.',
+  800: 'Yeni sefer: Kıbrıs! Venedik\'in Stradiot süvarileri sahada, kaidelerde Köprülü Yayı.',
+  850: 'Yeni sefer: Haçova! Habsburg ve Erdel orduları karşında.',
+  900: 'Yeni sefer: Girit! Venedik\'in en sağlam kalesi Kandiye\'ye yürüyoruz.',
+  950: 'Yeni sefer: Uyvar ve Kamaniçe! Kaidelerde Alparslan Yayı.',
+  970: 'Lehistan seferi başladı: Kazak süvarileri sahada.',
+  973: 'Kanatlı süvariler sahada: Lehistan\'ın en ağır atlıları.',
+  1000: 'Yeni sefer: Prut! Rus piyadeleri ve Kazak atlıları sahada.',
+  1005: 'Rus grenadiyerleri sahada: ağır ve inatçı piyade.',
+  1050: 'Son sefer: Malazgirt\'e Dönüş! Asırlar boyu karşılaştığın bütün ordular yeniden karşında.'
+};
+const LANE_TXT = {
+  300: 'Yol genişledi: artık üç şerit var. Kapılarda üç seçenek çıkar; hepsine bak, en iyisini seç.',
+  700: 'Yol dört şeride genişledi. Dev ordular için geniş meydan, ama kapılarda dört seçenek var.'
 };
 
 /* ---------- bölüm üretimi ---------- */
-const NL = SEFERLER.length * 50;
-const seferOf = i => Math.floor(i / 50);
+/* seferler 5 bölgeden (nb), bölgeler 10 bölümden (n) oluşur; son sefer daha kısa olabilir */
+const SEF0 = [], SEFR0 = [], REG0 = [], LV_SF = [], LV_REG = [];
+(function () {
+  let lv = 0, rg = 0;
+  SEFERLER.forEach((S, s) => {
+    SEF0.push(lv); SEFR0.push(rg);
+    for (let q = 0; q < (S.nb || 5); q++, rg++) { REG0.push(lv); const n = REGIONS[rg].n || 10; for (let k = 0; k < n; k++, lv++) { LV_SF.push(s); LV_REG.push(rg); } }
+    S.n = lv - SEF0[s]; S.nb = S.nb || 5;
+  });
+})();
+const NL = LV_SF.length;
+const seferOf = i => LV_SF[clamp(i, 0, NL - 1)];
+const regionOf = i => LV_REG[clamp(i, 0, NL - 1)];
+const regLen = r => REGIONS[r].n || 10;
+// bölümün yeri: sefer içi sıra (li), bölge içi sıra (k)
+function levelPos(i) { const sf = seferOf(i), reg = regionOf(i); return { sf, reg, li: i - SEF0[sf], slen: SEFERLER[sf].n, k: i - REG0[reg], rlen: regLen(reg), lastReg: reg === SEFR0[sf] + SEFERLER[sf].nb - 1 }; }
+// yol: 1–300 iki şerit, 301–700 üç şerit, 701+ dört şerit; hız 1923. bölüme kadar %50 artar
+const lanesOf = i => i < 300 ? 2 : i < 700 ? 3 : 4;
+const roadOf = i => [0, 0, 6, 8.6, 11.2][lanesOf(i)];
+const speedOf = i => SPEED * (1 + 0.5 * Math.min(1, i / 1922));
 // bölüme kadar beklenen Ordugâh seviyesi (düşman dayanıklılığı buna göre büyür)
 function nominalUp(i) {
   const u = i < 50 ? i * 0.2 : Math.min(upCap(seferOf(i)), i < 500 ? 10 + (i - 50) * 0.09 : 50.5 + (i - 500) * 0.03);
@@ -758,8 +1059,8 @@ function nominalUp(i) {
 }
 
 function foeTypeAt(i, r) {
-  const pool = POOLS[seferOf(i)].filter(p => p[1] <= i).map(p => p[0]);
-  const base = BASE_FOE[seferOf(i)], li = i % 50;
+  const pool = POOLS[seferOf(i)].filter(p => p[1] <= i && (p[2] === undefined || i < p[2])).map(p => p[0]);
+  const base = BASE_FOE[seferOf(i)], li = levelPos(i).li;
   const w = pool.map(id => id === base ? Math.max(0.35, 1 - li / 60) : FOES[id].atli ? 0.8 : 0.9);
   let s = w.reduce((a, b) => a + b, 0), x = r * s;
   for (let k = 0; k < pool.length; k++) { x -= w[k]; if (x <= 0) return pool[k]; }
@@ -769,8 +1070,9 @@ function foeTypeAt(i, r) {
 function buildLevel(i, f) {
   if (f === undefined) f = CAL[i] || 1;
   const rnd = rng(i * 7919 + 71);
-  const sf = seferOf(i), li = i % 50;
-  const d = li / 49, reg = Math.floor(i / 10), k = i % 10, R = REGIONS[reg];
+  const P = levelPos(i), sf = P.sf, li = P.li, reg = P.reg, k = P.k, R = REGIONS[reg];
+  const d = Math.min(1, li / Math.max(1, Math.min(49, P.slen - 1)));
+  const lanes = lanesOf(i), road = roadOf(i), S = road / ROAD;   // S: yatay ölçek
   const st = stats(nominalUp(i));
   const base = (0.78 + 0.62 * d) * Math.min(1, f);   // yapılar (blok, kaide, barikat)
   const hard = base * f;                  // düşmanlar: her bölüm bir tık daha zor (f: araclar/kalibre.js)
@@ -798,12 +1100,12 @@ function buildLevel(i, f) {
     }
     last = type;
     if (type === 'blocks') {
-      const side = rnd() < 0.5 ? -1 : 1, x = side * 3.6, n = 5 + Math.floor(rnd() * 4);
+      const side = rnd() < 0.5 ? -1 : 1, x = side * 3.6 * S, n = 5 + Math.floor(rnd() * 4);
       const reward = Math.max(1, Math.round(e * 0.06)), hp = Math.max(1, Math.round(dps() * 0.3 * base));
       for (let j = 0; j < n; j++) objs.push({ t: 'block', x, z: z - j * 2.3, hp, reward });
       e += n * reward * 0.8;
       if (s > 1 && rnd() < 0.5 && i >= 2) {
-        const pd = pedestalFor(i, rnd, t, h, e, dps(), base); pd.x = -side * 2.6; pd.z = z - 8; objs.push(pd);
+        const pd = pedestalFor(i, rnd, t, h, e, dps(), base); pd.x = -side * 2.6 * S; pd.z = z - 8; objs.push(pd);
         ({ t, h, e } = applyPed(pd, t, h, e));
       }
     } else if (type === 'gate') {
@@ -814,55 +1116,63 @@ function buildLevel(i, f) {
       if (i >= 14 && badLeft > 0 && lastGateBad === false && s > 2 && r < 0.3) { pair = [minus, div]; badLeft--; } // ikisi de kötü
       else if (r < 0.62) pair = [rnd() < 0.5 ? plus : mul, rnd() < 0.5 ? minus : div];
       else pair = [plus, mul];
-      lastGateBad = pair[0].op === '-' || pair[0].op === '/' ? (pair[1].op === '-' || pair[1].op === '/') : false;
+      const allBad = pair.every(o => o.op === '-' || o.op === '/');
+      lastGateBad = allBad;
       if (rnd() < 0.5) pair.reverse();
-      gates.push({ z, L: pair[0], R: pair[1] });
-      e = Math.min(MAX_COUNT, Math.max(applyOp(e, pair[0]), applyOp(e, pair[1])));
+      for (let j = 2; j < lanes; j++) {      // geniş yolda fazladan kapılar: çoğu tuzak, biri bazen küçük bir artı
+        const r2 = rnd(); let o;
+        if (allBad || r2 < 0.45) o = rnd() < 0.5 ? { op: '-', v: Math.max(2, Math.round(e * (0.15 + 0.25 * rnd()))) } : div;
+        else if (r2 < 0.8) o = { op: '+', v: Math.round(2 + e * (0.1 + 0.15 * rnd())) };
+        else o = mul;
+        pair.splice(Math.floor(rnd() * (pair.length + 1)), 0, o);
+      }
+      gates.push({ z, opts: pair });
+      e = Math.min(MAX_COUNT, Math.max(...pair.map(o => applyOp(e, o))));
     } else if (type === 'squad') {
       const ft = foeTypeAt(i, rnd()), F = FOES[ft];
       const n = Math.max(3, Math.round(e * 2.2 * hard / F.p));
-      objs.push({ t: 'squad', ft, x: (rnd() - 0.5) * 5, z, n, hm: hm() });
+      objs.push({ t: 'squad', ft, x: (rnd() - 0.5) * 5 * S, z, n, hm: hm() });
       const shot = dps() * 2.5 / F.hp / hm();
       e = Math.max(1, e - Math.max(0, n - shot) * F.p * (1 - st.zirh));
     } else if (type === 'pedestal') {
-      const pd = pedestalFor(i, rnd, t, h, e, dps(), base); pd.x = (rnd() < 0.5 ? -1 : 1) * (2 + rnd() * 1.4); pd.z = z; objs.push(pd);
+      const pd = pedestalFor(i, rnd, t, h, e, dps(), base); pd.x = (rnd() < 0.5 ? -1 : 1) * (2 + rnd() * 1.4) * S; pd.z = z; objs.push(pd);
       ({ t, h, e } = applyPed(pd, t, h, e));
     } else if (type === 'barricade') {
       const side = rnd() < 0.5 ? -1 : 1;
-      objs.push({ t: 'barricade', x: side * 3, z, w: 6, hp: Math.round(dps() * 0.7 * base) });
+      objs.push({ t: 'barricade', x: side * 3 * S, z, w: 6 * S, hp: Math.round(dps() * 0.7 * base * S) });
       if (i >= 24 && rnd() < 0.6) {                                       // öbür yanda küçük kol
         const ft = foeTypeAt(i, rnd()), F = FOES[ft], n = Math.max(3, Math.round(e * 1.2 * hard / F.p));
-        objs.push({ t: 'squad', ft, x: -side * 3, z: z - 3, n, hm: hm() });
+        objs.push({ t: 'squad', ft, x: -side * 3 * S, z: z - 3, n, hm: hm() });
         e = Math.max(1, e - Math.max(0, n - dps() * 1.5 / F.hp / hm()) * F.p * (1 - st.zirh));
       }
     } else if (type === 'archers') {
       const n = Math.max(4, Math.round(e * 1.4 * hard));
-      objs.push({ t: 'squad', ft: archer, x: (rnd() < 0.5 ? -1 : 1) * (1.5 + rnd() * 2.5), z: z - 6, n, hm: hm() });
+      objs.push({ t: 'squad', ft: archer, x: (rnd() < 0.5 ? -1 : 1) * (1.5 + rnd() * 2.5) * S, z: z - 6, n, hm: hm() });
       e = Math.max(1, e - n * 0.22 * (1 - st.zirh));
     } else if (type === 'kervan') {        // ganimet arabası: okla durdurulursa akçe verir
       const coins = Math.round((20 + 2 * i) * (0.8 + rnd() * 0.5));
-      objs.push({ t: 'kervan', x: (rnd() - 0.5) * 6, z: z - 4, hp: Math.max(4, Math.round(dps() * 0.9 * base)), coins, ph: rnd() * 6 });
+      objs.push({ t: 'kervan', x: (rnd() - 0.5) * 6 * S, amp: 3.2 * S, lim: road - 1.8, z: z - 4, hp: Math.max(4, Math.round(dps() * 0.9 * base)), coins, ph: rnd() * 6 });
     } else if (type === 'tas') {           // mancınık taşları: kırmızı halkadan uzak dur
       const n = 2 + Math.floor(rnd() * 2);
-      for (let j = 0; j < n; j++) objs.push({ t: 'tas', x: (rnd() < 0.5 ? -1 : 1) * (2.5 + rnd() * 2), z: z - j * 7, r: 2.1 });
+      for (let j = 0; j < n; j++) objs.push({ t: 'tas', x: (rnd() < 0.5 ? -1 : 1) * (2.5 + rnd() * 2) * S, z: z - j * 7, r: 2.1 });
       e *= 0.96;
     } else if (type === 'hendek') {        // hendek: yalnız köprüden kayıpsız geçilir
-      const bw = 1.7 + rnd() * 0.6, bx = (rnd() - 0.5) * 6;
+      const bw = 1.7 + rnd() * 0.6, bx = (rnd() - 0.5) * 6 * S;
       objs.push({ t: 'hendek', x: 0, z, bx, bw });
       const R = crowdR(e) * 0.85 + 0.3;
       e = Math.max(1, e * (1 - 0.5 * Math.max(0, R - bw) / (2 * R)));
     } else if (type === 'tabur') {         // araba tabyası: tüfekçili araba duvarı
       const side = rnd() < 0.5 ? -1 : 1;
-      objs.push({ t: 'barricade', araba: 1, x: side * 3, z, w: 6, hp: Math.round(dps() * 0.9 * base) });
+      objs.push({ t: 'barricade', araba: 1, x: side * 3 * S, z, w: 6 * S, hp: Math.round(dps() * 0.9 * base * S) });
       const n = Math.max(4, Math.round(e * 1.1 * hard));
-      objs.push({ t: 'squad', ft: 'tufekci', x: side * 3, z: z - 3, n, hm: hm() });
+      objs.push({ t: 'squad', ft: sf >= 15 ? 'muskeci' : 'tufekci', x: side * 3 * S, z: z - 3, n, hm: hm() });
       e = Math.max(1, e - n * 0.25 * (1 - st.zirh));
     } else if (type === 'sur') {           // sur duvarı: yolu baştan başa kapatır, okla yıkılır
-      objs.push({ t: 'sur', x: 0, z, w: ROAD * 2, hp: Math.round(dps() * 1.6 * base) });
+      objs.push({ t: 'sur', x: 0, z, w: road * 2, hp: Math.round(dps() * 1.6 * base) });
       e *= 0.97;
     } else if (type === 'gulle') {         // top güllesi: kırmızı şeritten yuvarlanır
       const n = 2 + Math.floor(rnd() * 2);
-      for (let j = 0; j < n; j++) objs.push({ t: 'gulle', x: (rnd() < 0.5 ? -1 : 1) * (1 + rnd() * 3.5), z: z - j * 9, r: 0.9 });
+      for (let j = 0; j < n; j++) objs.push({ t: 'gulle', x: (rnd() < 0.5 ? -1 : 1) * (1 + rnd() * 3.5) * S, z: z - j * 9, r: 0.9 });
       e *= 0.95;
     } else if (type === 'gecit') {         // dar geçit: kalabalık ordu sıkışır
       const w = 3.3 + rnd() * 0.8;
@@ -873,12 +1183,13 @@ function buildLevel(i, f) {
   }
   let boss = null, finalSquad;
   const bossZ = z - 6;
-  if (k === 4 || k === 9) {
-    const id = R.bosses[k === 4 ? 0 : 1], tip = BOSSES[id].tip;
+  const midBoss = k === 4 && P.rlen > 5, endBoss = k === P.rlen - 1;
+  if (midBoss || endBoss) {
+    const id = R.bosses[midBoss ? 0 : 1], tip = BOSSES[id].tip;
     const guard = Math.max(4, Math.round(e * 1.8 * hard / FOES[tip].p));
     objs.push({ t: 'squad', ft: tip, x: 0, z: bossZ + 14, n: guard, hm: hm() });
     e = Math.max(1, e - Math.max(0, guard - dps() * 2 / FOES[tip].hp / hm()) * FOES[tip].p * (1 - st.zirh));
-    const hp = Math.round(dps() * (3 + 3 * d) * hard * (k === 9 && reg % 5 === 4 ? 1.4 : 1));
+    const hp = Math.round(dps() * (3 + 3 * d) * hard * (i === NL - 1 ? 2 : endBoss && P.lastReg ? 1.4 : 1));
     boss = { t: 'boss', id, x: 0, z: bossZ, hp, kill: Math.max(3, e * 0.07 * hard) };
     objs.push(boss);
   } else {
@@ -887,11 +1198,12 @@ function buildLevel(i, f) {
     finalSquad = { t: 'squad', ft, x: 0, z: bossZ, n, final: true, hm: hm() };
     objs.push(finalSquad);
   }
-  let brief = UNLOCK_TXT[i] || '';
+  let brief = (LANE_TXT[i] ? LANE_TXT[i] + ' ' : '') + (UNLOCK_TXT[i] || '');
   if (boss) brief = (brief ? brief + ' ' : '') + BOSS_TXT[boss.id];
   if (!brief) brief = R.lines[k % 3];
+  if (i === 1070) brief = 'Bin yetmiş birinci bölüm. Her şeyin başladığı ova: Malazgirt. Asırlar boyu büyüttüğün ordunla Bizans İmparatorluk Ordusu\'nun karşısındasın. Sancağı yüksek tut, Akıncı Bey.';
   if (i === 0) brief = 'Sultan Alparslan\'ın akıncıları yola çıktı. Parmağını kaydır, artı kapılardan geç, mavi blokları okla kır. Sondaki Bizans öncülerini dağıt.';
-  return { i, sf, reg, k, ad: R.names[k], brief, objs, gates, endZ: bossZ, len: -bossZ + 40, boss: !!boss, reward: 60 + 10 * i };
+  return { i, sf, reg, k, ad: R.names[k], brief, objs, gates, endZ: bossZ, len: -bossZ + 40, boss: !!boss, reward: 60 + 10 * i, lanes, road, speed: speedOf(i) };
 }
 const GECIT_LOSS = 0.3, GULLE_V = 13;
 const gecitCap = w => Math.floor(Math.pow((w - 0.3) / (0.34 * 0.85), 2));   // bu genişliğe sığan akıncı sayısı
@@ -912,7 +1224,7 @@ function applyOp(c, o) {
 }
 
 /* Kalibrasyon katsayıları: araclar/kalibre.js üretir */
-const CAL = [0.798,0.857,0.878,0.838,0.814,0.823,0.812,0.983,1.057,0.848,0.825,1.156,0.939,5.141,5.761,2.234,5.531,2.211,4.783,2.032,0.825,0.576,0.834,0.767,0.573,0.673,0.57,0.623,0.459,0.796,0.741,0.589,0.662,0.525,3.75,0.577,0.584,0.681,0.623,0.671,0.506,0.732,0.451,0.581,0.573,0.418,0.42,0.777,0.406,0.601,0.69,0.675,0.979,0.788,0.58,3.358,0.873,1.498,0.703,0.811,1.602,0.73,0.704,0.505,0.579,0.641,0.778,0.578,0.717,0.588,0.825,0.787,0.555,0.567,0.469,0.693,0.797,0.781,0.957,0.593,0.605,0.662,0.622,0.556,0.695,0.281,0.632,0.67,0.62,0.615,0.824,0.413,0.439,0.46,0.557,0.363,0.533,0.393,0.543,0.352,1.036,0.554,0.902,0.689,0.727,0.814,0.623,0.874,1.02,0.814,0.574,0.847,0.92,1.922,0.579,0.881,0.933,0.572,0.703,0.69,0.905,0.761,0.544,0.567,0.811,0.708,0.781,0.763,0.635,0.598,0.278,0.69,0.517,0.459,0.524,0.624,0.462,0.367,0.715,0.382,0.441,0.321,0.548,0.495,0.467,0.359,0.469,0.785,0.535,0.58,0.666,0.986,0.881,0.765,0.446,1.27,0.633,0.834,0.802,0.662,1.502,0.595,0.68,0.747,0.658,0.609,0.665,0.445,0.572,0.571,0.703,0.504,0.746,0.673,0.527,0.449,0.686,0.713,0.685,0.707,0.798,0.779,0.433,0.504,0.53,0.505,0.574,0.392,0.721,0.588,0.502,0.515,0.464,0.537,0.637,0.641,0.279,0.701,0.506,0.371,0.631,0.626,0.906,0.671,0.504,0.56,0.758,0.637,0.537,0.642,0.781,0.533,0.831,0.646,0.627,0.703,0.661,0.568,0.822,0.692,0.415,0.714,0.581,0.746,0.642,0.808,0.645,0.626,0.576,0.576,0.311,0.359,0.474,0.667,0.64,0.681,0.608,0.49,0.669,0.476,0.472,0.586,0.571,0.531,0.636,0.571,0.378,0.542,0.52,0.279,1.061,0.671,1.203,0.763,0.647,0.735,0.412,0.554,0.483,0.626,0.751,0.564,0.694,0.499,0.799,0.711,0.691,0.616,0.868,0.474,0.496,0.881,0.37,0.47,0.654,0.576,0.531,0.694,0.568,0.69,0.578,0.619,0.651,0.499,0.758,0.647,0.458,0.228,0.541,0.481,0.476,0.498,0.541,0.507,0.53,0.592,0.639,0.374,0.592,0.615,0.555,0.631,0.704,0.654,0.533,0.619,0.696,0.553,0.703,0.627,1.277,0.46,0.491,0.562,0.531,0.712,0.625,0.387,0.569,0.606,0.88,0.528,0.627,0.548,0.554,0.611,0.47,0.701,0.568,0.64,0.506,0.507,0.556,0.596,0.492,0.593,0.356,0.516,0.443,0.599,0.48,0.333,0.446,0.779,0.656,0.326,0.561,0.657,0.519,0.672,0.796,0.796,1.095,0.581,0.594,0.583,0.579,0.862,0.491,0.604,0.816,0.866,0.588,0.465,0.935,0.517,0.921,0.547,0.47,0.531,0.684,0.582,0.659,0.9,0.399,0.506,0.561,0.897,0.526,0.462,0.76,0.386,0.631,0.707,0.485,0.4,0.526,0.575,0.63,0.416,0.483,0.307,0.718,0.415,0.598,0.369,0.768,0.421,0.535,0.554,0.55,0.598,0.793,0.711,0.62,0.966,0.796,0.535,0.802,0.744,0.667,0.818,0.717,0.585,0.831,0.525,0.833,0.641,0.644,0.491,0.527,0.575,0.675,0.531,0.359,0.761,0.537,0.597,0.545,0.664,0.461,0.485,0.576,0.601,0.496,0.729,0.522,0.643,0.726,0.521,0.619,0.467,0.548,0.583,0.38,0.688,0.483,0.398,0.484,0.461,0.49,0.67,0.92,0.652,0.809,0.838,0.656,0.883,0.823,0.611,0.581,0.528,0.724,0.646,0.549,0.52,0.421,0.74,0.69,0.631,0.406,0.583,0.41,0.409,0.722,0.571,0.698,0.526,0.504,0.326,0.414,0.638,0.577,0.405,0.364,0.41,0.499,0.701,0.637,0.325,0.393,0.406,0.326,0.647,0.566,0.297,0.497,0.584,0.376,0.41,0.548,0.79,0.675,0.695,0.808,0.802,0.47,0.643,0.705,0.402,0.551,0.445,0.745,0.531,0.641,0.593,0.622,0.719,0.477,0.591,0.642,0.797,0.735,0.54,0.345,0.537,0.542,0.539,0.597,0.587,0.547,0.497,0.732,0.709,0.419,0.328,0.787,0.454,0.475,0.65,0.509,0.812,0.49,0.702,0.327,0.463,0.587,0.765,0.81,0.533,0.619,0.9,0.661,0.39,0.575,0.661,0.524,0.528,0.699,0.57,0.865,0.577,0.684,0.552,0.703,0.459,0.533,0.908,0.683,0.673,0.77,0.475,0.492,0.669,0.598,0.525,0.658,0.723,0.465,0.646,0.798,0.441,0.28,0.409,0.431,0.383,0.24,0.881,0.399,0.393,0.64,0.605,0.52,0.52,0.537,0.434,0.639,0.44,0.54,0.388,0.545,0.785,0.699,0.551,0.496,0.69,0.717,0.968,0.952,0.615,1.012,0.696,0.425,0.889,0.669,0.545,0.496,0.443,0.412,0.415,0.386,0.651,0.641,0.521,0.62,0.853,0.744,0.465,0.708,0.505,0.534,0.379,0.458,0.58,0.499,0.578,0.472,0.456,0.52,0.491,0.454,0.26,0.527,0.328,0.276,0.665,0.458,0.532,0.452,0.454,0.704,0.914,0.598,0.38,0.845,0.756,0.911,1.037,0.476,0.7,0.846,0.473,0.606,0.544,0.462,0.726,1.012,0.867,0.439,0.354,0.347,0.409,0.667,0.71,0.604,0.527,1.027,0.483,0.746,0.713,0.856,0.587,0.665,0.539,0.492,0.222,0.875,0.686,0.375,0.404,0.836,0.498,0.502,0.584,0.529,0.698,0.748,0.597,0.382,0.528,0.494,0.702,0.527,0.383,0.948,0.547,0.627,0.907,0.36,0.697,0.85,0.474,0.421,0.524,0.718,0.647,1.025,0.604,0.298,0.533,0.579,0.779,0.449,0.705,0.81,0.651,0.4,0.669,0.623,0.612,0.574,0.729,0.522,0.845,0.56,0.539,0.449,0.445,0.35,0.587,0.637,0.678,0.5,0.607,0.449,0.522,0.311,0.482,0.59,0.584];
+const CAL = [0.798,0.857,0.878,0.838,0.814,0.823,0.812,0.983,1.057,0.848,0.825,1.156,0.939,5.141,5.761,2.234,5.531,2.211,4.783,2.032,0.825,0.576,0.834,0.767,0.573,0.673,0.57,0.623,0.459,0.796,0.741,0.589,0.662,0.525,3.75,0.577,0.584,0.681,0.623,0.671,0.506,0.732,0.451,0.581,0.573,0.418,0.42,0.777,0.406,0.601,0.69,0.675,0.979,0.788,0.58,3.358,0.873,1.498,0.703,0.811,1.602,0.73,0.704,0.505,0.579,0.641,0.778,0.578,0.717,0.588,0.825,0.787,0.555,0.567,0.469,0.693,0.797,0.781,0.957,0.593,0.605,0.662,0.622,0.556,0.695,0.281,0.632,0.67,0.62,0.615,0.824,0.413,0.439,0.46,0.557,0.363,0.533,0.393,0.543,0.352,1.036,0.554,0.902,0.689,0.727,0.814,0.623,0.874,1.02,0.814,0.574,0.847,0.92,1.922,0.579,0.881,0.933,0.572,0.703,0.69,0.905,0.761,0.544,0.567,0.811,0.708,0.781,0.763,0.635,0.598,0.278,0.69,0.517,0.459,0.524,0.624,0.462,0.367,0.715,0.382,0.441,0.321,0.548,0.495,0.467,0.359,0.469,0.785,0.535,0.58,0.666,0.986,0.881,0.765,0.446,1.27,0.633,0.834,0.802,0.662,1.502,0.595,0.68,0.747,0.658,0.609,0.665,0.445,0.572,0.571,0.703,0.504,0.746,0.673,0.527,0.449,0.686,0.713,0.685,0.707,0.798,0.779,0.433,0.504,0.53,0.505,0.574,0.392,0.721,0.588,0.502,0.515,0.464,0.537,0.637,0.641,0.279,0.701,0.506,0.371,0.631,0.626,0.906,0.671,0.504,0.56,0.758,0.637,0.537,0.642,0.781,0.533,0.831,0.646,0.627,0.703,0.661,0.568,0.822,0.692,0.415,0.714,0.581,0.746,0.642,0.808,0.645,0.626,0.576,0.576,0.311,0.359,0.474,0.667,0.64,0.681,0.608,0.49,0.669,0.476,0.472,0.586,0.571,0.531,0.636,0.571,0.378,0.542,0.52,0.279,1.061,0.671,1.203,0.763,0.647,0.735,0.412,0.554,0.483,0.626,0.751,0.564,0.694,0.499,0.799,0.711,0.691,0.616,0.868,0.474,0.496,0.881,0.37,0.47,0.654,0.576,0.531,0.694,0.568,0.69,0.578,0.619,0.651,0.499,0.758,0.647,0.458,0.228,0.541,0.481,0.476,0.498,0.541,0.507,0.53,0.592,0.639,0.374,0.592,0.615,0.555,0.631,0.704,0.654,0.533,0.619,0.696,0.553,0.703,0.627,1.277,0.46,0.491,0.562,0.531,0.712,0.625,0.387,0.569,0.606,0.88,0.528,0.627,0.548,0.554,0.611,0.47,0.701,0.568,0.64,0.506,0.507,0.556,0.596,0.492,0.593,0.356,0.516,0.443,0.599,0.48,0.333,0.446,0.779,0.656,0.326,0.561,0.657,0.519,0.672,0.796,0.796,1.095,0.581,0.594,0.583,0.579,0.862,0.491,0.604,0.816,0.866,0.588,0.465,0.935,0.517,0.921,0.547,0.47,0.531,0.684,0.582,0.659,0.9,0.399,0.506,0.561,0.897,0.526,0.462,0.76,0.386,0.631,0.707,0.485,0.4,0.526,0.575,0.63,0.416,0.483,0.307,0.718,0.415,0.598,0.369,0.768,0.421,0.535,0.554,0.55,0.598,0.793,0.711,0.62,0.966,0.796,0.535,0.802,0.744,0.667,0.818,0.717,0.585,0.831,0.525,0.833,0.641,0.644,0.491,0.527,0.575,0.675,0.531,0.359,0.761,0.537,0.597,0.545,0.664,0.461,0.485,0.576,0.601,0.496,0.729,0.522,0.643,0.726,0.521,0.619,0.467,0.548,0.583,0.38,0.688,0.483,0.398,0.484,0.461,0.49,0.67,0.92,0.652,0.809,0.838,0.656,0.883,0.823,0.611,0.581,0.528,0.724,0.646,0.549,0.52,0.421,0.74,0.69,0.631,0.406,0.583,0.41,0.409,0.722,0.571,0.698,0.526,0.504,0.326,0.414,0.638,0.577,0.405,0.364,0.41,0.499,0.701,0.637,0.325,0.393,0.406,0.326,0.647,0.566,0.297,0.497,0.584,0.376,0.41,0.548,0.79,0.675,0.695,0.808,0.802,0.47,0.643,0.705,0.402,0.551,0.445,0.745,0.531,0.641,0.593,0.622,0.719,0.477,0.591,0.642,0.797,0.735,0.54,0.345,0.537,0.542,0.539,0.597,0.587,0.547,0.497,0.732,0.709,0.419,0.328,0.787,0.454,0.475,0.65,0.509,0.812,0.49,0.702,0.327,0.463,0.587,0.765,0.81,0.533,0.619,0.9,0.661,0.39,0.575,0.661,0.524,0.528,0.699,0.57,0.865,0.577,0.684,0.552,0.703,0.459,0.533,0.908,0.683,0.673,0.77,0.475,0.492,0.669,0.598,0.525,0.658,0.723,0.465,0.646,0.798,0.441,0.28,0.409,0.431,0.383,0.24,0.881,0.399,0.393,0.64,0.605,0.52,0.52,0.537,0.434,0.639,0.44,0.54,0.388,0.545,0.785,0.699,0.551,0.496,0.69,0.717,0.968,0.952,0.615,1.012,0.696,0.425,0.889,0.669,0.545,0.496,0.443,0.412,0.415,0.386,0.651,0.641,0.521,0.62,0.853,0.744,0.465,0.708,0.505,0.534,0.379,0.458,0.58,0.499,0.578,0.472,0.456,0.52,0.491,0.454,0.26,0.527,0.328,0.276,0.665,0.458,0.532,0.452,0.454,0.704,0.914,0.598,0.38,0.845,0.756,0.911,1.037,0.476,0.7,0.846,0.473,0.606,0.544,0.462,0.726,1.012,0.867,0.439,0.354,0.347,0.409,0.667,0.71,0.604,0.527,1.027,0.483,0.746,0.713,0.856,0.587,0.665,0.539,0.492,0.222,0.875,0.686,0.375,0.404,0.836,0.498,0.502,0.584,0.529,0.698,0.748,0.597,0.382,0.528,0.494,0.702,0.527,0.383,0.948,0.547,0.627,0.907,0.36,0.697,0.85,0.474,0.421,0.524,0.718,0.647,1.025,0.604,0.298,0.533,0.579,0.779,0.449,0.705,0.81,0.651,0.4,0.669,0.623,0.612,0.574,0.729,0.522,0.845,0.56,0.539,0.449,0.445,0.35,0.587,0.637,0.678,0.5,0.607,0.449,0.522,0.311,0.482,0.59,0.584,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45,0.45];
 const LEVELS = [];
 for (let i = 0; i < NL; i++) LEVELS.push(buildLevel(i));
 
@@ -921,7 +1233,8 @@ function newGame(i, up) {
   const L = LEVELS[i], st = stats(up), r = rng(i * 31 + 7);
   const G = {
     L, st, rnd: r, i, state: 'play', t: 0, z: 0, x: 0, tx: 0, count: st.start, peak: st.start, heroes: 0, heroHp: 0, wTier: 0,
-    fireT: 0, arrows: [], foeShots: [], objs: [], gates: [], events: [], kills: 0, loot: 0, clash: false, march: 0, Rx: 0.5, Rz: 0.5
+    fireT: 0, arrows: [], foeShots: [], objs: [], gates: [], events: [], kills: 0, loot: 0, lost: 0, clash: false, march: 0, Rx: 0.5, Rz: 0.5,
+    road: L.road, lanes: L.lanes, speed: L.speed
   };
   for (const o of L.objs) {
     const c = Object.assign({}, o, { alive: true, max: o.hp || o.n, acc: 0, flash: 0 });
@@ -943,7 +1256,7 @@ function ev(G, type, data) { G.events.push(Object.assign({ type }, data)); }
 
 function loseSoldiers(G, k) {
   if (k <= 0) return;
-  const c = Math.min(k, G.count); G.count -= c; k -= c;
+  const c = Math.min(k, G.count); G.count -= c; k -= c; G.lost += c;
   if (k > 0 && G.heroes > 0) { G.heroHp -= k; G.heroes = Math.max(0, Math.ceil(G.heroHp / HERO_HP)); if (G.heroes === 0) G.heroHp = 0; }
 }
 function foeDims(o) {
@@ -999,10 +1312,10 @@ function step(G, dt) {
     if (G.march > 1.8) G.state = 'win';
     return;
   }
-  let speed = SPEED; if (G.clash) speed = 2.2; if (G.atBoss) speed = 0.4;
+  let speed = G.speed; if (G.clash) speed = 2.2; if (G.atBoss) speed = 0.4;
   G.clash = false; G.atBoss = false;
   G.z -= speed * dt;
-  let lim = Math.max(0, ROAD - 0.4 - G.Rx);
+  let lim = Math.max(0, G.road - 0.4 - G.Rx);
   for (const o of G.objs) if (o.t === 'gecit' && G.z - G.Rz * 0.5 <= o.z && G.z + G.Rz * 0.5 >= o.z - o.len) lim = Math.min(lim, Math.max(0, o.w - 0.3 - Math.min(G.Rx, o.w - 0.6)));
   G.tx = clamp(G.tx, -lim, lim);
   G.x += (G.tx - G.x) * Math.min(1, dt * 10); G.x = clamp(G.x, -lim, lim);
@@ -1029,7 +1342,7 @@ function step(G, dt) {
     o.flash = Math.max(0, o.flash - dt);
     const dist = G.z - o.z;
     if (o.t === 'kervan') {
-      o.x = clamp(o.x0 + Math.sin(G.t * 0.9 + o.ph) * 3.2, -4.2, 4.2);
+      o.x = clamp(o.x0 + Math.sin(G.t * 0.9 + o.ph) * (o.amp || 3.2), -(o.lim || 4.2), o.lim || 4.2);
       if (Math.abs(o.x - G.x) < o.w / 2 + G.Rx * 0.7 && Math.abs(o.z - G.z) < o.d / 2 + G.Rz * 0.7) killObj(G, o, false);
       continue;
     }
@@ -1116,8 +1429,8 @@ function step(G, dt) {
   // kapılar
   for (const g of G.gates) {
     if (g.passed || G.z - G.Rz * 0.3 > g.z) continue;
-    g.passed = true; g.side = G.x < 0 ? -1 : 1;
-    const o = g.side < 0 ? g.L : g.R, before = G.count;
+    g.passed = true; g.idx = laneAt(G, G.x, g.opts.length);
+    const o = g.opts[g.idx], before = G.count;
     G.count = applyOp(G.count, o);
     ev(G, 'gate', { g, d: G.count - before, x: G.x, z: G.z });
   }
@@ -1127,6 +1440,9 @@ function step(G, dt) {
   if (last && !last.alive) { G.state = 'march'; G.march = 0; ev(G, 'win', {}); }
 }
 
+// x konumundan kapı sırası ve kapının orta noktası
+function laneAt(G, x, n) { return clamp(Math.floor((x + G.road) / (2 * G.road / n)), 0, n - 1); }
+function laneX(G, idx, n) { return -G.road + (idx + 0.5) * 2 * G.road / n; }
 function progress(G) { return clamp(G.z / G.L.endZ, 0, 1); }
 function starsOf(G) { const r = G.count / Math.max(1, G.peak); return r >= 0.45 ? 3 : r >= 0.2 ? 2 : 1; }
 function rewardOf(G, win, firstClear) {
@@ -1136,6 +1452,6 @@ function rewardOf(G, win, firstClear) {
   return Math.min(Math.round(L.reward * 0.3), 4 + Math.floor(G.kills / 6)) + loot;
 }
 
-const API = { buildLevel, CAL, ROAD, WEAPONS, FOES, UPG, UPMAX, upCap, upCost, stats, REGIONS, SEFERLER, SOON, NL, seferOf, BOSSES, LEVELS, newGame, step, progress, starsOf, rewardOf, applyOp, crowdR, gecitCap, HERO_POW, MAX_HERO };
+const API = { buildLevel, CAL, ROAD, levelPos, regionOf, regLen, SEF0, SEFR0, REG0, lanesOf, roadOf, speedOf, laneAt, laneX, WEAPONS, FOES, UPG, UPMAX, upCap, upCost, stats, REGIONS, SEFERLER, SOON, NL, seferOf, BOSSES, LEVELS, newGame, step, progress, starsOf, rewardOf, applyOp, crowdR, gecitCap, HERO_POW, MAX_HERO };
 if (typeof module !== 'undefined' && module.exports) module.exports = API; else root.MANTIK = API;
 })(typeof window !== 'undefined' ? window : globalThis);

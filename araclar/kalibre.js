@@ -1,6 +1,6 @@
 // Her bölümün zorluk katsayısını (CAL) ayarlar. Ölçüt: "ortalama" oyuncuların (ara sıra hata yapan botlar)
 // ilk denemede kazanma oranı. Eğri testere dişi: her bölge içinde zorlaşır, yeni sefer biraz nefes aldırır,
-// genel çizgi 1. bölümde ~%95'ten 200. bölümde ~%25'e iner; 201–500 arası %56'dan %20'ye; 501–750 arası %48'den %18'e.
+// 1.4 eğrisi: target() içinde; yol genişliği ve hız mantik.js'te (lanesOf, speedOf).
 // Oyuncu kazandığı akçenin %85'ini Ordugâh'a harcar, sefer tavanını aşamaz.
 // Çalıştır: node araclar/kalibre.js [başlangıç bölümü, 1'den]   (≈10 dakika)
 const fs = require('fs'), path = require('path');
@@ -10,20 +10,19 @@ const { bot } = require('./bot.js');
 
 const NL = M.NL;
 function target(i) {
-  const k = i % 10, li = i % 50;
-  let t = i < 200 ? 0.95 - 0.62 * Math.pow(i / 199, 0.65) - 0.08 * (k / 9)
-        : i < 500 ? 0.50 - 0.22 * ((i - 200) / 299) - 0.08 * (k / 9)    // 201–500: her sefer nefesle başlar, yavaşça sertleşir
-                  : 0.42 - 0.16 * ((i - 500) / 249) - 0.08 * (k / 9);   // 501–750: yeni çağ biraz nefes aldırır, %48'den %18'e
-  if (li < 3) t += 0.06;                       // yeni sefer: ilk bölümler nefes aldırır
+  const P = M.levelPos(i), kk = P.k / Math.max(1, P.rlen - 1);
+  // 1.4: daha zor eğri. İlk 15 bölüm rahat, 100. bölümde %41, 500'de %26, 1071'de %22 (bölge içinde %8 daha sert)
+  let t = 0.30 + 0.62 * Math.exp(-i / 60) - 0.08 * (i / 1070) - 0.08 * kk;
+  if (P.li < 3) t += 0.06;                       // yeni sefer: ilk bölümler nefes aldırır
   return Math.min(0.97, Math.max(0.15, t));
 }
-const SEEDS = 24;
+const SEEDS = 16;
 function rng(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 const ACEMI = s => ({ r: rng(s), wrong: 0.3, jit: 2.0, delay: 0.3 });   // ortalama oyuncu
 function game(i, f, up, o) {
   M.LEVELS[i] = M.buildLevel(i, f);
   const G = M.newGame(i, up); let n = 0;
-  while (G.state === 'play' && n < 30 * 300) { bot(G, o); M.step(G, 1 / 30); n++; }
+  while (G.state === 'play' && n < 30 * 400) { bot(G, o); M.step(G, 1 / 30); n++; }
   return G;
 }
 function winRate(i, f, up) {
@@ -52,7 +51,7 @@ for (let i = 0; i < to; i++) {
   if (i >= from) {
     const tg = target(i);
     let lo = Math.log(0.2), hi = Math.log(6);
-    for (let k = 0; k < 12; k++) { const mid = (lo + hi) / 2; if (winRate(i, Math.exp(mid), up) >= tg) lo = mid; else hi = mid; }
+    for (let k = 0; k < 10; k++) { const mid = (lo + hi) / 2; if (winRate(i, Math.exp(mid), up) >= tg) lo = mid; else hi = mid; }
     out[i] = +Math.exp(lo).toFixed(3);
     process.stdout.write(`B${i + 1}:${out[i]}(%${Math.round(100 * winRate(i, out[i], up))}/%${Math.round(100 * tg)}) `);
     if ((i + 1) % 10 === 0) {
