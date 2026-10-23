@@ -1,6 +1,6 @@
-Dev güncelleme: 500 bölüm, 10 sefer!
-• 6 yeni sefer: Selçuklu'nun Zirvesi (Antalya, Sinop, Alanya, Suğdak), Uç Beylikleri (Koyunhisar 1302), Rumeli'ye Geçiş (Bursa, Gelibolu, Edirne), Kosova 1389, Niğbolu 1396, Varna 1444
-• 30 yeni bölge, 20 yeni dev
-• Yeni düşmanlar: Latin, Alan, Katalan, Sırp, Macar birlikleri, araba tabyası tüfekçileri
-• Yeni mekanikler: hendek ve köprü, araba tabyası
-• 3 yeni yay, Ordugâh'ta 55 seviye
+Dev güncelleme: 750 bölüm, 15 sefer!
+• 5 yeni sefer: İstanbul'un Fethi 1453, Fatih'in Seferleri (Mora, Trabzon, Bosna, Otranto), Belgrad ve Rodos 1521–1522, Mohaç 1526, Budin 1541
+• 25 yeni bölge, 19 yeni dev
+• Yeni düşmanlar: Ceneviz, Venedik, Hırvat ve Alman birlikleri, arkebüzcü, Rodos Şövalyesi, Macar süvarileri
+• Yeni mekanikler: yolu kesen sur duvarları ve top gülleleri
+• 2 yeni yay: Fatih Yayı ve Kanuni Yayı, Ordugâh'ta 60 seviye

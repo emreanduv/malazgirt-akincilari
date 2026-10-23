@@ -22,10 +22,10 @@ const which = process.argv[2] || 'hepsi';
   if (which === 'hepsi' || which === 'ekran') {
     // [ad, adres, bekleme(ms)]
     const scenes = [
-      ['01-sefer', '/www/index.html?kare=7&ileri=34', 3500],
+      ['01-sefer', '/www/index.html?kare=7&ileri=130', 3500],
       ['02-dev', '/www/index.html?kare=19&ileri=40', 4000],
-      ['03-hacli-krali', '/www/index.html?kare=449&ileri=40', 4000],
-      ['04-harita', '/www/index.html?kare=480&ekran=levels&bolge=44', 2500],
+      ['03-fetih', '/www/index.html?kare=549&ileri=40', 4000],
+      ['04-harita', '/www/index.html?kare=740&ekran=levels&bolge=52', 2500],
       ['05-menu', '/www/index.html?kare=0&ekran=menu', 3000]
     ];
     const devices = [

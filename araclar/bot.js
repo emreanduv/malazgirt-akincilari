@@ -20,12 +20,15 @@ function botCore(G, o) {
   // 1b) Mancınık halkası yaklaşıyorsa halkadan uzaklaş
   const tas = G.objs.find(o => o.alive && o.t === 'tas' && G.z - o.z < 14 && G.z - o.z > -1);
   if (tas && Math.abs(G.x - tas.x) < tas.r + G.Rx * 0.35 + 0.4) { const gap = tas.r + G.Rx * 0.35 + 0.7; G.tx = tas.x > 0 ? tas.x - gap : tas.x + gap; return; }
+  // 1b2) Gülle şeridindeysen çekil
+  const gl = G.objs.find(o => o.alive && !o.done && o.t === 'gulle' && o.warn && o.z < G.z && Math.abs(G.x - o.x) < o.r + G.Rx * 0.5 + 0.4);
+  if (gl) { const gap = gl.r + G.Rx * 0.5 + 0.8; let tx = gl.x > G.x ? gl.x - gap : gl.x + gap; if (Math.abs(tx) > 5) tx = gl.x > 0 ? gl.x - gap : gl.x + gap; G.tx = tx; return; }
   // 1c) Hendek yaklaşıyorsa köprüye hizalan
   const hd = G.objs.find(o => o.alive && o.t === 'hendek' && G.z - o.z < 16 && G.z - o.z > -1);
   if (hd) { G.tx = hd.bx; return; }
   // 2) Önündeki yapıya: eritebiliyorsa hizalan, eritemiyorsa kaç
   const dps = (G.count + G.heroes * M.HERO_POW) * G.st.dmg * M.WEAPONS[G.wTier].m * G.st.rate;
-  const ahead = G.objs.filter(o => o.alive && o.t !== 'tas' && o.t !== 'gecit' && o.t !== 'kervan' && o.t !== 'hendek' && o.z < G.z && G.z - o.z < 30).sort((a, b) => b.z - a.z);
+  const ahead = G.objs.filter(o => o.alive && o.t !== 'tas' && o.t !== 'gecit' && o.t !== 'kervan' && o.t !== 'hendek' && o.t !== 'gulle' && o.t !== 'sur' && o.z < G.z && G.z - o.z < 30).sort((a, b) => b.z - a.z);
   const wall = ahead.find(o => (o.t === 'barricade' || o.t === 'pedestal') && G.z - o.z < 14 && o.hp / Math.max(1, dps * 0.5) > (G.z - o.z) / 9);
   if (wall) { G.tx = wall.x > 0 ? -6 : 6; return; }
   for (const o of ahead) {

@@ -1,6 +1,6 @@
 // Her bölümün zorluk katsayısını (CAL) ayarlar. Ölçüt: "ortalama" oyuncuların (ara sıra hata yapan botlar)
 // ilk denemede kazanma oranı. Eğri testere dişi: her bölge içinde zorlaşır, yeni sefer biraz nefes aldırır,
-// genel çizgi 1. bölümde ~%95'ten 200. bölümde ~%25'e iner; 201–500 arası %56'dan %20'ye.
+// genel çizgi 1. bölümde ~%95'ten 200. bölümde ~%25'e iner; 201–500 arası %56'dan %20'ye; 501–750 arası %48'den %18'e.
 // Oyuncu kazandığı akçenin %85'ini Ordugâh'a harcar, sefer tavanını aşamaz.
 // Çalıştır: node araclar/kalibre.js [başlangıç bölümü, 1'den]   (≈10 dakika)
 const fs = require('fs'), path = require('path');
@@ -12,7 +12,8 @@ const NL = M.NL;
 function target(i) {
   const k = i % 10, li = i % 50;
   let t = i < 200 ? 0.95 - 0.62 * Math.pow(i / 199, 0.65) - 0.08 * (k / 9)
-                  : 0.50 - 0.22 * ((i - 200) / 299) - 0.08 * (k / 9);   // 201–500: her sefer nefesle başlar, yavaşça sertleşir
+        : i < 500 ? 0.50 - 0.22 * ((i - 200) / 299) - 0.08 * (k / 9)    // 201–500: her sefer nefesle başlar, yavaşça sertleşir
+                  : 0.42 - 0.16 * ((i - 500) / 249) - 0.08 * (k / 9);   // 501–750: yeni çağ biraz nefes aldırır, %48'den %18'e
   if (li < 3) t += 0.06;                       // yeni sefer: ilk bölümler nefes aldırır
   return Math.min(0.97, Math.max(0.15, t));
 }

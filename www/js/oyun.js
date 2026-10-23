@@ -11,8 +11,8 @@ const NL = M.NL, NSF = M.SEFERLER.length;
 const SKEY = 'malazgirt-akincilari-v1';
 let S = { coins: 0, unlocked: 1, stars: [], up: { start: 0, dmg: 0, rate: 0, zirh: 0 }, sound: true, seen: 0 };
 try { const s = JSON.parse(localStorage.getItem(SKEY)); if (s && typeof s === 'object') { S = Object.assign(S, s); S.up = Object.assign({ start: 0, dmg: 0, rate: 0, zirh: 0 }, s.up || {}); } } catch (e) {}
-// 1.0 → 1.1 göçü: Malazgirt'i bitirmiş oyuncu 2. seferi açık bulsun
-if (S.stars[49] && S.unlocked < 51) S.unlocked = 51;
+// sürüm göçü: önceki sürümün son bölümünü bitirmiş oyuncu yeni seferi açık bulsun
+for (let i = S.stars.length - 1; i >= 0; i--) if (S.stars[i]) { if (S.unlocked < i + 2) S.unlocked = Math.min(NL, i + 2); break; }
 function persist() { try { localStorage.setItem(SKEY, JSON.stringify(S)); } catch (e) {} }
 const totalStars = () => S.stars.reduce((a, b) => a + (b || 0), 0);
 const fmt = n => n >= 10000 ? (n / 1000).toFixed(n >= 100000 ? 0 : 1).replace('.', ',') + 'B' : String(Math.max(0, Math.ceil(n)));
@@ -145,7 +145,37 @@ const THEMES = [
   { sky: 0xe8d8b8, ground: 0xc0a070, hill: [0xb08a58, 0xbc9662, 0xa47e4e, 0xc49e6a], mt: 0x8a7462, bush: 0x9a6a2a, sun: 0xffe8c4, hemiG: 0x8a6440, forest: 0.6 },
   { sky: 0xd2e6ee, ground: 0xc4be8c, hill: [0xa8b07a, 0xb4b884, 0x9aa46c, 0xbebe8e], mt: 0x8a919a, bush: 0x5f7a42, sun: 0xfff6ea, hemiG: 0x6a7a62, lake: 0x2a70a8, cliff: 0.4 },
   { sky: 0xd4e2ea, ground: 0xb8b47e, hill: [0x9ea46c, 0xaaae78, 0x929a62, 0xb2b482], mt: 0x868c92, bush: 0x5a7040, sun: 0xfff4e8, hemiG: 0x687058, lake: 0x2a6aa0 },
-  { sky: 0xeeb08a, ground: 0xc29a6a, hill: [0xb08a5c, 0xba9466, 0xa48052, 0xc29c6e], mt: 0x86665a, bush: 0x6a5e36, sun: 0xffcc98, hemiG: 0x84563c, lake: 0x2a6098 }
+  { sky: 0xeeb08a, ground: 0xc29a6a, hill: [0xb08a5c, 0xba9466, 0xa48052, 0xc29c6e], mt: 0x86665a, bush: 0x6a5e36, sun: 0xffcc98, hemiG: 0x84563c, lake: 0x2a6098 },
+  // 11. sefer: Boğazkesen, Şahi Toplar, Kara Surları, Haliç, Son Hücum
+  { sky: 0xd4e8f0, ground: 0xa8b47e, hill: [0x8aa26a, 0x98ac74, 0x7e9660, 0xa4b27e], mt: 0x84909a, bush: 0x4f7040, sun: 0xfff6ea, hemiG: 0x627a5a, lake: 0x2a78b8, forest: 0.5 },
+  { sky: 0xe6e0c8, ground: 0xbcb07a, hill: [0xaaa06a, 0xb6aa74, 0x9e9460, 0xbeb27e], mt: 0x948a7a, bush: 0x6a7240, sun: 0xfff2dc, hemiG: 0x787048, sur: 0.6 },
+  { sky: 0xe2d8c4, ground: 0xb8a67a, hill: [0xa8966a, 0xb2a074, 0x9c8a60, 0xbaa87e], mt: 0x8e8478, bush: 0x6a6a40, sun: 0xfff0dc, hemiG: 0x76684a, sur: 1 },
+  { sky: 0xd2e4ee, ground: 0xb0b07e, hill: [0x94a06c, 0xa2aa76, 0x889462, 0xaab082], mt: 0x868e96, bush: 0x56703e, sun: 0xfff4e8, hemiG: 0x667058, lake: 0x2a6aa8, sur: 0.7 },
+  { sky: 0xf2c08e, ground: 0xc8a46a, hill: [0xb8945a, 0xc29e64, 0xac8852, 0xcaa66e], mt: 0x907060, bush: 0x76683a, sun: 0xffd2a0, hemiG: 0x8a5c3e, sur: 1 },
+  // 12. sefer: Semendire, Mora, Trabzon, Bosna, Eğriboz ve Otranto
+  { sky: 0xd6e4e8, ground: 0xa4ae7a, hill: [0x8a9c66, 0x98a872, 0x7e905c, 0xa2ac7c], mt: 0x84888a, bush: 0x56703e, sun: 0xfff4e8, hemiG: 0x667058, lake: 0x4a8ab0 },
+  { sky: 0xe4e8e0, ground: 0xc4b07a, hill: [0xb49c66, 0xbea670, 0xa8905c, 0xc6ae7a], mt: 0x9a8a78, bush: 0x6a7a3a, sun: 0xfff2dc, hemiG: 0x7a6e48, mtN: 44, cliff: 0.8 },
+  { sky: 0xd0dcd8, ground: 0x84a462, hill: [0x648a4a, 0x729654, 0x588042, 0x7e9e5a], mt: 0x667468, bush: 0x34602e, sun: 0xfff0e0, hemiG: 0x4a6440, lake: 0x2a5a80, forest: 1.2, mtN: 48 },
+  { sky: 0xd4e0dc, ground: 0x8aa666, hill: [0x6a8e4e, 0x789a58, 0x5e8446, 0x84a260], mt: 0x6e7a70, bush: 0x3a6230, sun: 0xfff2e2, hemiG: 0x4e6842, forest: 1, river: 0x4a8aa8, cliff: 0.5 },
+  { sky: 0xd8ecf4, ground: 0xd0bc88, hill: [0xb8a670, 0xc4b07a, 0xac9a66, 0xccb886], mt: 0x9a948a, bush: 0x5f7a3e, sun: 0xfff6ea, hemiG: 0x7a7a5a, lake: 0x2a8ac4 },
+  // 13. sefer: Sava Kıyısı, Belgrad, Ege Yolu, Rodos Surları, Rodos
+  { sky: 0xd6e4e0, ground: 0x9cae72, hill: [0x7e9a5c, 0x8ca666, 0x728e52, 0x96aa6e], mt: 0x7a8278, bush: 0x46683a, sun: 0xfff4e4, hemiG: 0x5a7048, river: 0x4d8cb0, forest: 0.5 },
+  { sky: 0xe0dcc8, ground: 0xb4a87a, hill: [0xa29a6c, 0xae9f74, 0x968c60, 0xb4a87e], mt: 0x8a8478, bush: 0x626a40, sun: 0xfff0dc, hemiG: 0x726a4c, river: 0x4a86a8, sur: 0.6 },
+  { sky: 0xd4ecf6, ground: 0xd4be88, hill: [0xbaa46e, 0xc6b078, 0xae9864, 0xcebc84], mt: 0x9e9688, bush: 0x6a7a3e, sun: 0xfff6ea, hemiG: 0x7e7a5a, lake: 0x2a90cc, cliff: 0.4 },
+  { sky: 0xdcecf2, ground: 0xc8b484, hill: [0xb29c6c, 0xbea676, 0xa69062, 0xc4ac80], mt: 0x948a7e, bush: 0x667a3e, sun: 0xfff4e6, hemiG: 0x7a7258, lake: 0x2a88c4, sur: 1 },
+  { sky: 0xe8c8a8, ground: 0xc0a478, hill: [0xae9068, 0xb89a70, 0xa28660, 0xc0a27a], mt: 0x8c7464, bush: 0x6a6a3a, sun: 0xffe0c0, hemiG: 0x806448, lake: 0x2a70a8, sur: 0.8 },
+  // 14. sefer: Tuna Boyunca, Drava Köprüsü, Macar Ordugâhı, Mohaç Ovası, Mohaç
+  { sky: 0xd6e4e8, ground: 0xa8b07c, hill: [0x8e9e68, 0x9caa74, 0x82925e, 0xa6ae7e], mt: 0x84888a, bush: 0x56703e, sun: 0xfff4e8, hemiG: 0x667058, lake: 0x4a8ab0, forest: 0.4 },
+  { sky: 0xd4e0d4, ground: 0x8ea66a, hill: [0x6e8e52, 0x7c9a5c, 0x62844a, 0x88a264], mt: 0x6e7a6e, bush: 0x3e6634, sun: 0xfff2e2, hemiG: 0x50683e, river: 0x4a86a0, forest: 0.8 },
+  { sky: 0xece2bc, ground: 0xc8b676, hill: [0xb8a666, 0xc4b070, 0xac9a5e, 0xccb87a], mt: 0x9c8e70, bush: 0x787a40, sun: 0xfff0d0, hemiG: 0x847446 },
+  { sky: 0xeee4c0, ground: 0xb8b474, hill: [0xa4a466, 0xb0ae70, 0x98985e, 0xb8b47a], mt: 0x908c70, bush: 0x667a3c, sun: 0xfff2d6, hemiG: 0x7a7646, river: 0x5a8a90 },
+  { sky: 0xf0b88e, ground: 0xc4a068, hill: [0xb48e58, 0xbe9862, 0xa88450, 0xc6a06c], mt: 0x8c6a58, bush: 0x6e6438, sun: 0xffd0a0, hemiG: 0x86583c, river: 0x4a7088 },
+  // 15. sefer: Viyana Yolu (güz), Güns, Slavonya, Peşte, Budin
+  { sky: 0xe6d6b8, ground: 0xb89c6a, hill: [0xa88a5a, 0xb49464, 0x9c7e52, 0xbc9a6c], mt: 0x8a7462, bush: 0x9a6a2a, sun: 0xffe6c0, hemiG: 0x8a6440, forest: 0.7 },
+  { sky: 0xd8e2e4, ground: 0x96a26c, hill: [0x7a8c58, 0x889862, 0x6e8050, 0x929e6a], mt: 0x7a8088, bush: 0x46603a, sun: 0xfff2e4, hemiG: 0x5a6a4a, mtN: 46, forest: 0.9, cliff: 0.4 },
+  { sky: 0xd6e2d6, ground: 0x8aa466, hill: [0x6a8c4e, 0x789858, 0x5e8246, 0x84a060], mt: 0x6c786e, bush: 0x3a6230, sun: 0xfff2e2, hemiG: 0x4e6842, forest: 1.1, river: 0x4a88a8 },
+  { sky: 0xe2e0cc, ground: 0xb8ae7c, hill: [0xa69e6c, 0xb2a876, 0x9a9262, 0xbaae80], mt: 0x8e887a, bush: 0x626c40, sun: 0xfff2de, hemiG: 0x746c4c, river: 0x4a86b0 },
+  { sky: 0xf2c494, ground: 0xc8a66c, hill: [0xb8965c, 0xc2a066, 0xac8a54, 0xcaa870], mt: 0x92725e, bush: 0x76683a, sun: 0xffd4a4, hemiG: 0x8a5e40, river: 0x4a7aa0, sur: 0.8 }
 ];
 
 /* geometri yardımcıları: renkli parçaları tek geometriye birleştir (az çizim çağrısı) */
@@ -306,9 +336,18 @@ const latinG = batiPiyadeG({ tunik: 0x8a2a2a, kalkan: 0xd8b040, arma: 0x8a2a2a, 
 const katalanG = batiPiyadeG({ tunik: 0xd8a020, zirh: 0x7a7a80, kalkan: 0xd8a020, arma: 0xb02020 });
 const sirpPiyadeG = batiPiyadeG({ tunik: 0xb02a2a, kalkan: 0xa02a2a, arma: 0xe8e2d2, mig: 0x8a949e });
 const tufekciG = aticiG({ tunik: 0x5a4a3a, silah: 'tufek' });
+const cenevizG = batiPiyadeG({ tunik: 0xe8e2d2, zirh: 0x7a7a80, kalkan: 0xb02a3a, arma: 0xe8e2d2, mig: 0x7a7a80 });
+const venedikG = batiPiyadeG({ tunik: 0xa0202a, kalkan: 0xd8b040, arma: 0xa0202a, sapka: 1, mig: 0x5a1a1a });
+const arkebuzG = aticiG({ tunik: 0x3a4a6a, silah: 'tufek' });
+const hirvatG = batiPiyadeG({ tunik: 0xb02030, zirh: 0x9aa3ad, kalkan: 0xe8e2d2, arma: 0xb02030 });
+const rodosG = batiPiyadeG({ tunik: 0x8a1a24, zirh: 0xaab3bb, kalkan: 0x8a1a24, arma: 0xe8e2d2, mig: 0xaab3bb });
+const landsknechtG = batiPiyadeG({ tunik: 0xd8b040, zirh: 0x2a2a2a, kalkan: 0x2a2a2a, arma: 0xd8b040, sapka: 1, mig: 0xb02030 });
+const zirhliG = agirAtliG({ ortu: 0x9aa3ad, tunik: 0x2a7a3a, kalkan: 0xb02030, arma: 0xe8e2d2 });
+const husarG = hafifAtliG({ at: 0x5a3a20, tunik: 0x2a6a3a, kalkan: 0xb02030, mig: 0xc8a040 });
 const FOE_GEO = { piyade: piyadeG(), okcu: okcuG, katafrakt: katafraktG, varang: varangG, akrit: akritG, frank: frankG, arbalet: arbaletG, sovalye: sovalyeG, kalkanli: kalkanliG,
-  latin: latinG, alan: alanG, katalan: katalanG, sirppiyade: sirpPiyadeG, sirpsovalye: sirpSovalyeG, macar: macarG, tufekci: tufekciG };
-const ATLI_GEO = { katafrakt: katafraktG, akrit: akritG, sovalye: sovalyeG, alan: alanG, sirpsovalye: sirpSovalyeG, macar: macarG };
+  latin: latinG, alan: alanG, katalan: katalanG, sirppiyade: sirpPiyadeG, sirpsovalye: sirpSovalyeG, macar: macarG, tufekci: tufekciG,
+  ceneviz: cenevizG, venedik: venedikG, arkebuz: arkebuzG, hirvat: hirvatG, rodos: rodosG, landsknecht: landsknechtG, zirhli: zirhliG, husar: husarG };
+const ATLI_GEO = { katafrakt: katafraktG, akrit: akritG, sovalye: sovalyeG, alan: alanG, sirpsovalye: sirpSovalyeG, macar: macarG, zirhli: zirhliG, husar: husarG };
 
 const armyMat = new THREE.MeshLambertMaterial({ vertexColors: true });
 const goldMat = new THREE.MeshPhongMaterial({ color: 0xe8b33a, specular: 0xfff2b0, shininess: 90, emissive: 0x3d2800 });
@@ -371,7 +410,9 @@ function enemyFlag(bg, fg, kind) {
 const flagTex = flagTexture('#1fa3a8', '#f0b232');
 const ENEMY_FLAG = [enemyFlag('#8e1f2a', '#e7c56a'), enemyFlag('#6a1b5a', '#e7c56a'), enemyFlag('#2c4f8f', '#ece6d6', 'parti'), enemyFlag('#7a1b2a', '#e7c56a'),
   enemyFlag('#8a2a2a', '#d8b040', 'parti'), enemyFlag('#8e1f2a', '#e7c56a'), enemyFlag('#5a1b4a', '#e7c56a'), enemyFlag('#a02a2a', '#ece6d6', 'serit'),
-  enemyFlag('#2c4f8f', '#ece6d6', 'parti'), enemyFlag('#b02030', '#ece6d6', 'serit')];
+  enemyFlag('#2c4f8f', '#ece6d6', 'parti'), enemyFlag('#b02030', '#ece6d6', 'serit'),
+  enemyFlag('#7a1b2a', '#e7c56a'), enemyFlag('#2a4a8a', '#e7c56a', 'parti'), enemyFlag('#a01a24', '#ece6d6', 'serit'),
+  enemyFlag('#2a6a3a', '#ece6d6', 'serit'), enemyFlag('#e0c040', '#1a1a1a', 'parti')];
 
 /* ================= DÜNYA ================= */
 const world = new THREE.Group(); scene.add(world);
@@ -412,6 +453,14 @@ function buildWorld(ti) {
     const rockM = new THREE.MeshLambertMaterial({ color: T.mt });
     for (let i = 0; i < 70 * T.cliff; i++) { const side = rnd() < .5 ? -1 : 1, s = 3 + rnd() * 7; const r = new THREE.Mesh(new THREE.DodecahedronGeometry(1, 0), rockM);
       r.scale.set(s, s * (0.8 + rnd() * 1.2), s); r.rotation.set(rnd(), rnd() * 6, rnd()); r.position.set(side * (11 + s * 0.6 + rnd() * 30), s * 0.4, 20 - rnd() * 1300); world.add(r); }
+  }
+  if (T.sur) {   // uzakta şehir surları ve burçlar
+    const wm = new THREE.MeshLambertMaterial({ color: 0xb8a88a }), tm = new THREE.MeshLambertMaterial({ color: 0xa8987a });
+    const sx = -(17 + 12 * (1 - T.sur)), n = 26;
+    const w = new THREE.Mesh(BOX(2.5, 9, 1300), wm); w.position.set(sx, 4.5, -630); w.receiveShadow = true; world.add(w);
+    const w2 = new THREE.Mesh(BOX(2, 6, 1300), wm); w2.position.set(sx + 5, 3, -630); world.add(w2);
+    for (let k = 0; k < n; k++) { const z = 30 - k * 50 - rnd() * 8, t = new THREE.Mesh(BOX(5, 14, 5), tm); t.position.set(sx, 7, z); t.castShadow = true; world.add(t);
+      for (let c = -1; c <= 1; c += 2) { const m = new THREE.Mesh(BOX(1.2, 1.2, 1.2), tm); m.position.set(sx + c * 1.9, 14.6, z); world.add(m); } }
   }
   const bush = new THREE.InstancedMesh(SPH(.6, 6, 4), new THREE.MeshLambertMaterial({ color: T.bush }), 220);
   for (let i = 0; i < 220; i++) { const side = rnd() < .5 ? -1 : 1; dummy.position.set(side * (8 + rnd() * 26), 0.15, 30 - rnd() * 1300); const s = 0.5 + rnd() * 1.1; dummy.scale.set(s * 1.3, s * 0.6, s); dummy.rotation.set(0, rnd() * 6, 0); dummy.updateMatrix(); bush.setMatrixAt(i, dummy.matrix); }
@@ -504,6 +553,19 @@ function buildLevelView(G) {
       fill.rotation.x = -Math.PI / 2; fill.position.y = .04; g.add(fill);
       const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(1.1, 0), stoneDark); rock.castShadow = true; rock.visible = false; g.add(rock);
       g.position.set(o.x, 0, o.z); levelGroup.add(g); VIEW.objs.set(o, { g, ring, fill, rock });
+    } else if (o.t === 'sur') {        // yolu kesen sur duvarı
+      const g = new THREE.Group(); const w = new THREE.Mesh(BOX(o.w + .8, 3.2, 1.4), stoneMat); w.position.y = 1.6; w.castShadow = true; w.receiveShadow = true; g.add(w);
+      for (let x = -o.w / 2; x <= o.w / 2 + .01; x += 1.2) { const c = new THREE.Mesh(BOX(.7, .7, 1.45), stoneMat); c.position.set(x, 3.55, 0); g.add(c); }
+      const kapi = new THREE.Mesh(BOX(2.2, 2.4, .2), new THREE.MeshLambertMaterial({ color: 0x3a2a20 })); kapi.position.set(0, 1.2, .72); g.add(kapi);
+      [-1, 1].forEach(sd => { const t = new THREE.Mesh(CYL(1.0, 1.1, 4.6, 8), stoneDark); t.position.set(sd * (o.w / 2 + .6), 2.3, 0); t.castShadow = true; g.add(t); });
+      const L = makeLabel(256, 128); drawBig(L, fmt(o.hp), '#ffd9a0'); const lab = labelSprite(L, 2.6, 1.3); lab.position.set(0, 5.0, 0); g.add(lab);
+      g.position.set(0, 0, o.z); levelGroup.add(g); VIEW.objs.set(o, { g, L, shown: o.hp });
+    } else if (o.t === 'gulle') {      // top güllesi ve uyarı şeridi
+      const g = new THREE.Group();
+      const lane = new THREE.Mesh(new THREE.PlaneGeometry(o.r * 2, 34), new THREE.MeshBasicMaterial({ color: 0xe0343f, transparent: true, opacity: 0, depthWrite: false }));
+      lane.rotation.x = -Math.PI / 2; lane.position.set(o.x, .05, o.z + 17); levelGroup.add(lane);
+      const ball = new THREE.Mesh(SPH(o.r * .75, 12, 9), new THREE.MeshPhongMaterial({ color: 0x2a2a30, shininess: 70, specular: 0x777777 })); ball.position.y = o.r * .75; ball.castShadow = true; g.add(ball);
+      g.position.set(o.x, 0, o.z); levelGroup.add(g); VIEW.objs.set(o, { g, lane, ball });
     } else if (o.t === 'gecit') {      // dar geçit: iki yanda kaya duvarı
       const g = new THREE.Group(), rockM = new THREE.MeshLambertMaterial({ color: 0x8a7e6e });
       [-1, 1].forEach(sd => { const w = new THREE.Mesh(BOX(4, 4.5, o.len), rockM); w.position.set(sd * (o.w + 2), 2.25, -o.len / 2); w.castShadow = true; w.receiveShadow = true; g.add(w);
@@ -547,6 +609,7 @@ function buildLevelView(G) {
   for (let z = -10; z > G.L.endZ; z -= 40) [-1, 1].forEach(s => { const p = new THREE.Group(); const pole = new THREE.Mesh(CYL(.07, .07, 4, 6), postMat); pole.position.y = 2; p.add(pole); const fl = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 1.6), new THREE.MeshLambertMaterial({ map: flagTex, side: THREE.DoubleSide })); fl.position.set(s * -.6, 3.1, 0); p.add(fl); p.position.set(s * (M.ROAD + 1.4), 0, z); levelGroup.add(p); });
   arrowMat.color.set(M.WEAPONS[0].c);
 }
+const GULLE_SPIN = 14;
 const SYM = { '+': '+', 'x': '×', '-': '−', '/': '÷' };
 const gateCache = {};
 function gateTex(o) {
@@ -601,7 +664,8 @@ function handleEvents() {
       case 'weapon': popup(M.WEAPONS[e.w].ad + '!', e.x, 3, e.z, 'gold'); SFX.weapon(); updateWeapon(); break;
       case 'hero': popup('Altın Alp katıldı!', e.x, 3.2, e.z, 'gold'); SFX.hero(); break;
       case 'troops': popup('+' + e.v + ' akıncı', e.x, 3, e.z, 'gold'); SFX.good(); break;
-      case 'crash': popup((e.gecit ? 'Sıkıştı −' : e.hendek ? 'Hendek −' : '−') + e.v, e.x, 2.4, e.z, 'bad'); SFX.crash(); if (navigator.vibrate) try { navigator.vibrate(30); } catch (x) {} break;
+      case 'gulleWarn': tone(70, 0.25, 'sine', 0.12, 0.4); noise(0.2, 0.12, 200); break;
+      case 'crash': popup((e.gecit ? 'Sıkıştı −' : e.hendek ? 'Hendek −' : e.gulle ? 'Gülle −' : '−') + e.v, e.x, 2.4, e.z, 'bad'); SFX.crash(); if (navigator.vibrate) try { navigator.vibrate(30); } catch (x) {} break;
       case 'break': { const v = VIEW.objs.get(e.o); if (v) v.die = 0.3; puff(e.o.x, 1, e.o.z, 2.4); puff(e.o.x + .6, 1.4, e.o.z, 1.8); SFX.break(); break; }
       case 'hit': SFX.tick(); if (Math.random() < .4) puff(e.x + (Math.random() - .5) * 2, .8, e.z, .9); break;
       case 'clash': SFX.tick(); if (Math.random() < .5) puff(e.x + (Math.random() - .5) * 2.5, .9, e.z, 1.4); break;
@@ -670,7 +734,7 @@ function renderLevels() {
   if (seferSel >= NSF) {     // yakında
     $('sName').textContent = M.SOON.ad; $('sSub').textContent = 'Sıradaki sefer';
     $('regionHead').textContent = '';
-    grid.innerHTML = '<div class="soon" style="grid-column:1/-1"><h3>Pek yakında</h3><p>İstanbul, Mohaç, Preveze ve daha fazlası: toplam 1071 bölüme doğru. Yeni seferler güncellemelerle geliyor. Bu arada eski bölümleri yıldızla, Ordugâh\'ı güçlendir.</p></div>';
+    grid.innerHTML = '<div class="soon" style="grid-column:1/-1"><h3>Pek yakında</h3><p>Zigetvar, Kıbrıs, Bağdat ve daha fazlası: toplam 1071 bölüme doğru. Yeni seferler güncellemelerle geliyor. Bu arada eski bölümleri yıldızla, Ordugâh\'ı güçlendir.</p></div>';
     return;
   }
   const SF = M.SEFERLER[seferSel];
@@ -786,14 +850,15 @@ function renderObjs(dt, t) {
   for (const [o, v] of VIEW.objs) {
     if (o.t === 'squad') continue;
     if (o.alive) {
-      if (v.L && Math.ceil(o.hp) !== v.shown) { v.shown = Math.ceil(o.hp); if (o.t === 'boss') drawBossBar(v.L, M.BOSSES[o.id].ad, o.hp, o.max); else drawBig(v.L, fmt(o.hp), o.t === 'barricade' ? '#ffd9a0' : '#fff'); }
+      if (v.L && Math.ceil(o.hp) !== v.shown) { v.shown = Math.ceil(o.hp); if (o.t === 'boss') drawBossBar(v.L, M.BOSSES[o.id].ad, o.hp, o.max); else drawBig(v.L, fmt(o.hp), (o.t === 'barricade' || o.t === 'sur') ? '#ffd9a0' : '#fff'); }
       if (o.flash !== undefined) { const s = 1 + o.flash * 1.2; v.g.scale.set(s, s, s); }
       if (v.item) v.item.rotation.y += dt * 1.6;
       if (o.t === 'boss') { v.g.position.z = o.z; v.m.rotation.z = Math.sin(t * 6) * 0.04; }
       if (o.t === 'kervan') { v.g.position.x = o.x; v.g.rotation.z = Math.sin(t * 9) * 0.02; }
+      if (o.t === 'gulle') { v.g.position.z = o.z; v.ball.rotation.x += dt * GULLE_SPIN; v.lane.material.opacity = o.warn && !o.done ? .25 + .25 * Math.abs(Math.sin(t * 7)) : 0; if (o.done) v.lane.visible = false; }
       if (o.t === 'tas') { const dz = G.z - o.z; v.ring.material.opacity = .5 + .4 * Math.abs(Math.sin(t * 6)); if (dz < 16) { v.rock.visible = true; v.rock.position.y = Math.max(.6, 18 * dz / 16); v.rock.rotation.x += dt * 4; } }
     } else if (v.die !== undefined && v.die > 0) { v.die -= dt; const s = Math.max(0.01, v.die / 0.3); v.g.scale.set(s, s, s); if (v.die <= 0) v.g.visible = false; }
-    else if (v.g && !o.alive && v.die === undefined) v.g.visible = false;
+    else if (v.g && !o.alive && v.die === undefined) { v.g.visible = false; if (v.lane) v.lane.visible = false; }
   }
   for (const gv of VIEW.gates) if (gv.anim >= 0 && gv.t < 1) { gv.t = Math.min(1, gv.t + dt * 3); const p = gv.panels[gv.anim]; p.scale.set(1 + gv.t * .3, Math.max(.01, 1 - gv.t), 1); p.material.opacity = 1 - gv.t; }
   for (const p of puffs) if (p.life > 0) { p.life -= dt; const k = 1 - p.life / 0.45; p.s.scale.setScalar(p.size * (0.6 + k * 1.2)); p.s.material.opacity = Math.max(0, 0.85 * (1 - k)); p.s.position.y += dt * 1.2; if (p.life <= 0) p.s.visible = false; }

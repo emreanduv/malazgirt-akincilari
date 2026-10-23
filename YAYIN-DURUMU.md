@@ -48,6 +48,16 @@
 - Mağaza metinleri: store/surum-1.2.md · Ekran görüntüleri yenilendi (03: Haçlı Kralı, 04: Niğbolu haritası)
 - Yol haritası: 200 → 500 → 1071 bölüm
 
+## 1.3.0 (23 Ekim 2026): 750 bölüm, 15 sefer
+- Yeni seferler: İstanbul'un Fethi (501–550), Fatih'in Seferleri (551–600), Belgrad ve Rodos (601–650), Mohaç (651–700), Budin (701–750)
+- Yeni birlikler: Ceneviz zırhlısı, Venedik piyadesi, arkebüzcü, Hırvat piyadesi, zırhlı Macar şövalyesi, Rodos Şövalyesi, Macar hafif süvarisi, Alman paralı askeri
+- Yeni mekanikler: sur duvarı (502+, yolu baştan başa keser, okla yıkılır), top güllesi (652+, kırmızı şeritten yuvarlanır)
+- 12 yay (Fatih Yayı, Kanuni Yayı), Ordugâh tavanı 60; 500 sonrası düşman gücü daha yavaş büyür (nominalUp)
+- Zorluk: 501–750 ortalama oyuncu %48 → %18; kalibrasyon üç işlemle: `node araclar/kalibre.js 501 584`, `585 667`, `668 750`; sonra 606, 619, 638, 699, 727 elle yumuşatıldı
+- Kayıt göçü genelleştirildi: son bitirilen bölümün ardındaki bölüm her zaman açılır
+- Mağaza metinleri: store/surum-1.3.md · Ekran görüntüleri: 01 yenilendi, 03 Fetih devi, 04 Kara Surları haritası
+- Yol haritası: 750 → 1071 (1.4) → 1453 → 1923
+
 ## Sıradakiler
 - Apple ve Google'ın inceleme yanıtlarını bekle.
 - 12+ test kullanıcısının Gmail adresini "Hisar Testçileri" listesine ekle, 14 gün sonra üretim başvurusu.
