@@ -68,6 +68,8 @@
 - Görsel: her bölümde gün saati / hava / mevsim (oyun.js MOODS, moodOf; `?hava=gece` ile zorlanabilir), yağmur ve kar parçacıkları, gece meşaleleri, düşen akıncılar ve kayıp sayıları
 - 7 yeni birlik (kürasiyer, tüfekçi, stradiot, kanatlı süvari, Kazak, Rus piyadesi, grenadiyer), 2 yeni yay (Köprülü, Alparslan)
 - Mağaza metinleri: store/surum-1.4.md
+- Derlemeler: iOS 1.4.0 (10) TestFlight'a yüklendi; Android 7 (1.4.0) imzalı (`imza-anahtari/malazgirt-1.4.0-7-imzali.aab`), Play kapalı test Alpha'ya eklendi; App Store 1.4.0 sürümü metin ve görsellerle açıldı
+- Denge (bütün bölümleri sırayla oynayan botlar): ortalama oyuncu 16–100 arası ilk denemede %76, 751–1071 arası %44; takılan bölüm yok. Takılma çıkarsa: `LIMIT=8 node araclar/duzelt.js`
 
 ## Sıradakiler
 - Apple ve Google'ın inceleme yanıtlarını bekle.
