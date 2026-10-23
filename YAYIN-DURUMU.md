@@ -57,6 +57,7 @@
 - Kayıt göçü genelleştirildi: son bitirilen bölümün ardındaki bölüm her zaman açılır
 - Mağaza metinleri: store/surum-1.3.md · Ekran görüntüleri: 01 yenilendi, 03 Fetih devi, 04 Kara Surları haritası
 - Yol haritası: 750 → 1071 (1.4) → 1453 → 1923
+- Derlemeler: iOS 1.3.0 (9) TestFlight'a yüklendi; Android 6 (1.3.0) imzalı, `imza-anahtari/malazgirt-1.3.0-6-imzali.aab`, Play kapalı test Alpha'ya eklendi; App Store 1.3.0 sürümü metin ve görsellerle açıldı
 
 ## Sıradakiler
 - Apple ve Google'ın inceleme yanıtlarını bekle.
