@@ -1,5 +1,6 @@
 name: "Masaüstü (Steam - Windows, macOS, Linux)"
 # Electron kabuğu (desktop/) + oyun (www/). Çıktılar GitHub Releases'a "masaustu-<sürüm>" etiketiyle yüklenir.
+# Derleme günlükleri "masaustu-gunluk" dalına yazılır (hata ayıklamak için).
 on:
   workflow_dispatch:
     inputs:
@@ -30,19 +31,39 @@ jobs:
       - name: Derle
         working-directory: desktop
         env: { CSC_IDENTITY_AUTO_DISCOVERY: "false" }
-        run: npm install --no-audit --no-fund && npm run ${{ matrix.cmd }}
-      - name: Steam klasörünü paketle
-        working-directory: desktop/dist
         run: |
-          ls -la
-          V=${{ inputs.version_name }}
-          if [ "${{ matrix.name }}" = windows ]; then 7z a ../steam-windows-$V.zip ./win-unpacked/* >/dev/null; fi
-          if [ "${{ matrix.name }}" = macos ]; then (cd mac-universal && ditto -c -k --keepParent "Malazgirt Akincilari.app" ../../steam-macos-$V.zip); fi
-          if [ "${{ matrix.name }}" = linux ]; then (cd linux-unpacked && zip -qry ../../steam-linux-$V.zip .); cp *.AppImage ../pardus-linux-$V.AppImage; cp *.deb ../pardus-linux-$V.deb; fi
-          ls -la ..
-      - name: GitHub Release'e yükle
+          set -o pipefail
+          (npm install --no-audit --no-fund && npm run ${{ matrix.cmd }}) 2>&1 | tee ../gunluk-${{ matrix.name }}.txt
+      - name: Çıktılar
+        if: always()
+        run: |
+          ls -la desktop/dist >> gunluk-${{ matrix.name }}.txt 2>&1 || true
+          mkdir -p cikti && cp desktop/dist/*.zip desktop/dist/*.tar.gz desktop/dist/*.AppImage desktop/dist/*.deb cikti/ 2>/dev/null || true
+          ls -la cikti
+      - uses: actions/upload-artifact@v4
+        with: { name: "paket-${{ matrix.name }}", path: cikti/*, if-no-files-found: warn }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: "gunluk-${{ matrix.name }}", path: "gunluk-${{ matrix.name }}.txt" }
+  release:
+    needs: build
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { path: indir }
+      - name: Günlükleri dala yaz
+        run: |
+          git config user.name "github-actions"; git config user.email "actions@github.com"
+          mkdir -p /tmp/g && cp indir/gunluk-*/*.txt /tmp/g/ 2>/dev/null || true
+          git checkout --orphan masaustu-gunluk && git rm -rqf . && cp /tmp/g/*.txt . 2>/dev/null || true
+          for f in gunluk-*.txt; do tail -c 60000 "$f" > "$f.k" && mv "$f.k" "$f"; done
+          git add -A && git commit -qm "Günlük ${{ inputs.version_name }}" && git push -qf origin masaustu-gunluk || true
+      - name: GitHub Release
         env: { GH_TOKEN: "${{ github.token }}" }
         run: |
           TAG=masaustu-${{ inputs.version_name }}
-          gh release view $TAG >/dev/null 2>&1 || gh release create $TAG --title "Masaüstü ${{ inputs.version_name }}" --notes "Steam (Windows, macOS, Linux) ve Pardus paketleri" --prerelease || true
-          for f in desktop/steam-*.zip desktop/pardus-*; do [ -f "$f" ] && gh release upload $TAG "$f" --clobber; done
+          ls -laR indir | grep -v gunluk || true
+          gh release view $TAG -R ${{ github.repository }} >/dev/null 2>&1 || gh release create $TAG -R ${{ github.repository }} --title "Masaüstü ${{ inputs.version_name }}" --notes "Steam (Windows, macOS, Linux) ve Pardus paketleri" --prerelease --target ${{ github.sha }}
+          for f in indir/paket-*/*; do gh release upload $TAG "$f" -R ${{ github.repository }} --clobber; done

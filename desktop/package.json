@@ -3,7 +3,10 @@
   "productName": "Malazgirt Akıncıları",
   "version": "1.5.0",
   "description": "Malazgirt Akıncıları — Steam (Windows, macOS, Linux) sürümü",
-  "author": "Mr. Anduv!",
+  "author": {
+    "name": "Mr. Anduv!",
+    "email": "emreanduvart@gmail.com"
+  },
   "license": "UNLICENSED",
   "private": true,
   "main": "main.js",
@@ -52,7 +55,8 @@
           ]
         }
       ],
-      "icon": "build/icon.png"
+      "icon": "build/icon.png",
+      "artifactName": "steam-windows-${version}.${ext}"
     },
     "mac": {
       "target": [
@@ -68,7 +72,8 @@
       "x64ArchFiles": "**/steamworksjs.darwin-*.node",
       "identity": null,
       "hardenedRuntime": false,
-      "gatekeeperAssess": false
+      "gatekeeperAssess": false,
+      "artifactName": "steam-macos-${version}.${ext}"
     },
     "linux": {
       "target": [
@@ -101,7 +106,8 @@
           "Comment": "Malazgirt Akıncıları",
           "Categories": "Game;ArcadeGame;"
         }
-      }
+      },
+      "artifactName": "linux-${version}.${ext}"
     },
     "deb": {
       "depends": [
@@ -116,5 +122,6 @@
         "libsecret-1-0"
       ]
     }
-  }
+  },
+  "homepage": "https://github.com/emreanduv"
 }
