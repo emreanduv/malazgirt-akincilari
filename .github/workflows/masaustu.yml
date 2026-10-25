@@ -1,4 +1,4 @@
-name: Masaüstü (Steam: Windows, macOS, Linux)
+name: "Masaüstü (Steam - Windows, macOS, Linux)"
 # Electron kabuğu (desktop/) + oyun (www/). Çıktılar GitHub Releases'a "masaustu-<sürüm>" etiketiyle yüklenir.
 on:
   workflow_dispatch:
