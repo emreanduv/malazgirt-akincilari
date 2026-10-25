@@ -77,14 +77,14 @@
 - Dil: Türkçe + İngilizce (www/js/dil.js arayüz sözlüğü; içerik çevirisi araclar/en/r0–r5.js → `node araclar/en/derle.js` → www/js/icerik-en.js)
 - Ayarlar ekranı: dil, ses efekti ve mehter düzeyi, grafik kalitesi, tam ekran (masaüstü), satın alımı geri yükle (mobil)
 - Fiyat:
-  - Mobil: ücretsiz, ilk 100 bölüm açık; "Tam Sürüm" tek seferlik ürün `com.anduv.malazgirt.tamsurum` (0,99 $). 100. bölümü geçmiş eski oyuncular ücretsiz devam eder.
-  - Steam: 0,99 $ tam oyun (uygulama içi satın alım yok).
+  - Mobil: ücretsiz, ilk 100 bölüm açık; "Tam Sürüm" tek seferlik ürün `com.anduv.malazgirt.tamsurum` (1,99 $). 100. bölümü geçmiş eski oyuncular ücretsiz devam eder.
+  - Steam: 1,99 $ tam oyun (uygulama içi satın alım yok).
 - Masaüstü: `desktop/` (Electron + steamworks.js). Steam başarımları (42; araclar/steam/basarimlar.js → store/steam/basarimlar.json, ikonlar store/steam/basarim-ikon), Steam Cloud kayıt, oyun kolu, F11 tam ekran.
   - Derleme: Actions → "Masaüstü (Steam)" (masaustu.yml), girdiler sürüm ve Steam App ID → GitHub sürümü `masaustu-<sürüm>`: Windows zip, macOS zip (universal), Linux tar.gz + AppImage + deb (Pardus için deb)
 - Steam görselleri: `node araclar/steam/gorseller.js` (kapsüller araclar/steam/kapak.html ile, ekran görüntüleri TR/EN 1920×1080) → store/steam/
 - Mağaza metinleri TR/EN ve Steam metinleri: store/surum-1.5.md; App Store metinleri store/appstore-metadata/{tr,en-US}; İngilizce ekran görüntüleri store/en/
 - Derlemeler (25 Ekim): iOS 1.5.0 (12) yüklendi, App Store 1.5.0 sürümüne bağlandı (TR + en-US metin ve görseller, inceleme notu yazıldı). Android 9 (1.5.0) imzalı (`imza-anahtari/malazgirt-1.5.0-9-imzali.aab`), Play kapalı test (Alpha) taslak sürümüne yüklendi, TR/EN sürüm notları girildi. Play mağaza girişi TR güncellendi, en-US çevirisi eklendi. Masaüstü: GitHub sürümü `masaustu-1.5.0` (Linux paketi xvfb altında açıldı).
-- Uygulama içi ürün: App Store Connect'te `com.anduv.malazgirt.tamsurum` oluşturuldu (Non-Consumable, 0,99 $, 175 ülke, TR/EN adlar). Eksik: inceleme ekran görüntüsü (Mac: Documents/Malazgirt-Akincilari/iap-inceleme-ekrani.png) ve Paid Apps Agreement. Play: satıcı (Google Payments) hesabı açılınca ürün oluşturulacak.
+- Uygulama içi ürün: App Store Connect'te `com.anduv.malazgirt.tamsurum` oluşturuldu (Non-Consumable, 1,99 $ (25 Ekim kararı; önce 0,99 $ girilmişti, App Store Connect oturumu açılınca güncellenecek), 175 ülke, TR/EN adlar). Eksik: inceleme ekran görüntüsü (Mac: Documents/Malazgirt-Akincilari/iap-inceleme-ekrani.png) ve Paid Apps Agreement. Play: satıcı (Google Payments) hesabı açılınca ürün oluşturulacak.
 - Denge (bütün bölümleri oynayan botlar): ortalama oyuncu ilk denemede 1–100 %73, 751–1071 %46, 1072–1453 %45; iyi oyuncu 1072–1453 %65. Takılan bölümler yumuşatıldı.
 - Önemli: mobil 1.5 yayına çıkmadan önce satın alma çalışır olmalı (100. bölümden sonra ödeme ekranı çıkıyor).
 - Arayüz büyük masaüstü pencerelerinde 1,45× / 2× ölçeklenir (index.html @media)
