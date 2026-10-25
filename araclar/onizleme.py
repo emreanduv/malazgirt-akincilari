@@ -13,9 +13,9 @@ html = html.replace('<style>', '<link rel="stylesheet" href="https://fonts.googl
 html = html.replace('<script src="lib/three.min.js"></script>', '<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>')
 ses = root / 'ses-kurtarici.js'
 if ses.exists():
-    html = html.replace('<script src="ses-kurtarici.js"></script>', '<script>\n' + ses.read_text(encoding='utf-8') + '\n</script>')
+    html = html.replace('<script src="ses-kurtarici.js"></script>', '<script>\n' + ses.read_text(encoding='utf-8').replace('</script', '<\\/script') + '\n</script>')
 for name in ['mantik', 'icerik-en', 'dil', 'oyun']:
-    js = (root / 'js' / f'{name}.js').read_text(encoding='utf-8')
+    js = (root / 'js' / f'{name}.js').read_text(encoding='utf-8').replace('</script', '<\\/script')
     html = html.replace(f'<script src="js/{name}.js"></script>', '<script>\n' + js + '\n</script>')
 pathlib.Path(sys.argv[1]).write_text(html.strip() + '\n', encoding='utf-8')
 print('yazıldı:', sys.argv[1], len(html) // 1024, 'KB')
