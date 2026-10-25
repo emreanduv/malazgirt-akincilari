@@ -14,7 +14,7 @@ html = html.replace('<script src="lib/three.min.js"></script>', '<script src="ht
 ses = root / 'ses-kurtarici.js'
 if ses.exists():
     html = html.replace('<script src="ses-kurtarici.js"></script>', '<script>\n' + ses.read_text(encoding='utf-8') + '\n</script>')
-for name in ['mantik', 'oyun']:
+for name in ['mantik', 'icerik-en', 'dil', 'oyun']:
     js = (root / 'js' / f'{name}.js').read_text(encoding='utf-8')
     html = html.replace(f'<script src="js/{name}.js"></script>', '<script>\n' + js + '\n</script>')
 pathlib.Path(sys.argv[1]).write_text(html.strip() + '\n', encoding='utf-8')

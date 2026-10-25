@@ -88,6 +88,18 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 #sndBtn{position:fixed;right:max(14px,env(safe-area-inset-right,0px));top:calc(env(safe-area-inset-top,0px) + 14px);z-index:5;width:46px;height:46px;border-radius:50%;
   border:2px solid rgba(255,255,255,.5);background:rgba(18,42,75,.8);padding:0;display:grid;place-items:center}
 #sndBtn svg{width:24px;height:24px}
+#setBtn{position:fixed;left:max(14px,env(safe-area-inset-left,0px));top:calc(env(safe-area-inset-top,0px) + 14px);z-index:5;width:46px;height:46px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.5);background:rgba(18,42,75,.8);padding:0;display:grid;place-items:center}
+#setBtn svg{width:26px;height:26px}
+.setlist{width:100%;max-width:560px;display:flex;flex-direction:column;gap:10px}
+.setrow{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--paper);color:var(--ink);border-radius:16px;padding:12px 14px;font-weight:800;font-size:18px;box-shadow:0 4px 0 var(--paper-d)}
+.setrow input[type=range]{flex:1;max-width:220px;accent-color:#1fa3a8}
+.seg{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.seg button{border:0;border-radius:12px;padding:8px 12px 5px;font-weight:800;font-size:15px;background:#d9cdb3;color:var(--ink)}
+.seg button.on{background:linear-gradient(180deg,#2bb9be,var(--tq-d));color:#fff}
+.setrow .alt{font-size:15px;padding:8px 12px 5px}
+#creditEn{display:block;font-size:12px;opacity:.8}
+:focus-visible{outline:3px solid #f0b232;outline-offset:3px}
 
 /* Bölüm haritası */
 .sefer{flex:none;width:100%;max-width:560px;display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#2bb9be,var(--tq-d));border:3px solid var(--gold);border-radius:16px;padding:6px 8px;box-shadow:0 4px 0 var(--gold-d)}
@@ -117,6 +129,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .lv .tag{position:absolute;top:-7px;right:-4px;background:var(--crimson);color:#fff;font-size:11px;font-weight:800;padding:2px 7px 0;border-radius:8px;letter-spacing:.04em}
 .lv.cur{outline:3px solid var(--gold);outline-offset:2px}
 .lv.lock{background:#5d6a7d;box-shadow:0 5px 0 #3f4a5a;color:#cfd6e0}
+.lv.pay{position:relative}.lv.pay::after{content:'★';position:absolute;top:4px;right:6px;font-size:13px;color:#c8902a}
 .lv.lock .n{color:#e3e8ef}.lv.lock .nm{color:#d0d6de}
 .star{width:16px;height:16px;display:inline-block;background:var(--gold);clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
 .star.off{background:#d7ccb2}
@@ -163,19 +176,20 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 </style>
 </head>
 <body>
-<canvas id="c" aria-label="Oyun alanı"></canvas>
+<canvas id="c" data-ta="Oyun alanı" aria-label="Oyun alanı"></canvas>
 
 <div id="hud" hidden>
   <div class="pill" id="hLvl">Bölüm 1</div>
   <div class="prog" aria-hidden="true"><i id="progFill"></i></div>
-  <button id="pauseBtn" aria-label="Duraklat"><i></i></button>
+  <button id="pauseBtn" data-ta="Duraklat" aria-label="Duraklat"><i></i></button>
 </div>
 <div id="weapon" hidden></div>
 <div id="bubble" hidden></div>
-<div id="hint" hidden>← Kaydır →</div>
+<div id="hint" hidden data-t>← Kaydır →</div>
 <div id="pops"></div>
 
 <button id="sndBtn" aria-label="Sesi kapat"></button>
+<button id="setBtn" data-ta="Ayarlar" aria-label="Ayarlar"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M19.4 13a7.6 7.6 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.4 7.4 0 0 0-1.7-1L15 3.3h-4l-.4 2.6a7.4 7.4 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.6 7.6 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7.4 7.4 0 0 0 1.7 1l.4 2.6h4l.4-2.6a7.4 7.4 0 0 0 1.7-1l2.5 1 2-3.5zM13 15.5A3.5 3.5 0 1 1 13 8.5a3.5 3.5 0 0 1 0 7z"/></svg></button>
 
 <!-- Ana menü -->
 <section id="scrMenu" class="screen veil">
@@ -186,17 +200,17 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
   </div>
   <div class="spacer"></div>
   <div class="stack">
-    <div class="meta"><div class="pill"><b class="akce"></b><span id="mCoins">0</span> akçe</div><div class="pill" id="mStars">0 / 150 yıldız</div></div>
-    <button class="big" id="bPlay">SEFERE ÇIK<small id="bPlaySub">Bölüm 1 · Halep Kapısı</small></button>
-    <div class="row"><button class="alt" id="bLevels">Bölümler</button><button class="alt dark" id="bCamp">Ordugâh</button></div>
-    <p class="credit">Bir Mr. Anduv! yapımıdır.</p>
+    <div class="meta"><div class="pill"><b class="akce"></b><span id="mCoins">0</span> <span data-t>akçe</span></div><div class="pill" id="mStars">0 / 150 yıldız</div></div>
+    <button class="big" id="bPlay" data-t>SEFERE ÇIK<small id="bPlaySub">Bölüm 1 · Halep Kapısı</small></button>
+    <div class="row"><button class="alt" id="bLevels" data-t>Bölümler</button><button class="alt dark" id="bCamp" data-t>Ordugâh</button></div>
+    <p class="credit">Bir Mr. Anduv! yapımıdır.<span id="creditEn"></span></p>
   </div>
 </section>
 
 <!-- Bölüm haritası -->
 <section id="scrLevels" class="screen solid" hidden>
-  <div class="topbar"><button class="back" data-go="menu" aria-label="Geri">‹</button><h2>Sefer Haritası</h2><div class="pill" id="lStars">0</div></div>
-  <div class="sefer"><button id="sPrev" aria-label="Önceki sefer">‹</button><div><b id="sName"></b><small id="sSub"></small></div><button id="sNext" aria-label="Sonraki sefer">›</button></div>
+  <div class="topbar"><button class="back" data-go="menu" data-ta="Geri" aria-label="Geri">‹</button><h2 data-t>Sefer Haritası</h2><div class="pill" id="lStars">0</div></div>
+  <div class="sefer"><button id="sPrev" data-ta="Önceki sefer" aria-label="Önceki sefer">‹</button><div><b id="sName"></b><small id="sSub"></small></div><button id="sNext" data-ta="Sonraki sefer" aria-label="Sonraki sefer">›</button></div>
   <div class="tabs" id="tabs" role="tablist"></div>
   <div class="regionHead" id="regionHead"></div>
   <div class="grid" id="grid"></div>
@@ -204,14 +218,14 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 
 <!-- Ordugâh -->
 <section id="scrCamp" class="screen solid" hidden>
-  <div class="topbar"><button class="back" id="cBack" aria-label="Geri">‹</button><h2>Ordugâh</h2><div class="pill"><b class="akce"></b><span id="cCoins">0</span></div></div>
+  <div class="topbar"><button class="back" id="cBack" data-ta="Geri" aria-label="Geri">‹</button><h2 data-t>Ordugâh</h2><div class="pill"><b class="akce"></b><span id="cCoins">0</span></div></div>
   <div class="camp" id="camp"></div>
-  <p class="note">Akçe her zaferle gelir. İlk zafer tam ödül, tekrar oynadığın bölümler üçte bir ödül verir. Takıldığın yerde eski bölümleri yıldızlamak da iyi gelir.</p>
+  <p class="note" data-t>Akçe her zaferle gelir. İlk zafer tam ödül, tekrar oynadığın bölümler üçte bir ödül verir. Takıldığın yerde eski bölümleri yıldızlamak da iyi gelir.</p>
 </section>
 
 <!-- Brifing -->
 <section id="scrBrief" class="screen solid" hidden>
-  <div class="topbar"><button class="back" data-go="levels" aria-label="Geri">‹</button><h2></h2></div>
+  <div class="topbar"><button class="back" data-go="levels" data-ta="Geri" aria-label="Geri">‹</button><h2></h2></div>
   <div class="brief">
     <svg class="seal" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="25" fill="#c8303a"/><circle cx="26" cy="26" r="20" fill="none" stroke="#f0b232" stroke-width="2"/><path fill="#f0b232" d="M29 13a13 13 0 1 0 8 23.5A14.5 14.5 0 1 1 29 13z"/><path fill="#fff8ea" d="M33 21l1.4 3 3.2-.6-.6 3.2 3 1.4-3 1.4.6 3.2-3.2-.6-1.4 3-1.4-3-3.2.6.6-3.2-3-1.4 3-1.4-.6-3.2 3.2.6z"/></svg>
     <div class="rg" id="brReg"></div>
@@ -220,16 +234,16 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
     <p id="brText"></p>
     <div class="foes" id="brFoes"></div>
   </div>
-  <div class="stack"><button class="alt dark notify" id="brCamp" hidden>Önce Ordugâh: geliştirme hazır</button><button class="big" id="bStart">SAVAŞA BAŞLA</button></div>
+  <div class="stack"><button class="alt dark notify" id="brCamp" hidden data-t>Önce Ordugâh: geliştirme hazır</button><button class="big" id="bStart" data-t>SAVAŞA BAŞLA</button></div>
 </section>
 
 <!-- Duraklat -->
 <section id="scrPause" class="screen solid" hidden>
   <div class="result">
-    <h2 style="font-size:52px">Mola</h2>
+    <h2 style="font-size:52px" data-t>Mola</h2>
     <div class="stack">
-      <button class="big" id="pResume">DEVAM</button>
-      <div class="row"><button class="alt" id="pRestart">Yeniden</button><button class="alt dark" id="pMenu">Menü</button></div>
+      <button class="big" id="pResume" data-t>DEVAM</button>
+      <div class="row"><button class="alt" id="pRestart" data-t>Yeniden</button><button class="alt dark" id="pMenu" data-t>Menü</button></div>
     </div>
   </div>
 </section>
@@ -244,7 +258,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
     <div class="gain"><b class="akce"></b>+<span id="wGain">0</span></div>
     <div class="stack">
       <button class="big" id="wNext">DEVAM</button>
-      <div class="row"><button class="alt" id="wRetry">Tekrar</button><button class="alt dark" id="wMenu">Menü</button></div>
+      <div class="row"><button class="alt" id="wRetry" data-t>Tekrar</button><button class="alt dark" id="wMenu" data-t>Menü</button></div>
     </div>
   </div>
 </section>
@@ -252,18 +266,48 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 <!-- Yenilgi -->
 <section id="scrLose" class="screen veil lose" hidden>
   <div class="result">
-    <h2>GERİ ÇEKİL!</h2>
+    <h2 data-t>GERİ ÇEKİL!</h2>
     <div class="stats" id="lTip"></div>
     <div class="gain"><b class="akce"></b>+<span id="lGain">0</span></div>
     <div class="stack">
-      <button class="big" id="lRetry">TEKRAR DENE</button>
-      <div class="row"><button class="alt dark" id="lCamp">Ordugâh</button><button class="alt dark" id="lMenu">Menü</button></div>
+      <button class="big" id="lRetry" data-t>TEKRAR DENE</button>
+      <div class="row"><button class="alt dark" id="lCamp" data-t>Ordugâh</button><button class="alt dark" id="lMenu" data-t>Menü</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- Ayarlar -->
+<section id="scrSet" class="screen solid" hidden>
+  <div class="topbar"><button class="back" id="setBack" data-ta="Geri" aria-label="Geri">‹</button><h2 data-t>Ayarlar</h2></div>
+  <div class="setlist">
+    <div class="setrow"><span data-t>Dil</span><div class="seg" id="setLang"><button data-v="tr">Türkçe</button><button data-v="en">English</button></div></div>
+    <label class="setrow"><span data-t>Ses efektleri</span><input type="range" id="setSfx" min="0" max="100" step="5"></label>
+    <label class="setrow"><span data-t>Mehter (müzik)</span><input type="range" id="setMus" min="0" max="100" step="5"></label>
+    <div class="setrow"><span data-t>Grafik kalitesi</span><div class="seg" id="setQ"><button data-v="dusuk" data-t>Düşük</button><button data-v="orta" data-t>Orta</button><button data-v="yuksek" data-t>Yüksek</button></div></div>
+    <div class="setrow" id="setFsRow"><span data-t>Tam ekran</span><div class="seg" id="setFs"><button data-v="1" data-t>Açık</button><button data-v="0" data-t>Kapalı</button></div></div>
+    <div class="setrow" id="setFullRow" hidden><span data-t>Tam Sürüm</span><button class="alt" id="setRestore" data-t>Satın alımları geri yükle</button></div>
+  </div>
+  <div class="stack"><button class="big" id="setOk" data-t>Tamam</button><button class="alt dark" id="setQuit" hidden data-t>Oyundan çık</button></div>
+  <p class="credit">Bir Mr. Anduv! yapımıdır.</p>
+</section>
+
+<!-- Tam sürüm -->
+<section id="scrFull" class="screen veil" hidden>
+  <div class="result">
+    <h2 data-t>Tam Sürüm</h2>
+    <div class="stats" data-t>İlk iki sefer, yani 100 bölüm ücretsiz. Tam sürümle 1453 bölümün, 30 seferin hepsi tek seferlik ödemeyle açılır. Reklam yok, abonelik yok.</div>
+    <div class="stack">
+      <button class="big" id="fBuy"><span data-t>TAM SÜRÜMÜ AL</span><small id="fPrice"></small></button>
+      <div class="row"><button class="alt" id="fRestore" data-t>Satın alımları geri yükle</button><button class="alt dark" id="fLater" data-t>Şimdi değil</button></div>
+      <p class="credit" id="fMsg"></p>
     </div>
   </div>
 </section>
 
 <script src="lib/three.min.js"></script>
 <script src="js/mantik.js"></script>
+<script src="js/icerik-en.js"></script>
+<script src="js/dil.js"></script>
 <script src="js/oyun.js"></script>
 </body>
 </html>

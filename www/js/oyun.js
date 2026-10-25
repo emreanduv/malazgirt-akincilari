@@ -19,25 +19,32 @@ const NL = M.NL, NSF = M.SEFERLER.length;
 
 /* ================= KAYIT ================= */
 const SKEY = 'malazgirt-akincilari-v1';
-let S = { coins: 0, unlocked: 1, stars: [], up: { start: 0, dmg: 0, rate: 0, zirh: 0 }, sound: true, seen: 0 };
-try { const s = JSON.parse(localStorage.getItem(SKEY)); if (s && typeof s === 'object') { S = Object.assign(S, s); S.up = Object.assign({ start: 0, dmg: 0, rate: 0, zirh: 0 }, s.up || {}); } } catch (e) {}
+const D = window.DIL, t = D.t, HOST = D.HOST;
+const FREE_LIMIT = 100;   // mobilde ücretsiz bölüm sayısı (ilk iki sefer); gerisi Tam Sürüm
+let S = { coins: 0, unlocked: 1, stars: [], up: { start: 0, dmg: 0, rate: 0, zirh: 0 }, sound: true, seen: 0, lang: D.lang, vol: { sfx: 80, mus: 80 }, q: D.platform === 'web' || D.platform === 'steam' ? 'yuksek' : 'orta', fs: 1 };
+try { const raw = HOST && HOST.load ? HOST.load() : null; const s = JSON.parse(raw || localStorage.getItem(SKEY)); if (s && typeof s === 'object') { S = Object.assign(S, s); S.up = Object.assign({ start: 0, dmg: 0, rate: 0, zirh: 0 }, s.up || {}); S.vol = Object.assign({ sfx: 80, mus: 80 }, s.vol || {}); } } catch (e) {}
+if (S.lang !== D.lang) D.setLang(S.lang);
+// tam sürüm: masaüstü (Steam) satın alınmış oyundur; mobilde ilk 100 bölümü geçmiş eski oyuncular ücretsiz devam eder
+if (D.platform !== 'android' && D.platform !== 'ios') S.full = true;
+else if (!S.fullChecked) { if (S.unlocked > FREE_LIMIT + 1) S.full = true; S.fullChecked = 1; }
 // sürüm göçü: önceki sürümün son bölümünü bitirmiş oyuncu yeni seferi açık bulsun
 for (let i = S.stars.length - 1; i >= 0; i--) if (S.stars[i]) { if (S.unlocked < i + 2) S.unlocked = Math.min(NL, i + 2); break; }
-function persist() { try { localStorage.setItem(SKEY, JSON.stringify(S)); } catch (e) {} }
+function persist() { const j = JSON.stringify(S); try { localStorage.setItem(SKEY, j); } catch (e) {} if (HOST && HOST.save) try { HOST.save(j); } catch (e) {} }
 if (MAC) { const sf = M.seferOf(MAC.lv), i = MAC.lv, nom = i < 50 ? i * 0.2 : Math.min(M.upCap(sf), i < 500 ? 10 + (i - 50) * 0.09 : 50.5 + (i - 500) * 0.03);
   const u = MAC.ud === null ? MAC.up : Math.max(0, Math.min(M.upCap(sf), Math.round(nom + MAC.ud))); MAC.up = u;
   S = { coins: 0, unlocked: M.NL, stars: [], up: { start: u, dmg: u, rate: u, zirh: u }, sound: MAC.ses, seen: 0 }; persist = () => {}; }
 const totalStars = () => S.stars.reduce((a, b) => a + (b || 0), 0);
-const fmt = n => n >= 10000 ? (n / 1000).toFixed(n >= 100000 ? 0 : 1).replace('.', ',') + 'B' : String(Math.max(0, Math.ceil(n)));
+const fmt = n => n >= 10000 ? D.dec((n / 1000).toFixed(n >= 100000 ? 0 : 1)) + (D.lang === 'en' ? 'K' : 'B') : String(Math.max(0, Math.ceil(n)));
 
 /* ================= SES ================= */
 // Bütün sesler WebAudio ile anlık üretilir: dosya yok, internet yok.
-let AC = null, MASTER = null, NOISE = null, drumT = 0, drumOn = false;
+let AC = null, MASTER = null, SFXG = null, MUSG = null, OUT = null, NOISE = null, drumT = 0, drumOn = false;
 function audio() {
   if (AC) return AC;
   try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; }
   const comp = AC.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 6; comp.connect(AC.destination);
   MASTER = AC.createGain(); MASTER.gain.value = 0.8; MASTER.connect(comp);
+  SFXG = AC.createGain(); SFXG.connect(MASTER); MUSG = AC.createGain(); MUSG.connect(MASTER); applyVolume();
   NOISE = AC.createBuffer(1, AC.sampleRate * 1.0, AC.sampleRate); const d = NOISE.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
   return AC;
 }
@@ -46,14 +53,16 @@ window.SesKurtarici && SesKurtarici.yenidenKur(() => { AC = null; });
 function tone(f, d = 0.12, type = 'square', v = 0.04, slide = 0, delay = 0) {
   if (!S.sound || !audio()) return; const t0 = AC.currentTime + delay; const o = AC.createOscillator(), g = AC.createGain();
   o.type = type; o.frequency.setValueAtTime(f, t0); if (slide) o.frequency.exponentialRampToValueAtTime(f * slide, t0 + d);
-  g.gain.setValueAtTime(v, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d); o.connect(g); g.connect(MASTER); o.start(t0); o.stop(t0 + d + 0.03);
+  g.gain.setValueAtTime(v, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d); o.connect(g); g.connect(OUT || SFXG); o.start(t0); o.stop(t0 + d + 0.03);
 }
 function noise(d = 0.15, v = 0.12, freq = 900, delay = 0, q = 0.8) {
   if (!S.sound || !audio()) return; const t0 = AC.currentTime + delay; const s = AC.createBufferSource(); s.buffer = NOISE;
   const f = AC.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = freq; f.Q.value = q; const g = AC.createGain();
-  g.gain.setValueAtTime(v, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d); s.connect(f); f.connect(g); g.connect(MASTER); s.start(t0); s.stop(t0 + d + 0.02);
+  g.gain.setValueAtTime(v, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d); s.connect(f); f.connect(g); g.connect(OUT || SFXG); s.start(t0); s.stop(t0 + d + 0.02);
 }
-function davul(delay = 0, big = false) { tone(big ? 70 : 95, big ? 0.32 : 0.16, 'sine', big ? 0.22 : 0.12, 0.5, delay); noise(0.08, big ? 0.1 : 0.05, 500, delay); }
+function applyVolume() { if (!SFXG) return; SFXG.gain.value = (S.vol.sfx / 100) ** 1.5; MUSG.gain.value = (S.vol.mus / 100) ** 1.5 * 1.2; }
+const mus = fn => function () { const o = OUT; OUT = MUSG; try { fn.apply(this, arguments); } finally { OUT = o; } };
+const davul = mus(function (delay = 0, big = false) { tone(big ? 70 : 95, big ? 0.32 : 0.16, 'sine', big ? 0.22 : 0.12, 0.5, delay); noise(0.08, big ? 0.1 : 0.05, 500, delay); });
 let lastTick = 0;
 const SFX = {
   tick() { const n = performance.now(); if (n - lastTick < 60) return; lastTick = n; tone(900 + Math.random() * 300, 0.04, 'triangle', 0.025); },
@@ -70,23 +79,24 @@ const SFX = {
 };
 // Hicaz dizisi (Re): zurna havası
 const HICAZ = [293.66, 311.13, 369.99, 392, 440, 466.16, 523.25, 587.33];
-function fanfare() { davul(0, true); davul(0.26); davul(0.39); [0, 2, 3, 4, 3, 4, 6, 7].forEach((n, i) => tone(HICAZ[n] * 2, 0.17, 'square', 0.035, 0, 0.1 + i * 0.13)); davul(1.2, true); }
-function sadHorn() { [4, 3, 2, 1, 0].forEach((n, i) => tone(HICAZ[n], 0.24, 'sawtooth', 0.035, 0, i * 0.18)); davul(0.95, true); }
+const fanfare = mus(function () { davul(0, true); davul(0.26); davul(0.39); [0, 2, 3, 4, 3, 4, 6, 7].forEach((n, i) => tone(HICAZ[n] * 2, 0.17, 'square', 0.035, 0, 0.1 + i * 0.13)); davul(1.2, true); });
+const sadHorn = mus(function () { [4, 3, 2, 1, 0].forEach((n, i) => tone(HICAZ[n], 0.24, 'sawtooth', 0.035, 0, i * 0.18)); davul(0.95, true); });
 function drumLoop(dt) {   // savaş sırasında ağır mehter davulu
   if (!drumOn || !S.sound || !AC) return; drumT -= dt;
   if (drumT <= 0) { drumT += 1.6; davul(0, true); davul(0.4); davul(0.8, true); davul(1.0); davul(1.2); }
 }
 const SND_ON = '<svg viewBox="0 0 24 24"><path fill="#fff" d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>';
 const SND_OFF = '<svg viewBox="0 0 24 24"><path fill="#fff" d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9l6 6M22 9l-6 6" stroke="#ff8a8f" stroke-width="2.2" stroke-linecap="round"/></svg>';
-function drawSnd() { $('sndBtn').innerHTML = S.sound ? SND_ON : SND_OFF; $('sndBtn').setAttribute('aria-label', S.sound ? 'Sesi kapat' : 'Sesi aç'); }
+function drawSnd() { $('sndBtn').innerHTML = S.sound ? SND_ON : SND_OFF; $('sndBtn').setAttribute('aria-label', S.sound ? t('Sesi kapat') : t('Sesi aç')); }
 $('sndBtn').addEventListener('click', () => { S.sound = !S.sound; persist(); drawSnd(); if (S.sound) { unlockAudio(); SFX.click(); } });
 drawSnd();
 
 /* ================= THREE SAHNE ================= */
 const canvas = $('c');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+function applyQuality(first) { const q = S.q; renderer.setPixelRatio(q === 'dusuk' ? 1 : Math.min(window.devicePixelRatio || 1, q === 'orta' ? 1.5 : 2)); renderer.shadowMap.enabled = q !== 'dusuk'; renderer.shadowMap.needsUpdate = true; if (!first) resize(); }
+applyQuality(true);
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xead09a); scene.fog = new THREE.Fog(0xead09a, 70, 200);
 const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 500);
@@ -198,7 +208,15 @@ const BATAKLIK = { sky: 0xd2dcd4, ground: 0x7e9a64, hill: [0x6a8a52, 0x76945a, 0
  [62, { cliff: 0.6 }], [56], [63], [62], [64],                       // Girit
  [73], [61], [67], [18, { river: 0x4a86a8 }], [19],                  // Uyvar ve Kamaniçe
  [45], [46], [48, { river: 0x4a86a8 }], [47], [49],                  // Prut
- [30], [2], [4]                                                      // Malazgirt'e Dönüş
+ [30], [2], [4],                                                     // Malazgirt'e Dönüş
+ [56], [63], [56, { cliff: 1 }], [59], [64],                         // Mora
+ [60], [71], [61], [65], [61, { sur: 0.8 }],                         // Belgrad
+ [65], [71], [67], [-1, { mood: 'gece' }], [69],                     // Şebeş
+ [23], [20], [63, { lake: 0x2a8ac4 }], [22], [4, { sur: 0.8 }],      // Akka
+ [45], [40], [42], [43, { sur: 0.6 }], [44],                         // Silistre
+ [42], [68], [41], [43], [45],                                       // Plevne
+ [56], [42], [18], [68], [19],                                       // Dömeke
+ [30], [50], [54]                                                    // Fetih Yolu
 ].forEach(([k, o]) => THEMES.push(Object.assign({}, k < 0 ? BATAKLIK : THEMES[k], o || {})));
 
 /* geometri yardımcıları: renkli parçaları tek geometriye birleştir (az çizim çağrısı) */
@@ -375,12 +393,18 @@ const kanatliG = agirAtliG({ ortu: 0xa02a2a, tunik: 0xe8e2d2, kalkan: 0xe8e2d2, 
 const kazakG = hafifAtliG({ at: 0x4a3020, tunik: 0x2a4a8a, kalkan: 0x6a4a2a, mig: 0x2a2a2a });
 const rusaskerG = batiPiyadeG({ tunik: 0x2a5a3a, zirh: 0x2a5a3a, kalkan: 0x2a5a3a, arma: 0xb02030, sapka: 1, mig: 0x1a1a1a });
 const grenadiyerG = batiPiyadeG({ tunik: 0x2a4a2a, zirh: 0xb02030, kalkan: 0x2a4a2a, arma: 0xd8b040, mig: 0xb02030 });
+const avusturyaG = batiPiyadeG({ tunik: 0xece6d6, zirh: 0xece6d6, kalkan: 0xece6d6, arma: 0xb02030, sapka: 1, mig: 0x1a1a1a });
+const fransizG = batiPiyadeG({ tunik: 0x2a3a9a, zirh: 0xece6d6, kalkan: 0x2a3a9a, arma: 0xb02030, sapka: 1, mig: 0x1a1a1a });
+const fransizSuvariG = agirAtliG({ ortu: 0x2a3a9a, tunik: 0x2a3a9a, kalkan: 0xd8b040, arma: 0xb02030 });
+const nisanciG = aticiG({ tunik: 0x3a4a3a, silah: 'tufek' });
+const yunanG = batiPiyadeG({ tunik: 0x2a5aa8, zirh: 0x2a5aa8, kalkan: 0x2a5aa8, arma: 0xece6d6, sapka: 1, mig: 0x2a2a3a });
 const FOE_GEO = { piyade: piyadeG(), okcu: okcuG, katafrakt: katafraktG, varang: varangG, akrit: akritG, frank: frankG, arbalet: arbaletG, sovalye: sovalyeG, kalkanli: kalkanliG,
   latin: latinG, alan: alanG, katalan: katalanG, sirppiyade: sirpPiyadeG, sirpsovalye: sirpSovalyeG, macar: macarG, tufekci: tufekciG,
   ceneviz: cenevizG, venedik: venedikG, arkebuz: arkebuzG, hirvat: hirvatG, rodos: rodosG, landsknecht: landsknechtG, zirhli: zirhliG, husar: husarG,
-  kirasiyer: kirasiyerG, muskeci: muskeciG, stradiot: stradiotG, kanatlihusar: kanatliG, kazak: kazakG, rusasker: rusaskerG, grenadiyer: grenadiyerG };
+  kirasiyer: kirasiyerG, muskeci: muskeciG, stradiot: stradiotG, kanatlihusar: kanatliG, kazak: kazakG, rusasker: rusaskerG, grenadiyer: grenadiyerG,
+  avusturyapiyade: avusturyaG, fransizpiyade: fransizG, fransizsuvari: fransizSuvariG, nisanci: nisanciG, yunanpiyade: yunanG };
 const ATLI_GEO = { katafrakt: katafraktG, akrit: akritG, sovalye: sovalyeG, alan: alanG, sirpsovalye: sirpSovalyeG, macar: macarG, zirhli: zirhliG, husar: husarG,
-  kirasiyer: kirasiyerG, stradiot: stradiotG, kanatlihusar: kanatliG, kazak: kazakG };
+  kirasiyer: kirasiyerG, stradiot: stradiotG, kanatlihusar: kanatliG, kazak: kazakG, fransizsuvari: fransizSuvariG };
 
 const armyMat = new THREE.MeshLambertMaterial({ vertexColors: true });
 const goldMat = new THREE.MeshPhongMaterial({ color: 0xe8b33a, specular: 0xfff2b0, shininess: 90, emissive: 0x3d2800 });
@@ -447,7 +471,9 @@ const ENEMY_FLAG_ASIL = () => [enemyFlag('#8e1f2a', '#e7c56a'), enemyFlag('#6a1b
   enemyFlag('#7a1b2a', '#e7c56a'), enemyFlag('#2a4a8a', '#e7c56a', 'parti'), enemyFlag('#a01a24', '#ece6d6', 'serit'),
   enemyFlag('#2a6a3a', '#ece6d6', 'serit'), enemyFlag('#e0c040', '#1a1a1a', 'parti'),
   enemyFlag('#e0c040', '#1a1a1a', 'parti'), enemyFlag('#a01a24', '#e7c56a'), enemyFlag('#1a1a1a', '#e0c040', 'serit'), enemyFlag('#a01a24', '#e7c56a', 'parti'),
-  enemyFlag('#b02030', '#ece6d6', 'serit'), enemyFlag('#2a5a3a', '#ece6d6', 'parti'), enemyFlag('#6a1b5a', '#e7c56a')];
+  enemyFlag('#b02030', '#ece6d6', 'serit'), enemyFlag('#2a5a3a', '#ece6d6', 'parti'), enemyFlag('#6a1b5a', '#e7c56a'),
+  enemyFlag('#a01a24', '#e7c56a'), enemyFlag('#1a1a1a', '#e0c040', 'serit'), enemyFlag('#e0c040', '#1a1a1a', 'parti'), enemyFlag('#2a3a9a', '#ece6d6', 'serit'),
+  enemyFlag('#ece6d6', '#2a4a9a', 'serit'), enemyFlag('#2a5a3a', '#ece6d6', 'parti'), enemyFlag('#2a5aa8', '#ece6d6', 'serit'), enemyFlag('#6a1b5a', '#e7c56a')];
 const ENEMY_FLAG = MAC ? ENEMY_FLAG_ASIL().map(() => enemyFlag(MAC.r1, MAC.r2)) : ENEMY_FLAG_ASIL();
 
 /* ================= HAVA, GÜN SAATİ, MEVSİM ================= */
@@ -467,7 +493,9 @@ const MOODS = {
 const MOOD_W = [['ogle', 3], ['sabah', 1.1], ['ikindi', 1.1], ['aksam', 1], ['gece', .8, 25], ['bulut', 1, 15], ['yagmur', .8, 20], ['sis', .6, 40], ['bahar', .9, 10], ['guz', .9, 40], ['kis', .7, 60]];
 function moodOf(i, T) {
   if (Q.get('hava')) return Q.get('hava');
-  if (i === M.NL - 1) return 'aksam';
+  if (i === M.NL - 1) return 'sabah';      // fetih şafakta
+  if (i === 1070) return 'aksam';            // Malazgirt'e dönüş gün batımında
+  if (T.mood) return T.mood;
   if (i < 8) return 'ogle';
   if (T.ground === 0xeef2f6) return 'kis';                     // karlı bölgeler
   const kum = ((T.ground >> 16) & 255) - ((T.ground >> 8) & 255) > 22;   // kumlu, sıcak bölgeler: kar yok
@@ -622,7 +650,7 @@ function buildLevelView(G) {
         const su = new THREE.Mesh(BOX(b - a, .02, 2.2), new THREE.MeshPhongMaterial({ color: 0x3a6a80, shininess: 60 })); su.position.set((a + b) / 2, .09, 0); g.add(su); });
       const kopru = new THREE.Mesh(BOX(o.bw * 2, .18, 3.0), woodMat); kopru.position.set(o.bx, .12, 0); kopru.receiveShadow = true; g.add(kopru);
       [-1, 1].forEach(sd => { const rl = new THREE.Mesh(BOX(.1, .5, 3.0), woodMat); rl.position.set(o.bx + sd * o.bw, .4, 0); g.add(rl); });
-      const L = makeLabel(256, 128); drawBig(L, 'KÖPRÜ', '#ffe08a', '#16202e', 80); const lab = labelSprite(L, 2.0, 1.0); lab.position.set(o.bx, 1.6, 0); g.add(lab);
+      const L = makeLabel(256, 128); drawBig(L, t('KÖPRÜ'), '#ffe08a', '#16202e', 80); const lab = labelSprite(L, 2.0, 1.0); lab.position.set(o.bx, 1.6, 0); g.add(lab);
       g.position.set(0, 0, o.z); levelGroup.add(g); VIEW.objs.set(o, { g });
     } else if (o.t === 'barricade') {
       const g = new THREE.Group(); const beam = new THREE.Mesh(BOX(o.w, .35, .35), woodMat); beam.position.y = .5; beam.castShadow = true; g.add(beam);
@@ -664,7 +692,7 @@ function buildLevelView(G) {
       const g = new THREE.Group(), rockM = new THREE.MeshLambertMaterial({ color: 0x8a7e6e });
       const ww = G.road - o.w + 2.5; [-1, 1].forEach(sd => { const w = new THREE.Mesh(BOX(ww, 4.5, o.len), rockM); w.position.set(sd * (o.w + ww / 2), 2.25, -o.len / 2); w.castShadow = true; w.receiveShadow = true; g.add(w);
         for (let k = 0; k < 5; k++) { const r = new THREE.Mesh(new THREE.DodecahedronGeometry(1.4 + (k % 2) * .5, 0), stoneDark); r.position.set(sd * (o.w + .9 + (k % 2) * .5), 4.6 + (k % 3) * .3, -k * o.len / 4.5); g.add(r); } });
-      const L = makeLabel(512, 128); drawBig(L, 'DAR GEÇİT · ' + M.gecitCap(o.w) + ' kişi sığar', '#ffd9a0', '#16202e', 64); const lab = labelSprite(L, 5.4, 1.35); lab.position.set(0, 5.2, 0); g.add(lab);
+      const L = makeLabel(512, 128); drawBig(L, t('DAR GEÇİT · {n} kişi sığar', { n: M.gecitCap(o.w) }), '#ffd9a0', '#16202e', 64); const lab = labelSprite(L, 5.4, 1.35); lab.position.set(0, 5.2, 0); g.add(lab);
       g.position.set(0, 0, o.z); levelGroup.add(g); VIEW.objs.set(o, { g });
     } else if (o.t === 'squad') {
       const L = makeLabel(256, 128); drawCount(L, o.n); const spr = labelSprite(L, o.final ? 3.2 : 2.4, o.final ? 1.6 : 1.2); levelGroup.add(spr);
@@ -703,7 +731,7 @@ function buildLevelView(G) {
   [-1, 1].forEach(s => { const w = new THREE.Mesh(BOX(.6, .7, len), stoneMat); w.position.set(s * (G.road + .3), .35, cz); w.receiveShadow = true; levelGroup.add(w); });
   // yol boyu sancaklar
   for (let z = -10; z > G.L.endZ; z -= 40) [-1, 1].forEach(s => { const p = new THREE.Group(); const pole = new THREE.Mesh(CYL(.07, .07, 4, 6), postMat); pole.position.y = 2; p.add(pole); const fl = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 1.6), new THREE.MeshLambertMaterial({ map: flagTex, side: THREE.DoubleSide })); fl.position.set(s * -.6, 3.1, 0); p.add(fl);
-    if ((MOODS[mood] || {}).torch) { const fire = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xffa040, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending })); fire.scale.set(2.4, 2.4, 1); fire.position.y = 4.2; p.add(fire); }
+    if ((MOODS[mood] || {}).torch && S.q !== 'dusuk') { const fire = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xffa040, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending })); fire.scale.set(2.4, 2.4, 1); fire.position.y = 4.2; p.add(fire); }
     p.position.set(s * (G.road + 1.4), 0, z); levelGroup.add(p); });
   arrowMat.color.set(M.WEAPONS[0].c);
   DEAD.length = 0; lostSeen = G.lost; lossPop = 0;
@@ -736,19 +764,19 @@ let G = null, mode = 'menu', paused = false, hintT = 0, camX = 0, camZ = 0, last
 function startGame(i) {
   G = M.newGame(i, S.up); buildLevelView(G); camX = 0; camZ = 0;
   mode = 'play'; paused = false; hintT = i === 0 ? 3.2 : 0;
-  show(null); $('hLvl').textContent = 'Bölüm ' + (i + 1); updateWeapon();
+  show(null); $('hLvl').textContent = t('Bölüm {n}', { n: i + 1 }); updateWeapon();
   drumOn = true; drumT = 0.3; unlockAudio();
   if (MAC) { $('hLvl').textContent = MAC.bk + ' – ' + MAC.rk; banner(MAC.bk + ' ordusu', MAC.rk + ' kalesine'); } else banner(G.L.ad, M.REGIONS[G.L.reg].ad);
 }
 function previewLevel(i) { G = M.newGame(i, S.up); buildLevelView(G); camX = 0; camZ = 0; mode = 'menu'; drumOn = false; }
-function updateWeapon() { const w = M.WEAPONS[G.wTier]; $('weapon').innerHTML = w.ad + '<small>×' + String(w.m).replace('.', ',') + '</small>'; arrowMat.color.set(w.c); }
+function updateWeapon() { const w = M.WEAPONS[G.wTier]; $('weapon').innerHTML = w.ad + '<small>×' + D.dec(w.m) + '</small>'; arrowMat.color.set(w.c); }
 
 /* girdi: parmağını kaydır */
 let drag = false, lx = 0, keyDir = 0;
 window.addEventListener('pointerdown', e => { unlockAudio(); if (mode !== 'play' || paused) return; drag = true; lx = e.clientX; });
 window.addEventListener('pointermove', e => { if (!drag || !G) return; const dx = e.clientX - lx; lx = e.clientX; G.tx += dx / Math.min(window.innerWidth, 520) * 13; });
 ['pointerup', 'pointercancel'].forEach(t => window.addEventListener(t, () => drag = false));
-window.addEventListener('keydown', e => { if (e.key === 'ArrowLeft' || e.key === 'a') keyDir = -1; if (e.key === 'ArrowRight' || e.key === 'd') keyDir = 1; if (e.key === 'Escape' && mode === 'play') pause(true); });
+window.addEventListener('keydown', e => { if (e.key === 'ArrowLeft' || e.key === 'a') keyDir = -1; if (e.key === 'ArrowRight' || e.key === 'd') keyDir = 1; if (e.key === 'Escape') { if (mode === 'play' && !paused) pause(true); else if (curScr && curScr !== 'menu') padBack(); } if (e.key === 'F11' && HOST) { e.preventDefault(); S.fs = S.fs ? 0 : 1; persist(); applyFullscreen(); } });
 window.addEventListener('keyup', e => { if (['ArrowLeft', 'ArrowRight', 'a', 'd'].includes(e.key)) keyDir = 0; });
 document.addEventListener('visibilitychange', () => { if (document.hidden && mode === 'play' && !paused) pause(true); });
 
@@ -756,15 +784,15 @@ function handleEvents() {
   for (const e of G.events) {
     switch (e.type) {
       case 'gain': popup('+' + e.v, e.x, 1.8, e.z); SFX.gain(); break;
-      case 'loot': popup('+' + e.v + ' akçe', e.x, 3, e.z, 'gold'); SFX.buy(); break;
+      case 'loot': popup(t('+{n} akçe', { n: e.v }), e.x, 3, e.z, 'gold'); SFX.buy(); break;
       case 'tas': { const v = VIEW.objs.get(e.o); if (v) { v.g.visible = false; } puff(e.o.x, .8, e.o.z, 3.4); puff(e.o.x + 1, 1.2, e.o.z, 2.4); noise(0.3, 0.2, 300); tone(90, 0.3, 'sine', 0.15, 0.5);
         if (e.v) { lossShown += e.v; popup('−' + e.v, G.x, 2.6, G.z, 'bad'); if (navigator.vibrate) try { navigator.vibrate(40); } catch (x) {} } break; }
       case 'gate': { popup((e.d >= 0 ? '+' : '') + e.d, e.x, 2.5, e.z - 1, e.d >= 0 ? '' : 'bad'); e.d >= 0 ? SFX.good() : SFX.bad(); const v = VIEW.gates.find(v => v.gt === e.g); if (v) { v.anim = e.g.idx; v.t = 0; } break; }
       case 'weapon': popup(M.WEAPONS[e.w].ad + '!', e.x, 3, e.z, 'gold'); SFX.weapon(); updateWeapon(); break;
-      case 'hero': popup('Altın Alp katıldı!', e.x, 3.2, e.z, 'gold'); SFX.hero(); break;
-      case 'troops': popup('+' + e.v + ' akıncı', e.x, 3, e.z, 'gold'); SFX.good(); break;
+      case 'hero': popup(t('Altın Alp katıldı!'), e.x, 3.2, e.z, 'gold'); if (G.heroes >= 3) achieve('ALP3'); SFX.hero(); break;
+      case 'troops': popup(t('+{n} akıncı', { n: e.v }), e.x, 3, e.z, 'gold'); SFX.good(); break;
       case 'gulleWarn': tone(70, 0.25, 'sine', 0.12, 0.4); noise(0.2, 0.12, 200); break;
-      case 'crash': lossShown += e.v; popup((e.gecit ? 'Sıkıştı −' : e.hendek ? 'Hendek −' : e.gulle ? 'Gülle −' : '−') + e.v, e.x, 2.4, e.z, 'bad'); SFX.crash(); if (navigator.vibrate) try { navigator.vibrate(30); } catch (x) {} break;
+      case 'crash': lossShown += e.v; popup((e.gecit ? t('Sıkıştı −') : e.hendek ? t('Hendek −') : e.gulle ? t('Gülle −') : '−') + e.v, e.x, 2.4, e.z, 'bad'); SFX.crash(); if (navigator.vibrate) try { navigator.vibrate(30); } catch (x) {} break;
       case 'break': { const v = VIEW.objs.get(e.o); if (v) v.die = 0.3; puff(e.o.x, 1, e.o.z, 2.4); puff(e.o.x + .6, 1.4, e.o.z, 1.8); SFX.break(); break; }
       case 'hit': SFX.tick(); if (Math.random() < .4) puff(e.x + (Math.random() - .5) * 2, .8, e.z, .9); break;
       case 'clash': SFX.tick(); if (Math.random() < .5) puff(e.x + (Math.random() - .5) * 2.5, .9, e.z, 1.4); break;
@@ -801,31 +829,36 @@ function finish(win) {
   lastRes = { i, win, stars, gain };
   if (win) {
     const sfi = M.seferOf(i), SF = M.SEFERLER[sfi], last = i === M.SEF0[sfi] + SF.n - 1;
-    $('wTitle').textContent = last ? SF.zafer : 'ZAFER!';
+    $('wTitle').textContent = last ? SF.zafer : t('ZAFER!');
     $('wStars').innerHTML = starHtml(stars);
-    $('wStats').innerHTML = (last ? '' : G.L.ad + ' geçildi.<br>') + 'Sağ kalan akıncı: <b>' + G.count + '</b>' + (G.heroes ? ' · Altın Alp: <b>' + G.heroes + '</b>' : '') + '<br>Dağıtılan düşman askeri: <b>' + fmt(G.kills) + '</b>' + (G.loot ? '<br>Kervan ganimeti: <b>' + G.loot + ' akçe</b>' : '') + (!last && canUpgrade() ? '<br><span class="hint">Ordugâh\'ta yeni geliştirme alabilirsin!</span>' : '');
+    $('wStats').innerHTML = (last ? '' : t('{a} geçildi.', { a: G.L.ad }) + '<br>') + t('Sağ kalan akıncı') + ': <b>' + G.count + '</b>' + (G.heroes ? ' · ' + t('Altın Alp') + ': <b>' + G.heroes + '</b>' : '') + '<br>' + t('Dağıtılan düşman askeri') + ': <b>' + fmt(G.kills) + '</b>' + (G.loot ? '<br>' + t('Kervan ganimeti') + ': <b>' + G.loot + ' ' + t('akçe') + '</b>' : '') + (!last && canUpgrade() ? '<br><span class="hint">' + t('Ordugâh\'ta yeni geliştirme alabilirsin!') + '</span>' : '');
+    winAchievements(i, stars, last, sfi);
     $('wEpi').hidden = !last;
-    if (last) $('wEpi').textContent = SF.epilog + (i < NL - 1 ? ' Sıradaki sefer: ' + M.SEFERLER[sfi + 1].ad + '!' : ' Yeni seferler pek yakında: hedef 1453 bölüm.');
+    if (last) $('wEpi').textContent = SF.epilog + (i < NL - 1 ? t(' Sıradaki sefer: {a}!', { a: M.SEFERLER[sfi + 1].ad }) : t(' Yeni seferler pek yakında: hedef 1923 bölüm.'));
     $('wGain').textContent = gain;
-    $('wNext').textContent = i === NL - 1 ? 'SEFER HARİTASI' : last ? 'YENİ SEFER' : 'DEVAM';
+    $('wNext').textContent = t(i === NL - 1 ? 'SEFER HARİTASI' : last ? 'YENİ SEFER' : 'DEVAM');
     show('win'); fanfare(); for (let k = 0; k < stars; k++) setTimeout(() => SFX.star(k), 300 + k * 250);
   } else {
     let tip;
-    if (G.wTier === 0 && G.L.objs.some(o => o.t === 'pedestal')) tip = 'Kaideleri okla sıfırla: daha güçlü bir yay, ordunun gücünü katlar.';
-    else if (G.peak < 30) tip = 'Kapılarda doğru tarafı seç. Ordun büyük olmadan bölüm sonuna varma.';
-    else if (G.L.boss) tip = 'Dev, ok gücünle eriyor. Ordugâh\'ta Ok Ucu ve Kemankeşhane\'yi geliştir.';
-    else tip = 'Ordugâh\'ta akıncılarını güçlendir ya da eski bölümleri yıldızlayıp akçe topla.';
+    if (G.wTier === 0 && G.L.objs.some(o => o.t === 'pedestal')) tip = t('Kaideleri okla sıfırla: daha güçlü bir yay, ordunun gücünü katlar.');
+    else if (G.peak < 30) tip = t('Kapılarda doğru tarafı seç. Ordun büyük olmadan bölüm sonuna varma.');
+    else if (G.L.boss) tip = t('Dev, ok gücünle eriyor. Ordugâh\'ta Ok Ucu ve Kemankeşhane\'yi geliştir.');
+    else tip = t('Ordugâh\'ta akıncılarını güçlendir ya da eski bölümleri yıldızlayıp akçe topla.');
     $('lTip').textContent = tip; $('lGain').textContent = gain;
     show('lose'); sadHorn();
   }
 }
 
 /* ================= EKRANLAR ================= */
-const SCR = { menu: 'scrMenu', levels: 'scrLevels', camp: 'scrCamp', brief: 'scrBrief', pause: 'scrPause', win: 'scrWin', lose: 'scrLose' };
+const SCR = { menu: 'scrMenu', levels: 'scrLevels', camp: 'scrCamp', brief: 'scrBrief', pause: 'scrPause', win: 'scrWin', lose: 'scrLose', set: 'scrSet', full: 'scrFull' };
+let curScr = 'menu';
 function show(n) {
   for (const k in SCR) $(SCR[k]).hidden = k !== n;
+  curScr = n;
   const playing = n === null || n === 'pause';
-  $('hud').hidden = !playing; $('weapon').hidden = !playing; $('sndBtn').hidden = !(n === 'menu' || n === 'pause');
+  $('hud').hidden = !playing; $('weapon').hidden = !playing; $('sndBtn').hidden = !(n === 'menu' || n === 'pause'); $('setBtn').hidden = !(n === 'menu' || n === 'pause') || !!MAC;
+  if (n === 'set') renderSet();
+  setTimeout(() => { const sc = n && $(SCR[n]); if (sc && padActive) { const b = sc.querySelector('.big:not([hidden]),button:not([disabled]):not([hidden])'); if (b) b.focus(); } }, 30);
   if (n === 'menu') renderMenu(); if (n === 'levels') renderLevels(); if (n === 'camp') renderCamp();
 }
 const upCapNow = () => M.upCap(M.seferOf(Math.min(NL, S.unlocked) - 1));
@@ -834,8 +867,8 @@ let campFrom = 'menu';
 function openCamp(from) { campFrom = from; show('camp'); }
 const nextLevel = () => Math.min(NL - 1, S.unlocked - 1);
 function renderMenu() {
-  const i = nextLevel(); $('mCoins').textContent = S.coins; $('mStars').textContent = totalStars() + ' / ' + NL * 3 + ' yıldız';
-  $('bPlaySub').textContent = 'Bölüm ' + (i + 1) + ' · ' + M.LEVELS[i].ad;
+  const i = nextLevel(); $('mCoins').textContent = S.coins; $('mStars').textContent = t('{a} / {b} yıldız', { a: totalStars(), b: NL * 3 });
+  $('bPlaySub').textContent = t('Bölüm {n}', { n: i + 1 }) + ' · ' + M.LEVELS[i].ad; $('creditEn').textContent = D.lang === 'en' ? 'A Mr. Anduv! production.' : '';
   $('bCamp').classList.toggle('notify', canUpgrade());
 }
 let regionSel = -1, seferSel = -1;
@@ -847,18 +880,18 @@ function renderLevels() {
   $('sPrev').disabled = seferSel === 0; $('sNext').disabled = seferSel >= NSF;
   const grid = $('grid'), tabs = $('tabs'); grid.innerHTML = ''; tabs.innerHTML = '';
   if (seferSel >= NSF) {     // yakında
-    $('sName').textContent = M.SOON.ad; $('sSub').textContent = 'Sıradaki sefer';
+    $('sName').textContent = M.SOON.ad; $('sSub').textContent = t('Sıradaki sefer');
     $('regionHead').textContent = '';
-    grid.innerHTML = '<div class="soon" style="grid-column:1/-1"><h3>Pek yakında</h3><p>Bin yetmiş bir bölümün hepsini bitirdin! Yeni seferler güncellemelerle geliyor: hedef 1453, sonra 1923 bölüm. Bu arada eski bölümleri yıldızla, Ordugâh\'ı güçlendir.</p></div>';
+    grid.innerHTML = '<div class="soon" style="grid-column:1/-1"><h3>' + t('Pek yakında') + '</h3><p>' + t('Bin dört yüz elli üç bölümün hepsini bitirdin! Yeni seferler güncellemelerle geliyor: hedef 1923 bölüm. Bu arada eski bölümleri yıldızla, Ordugâh\'ı güçlendir.') + '</p></div>';
     return;
   }
   const SF = M.SEFERLER[seferSel];
-  $('sName').textContent = (seferSel + 1) + '. Sefer: ' + SF.ad; $('sSub').textContent = SF.yil + ' · ' + SF.alt;
+  $('sName').textContent = t('{n}. Sefer: {a}', { n: seferSel + 1, a: SF.ad }); $('sSub').textContent = SF.yil + ' · ' + SF.alt;
   if (sefOfReg(regionSel) !== seferSel) regionSel = M.SEFR0[seferSel];
   for (let r = M.SEFR0[seferSel]; r < M.SEFR0[seferSel] + SF.nb; r++) {
     const R = M.REGIONS[r], r0 = M.REG0[r], rn = M.regLen(r), lock = r0 + 1 > S.unlocked; let st = 0; for (let k = 0; k < rn; k++) st += S.stars[r0 + k] || 0;
     const b = document.createElement('button'); b.className = 'tab' + (lock ? ' locked' : ''); b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', r === regionSel);
-    b.innerHTML = R.ad + '<small>' + (lock ? 'Kilitli' : st + ' / ' + rn * 3 + ' yıldız') + '</small>';
+    b.innerHTML = R.ad + '<small>' + (lock ? t('Kilitli') : t('{a} / {b} yıldız', { a: st, b: rn * 3 })) + '</small>';
     b.addEventListener('click', () => { SFX.click(); regionSel = r; renderLevels(); });
     tabs.appendChild(b);
   }
@@ -868,9 +901,9 @@ function renderLevels() {
     const i = M.REG0[regionSel] + k, L = M.LEVELS[i], lock = i + 1 > S.unlocked;
     const b = document.createElement('button'); b.className = 'lv' + (lock ? ' lock' : '') + (i === nextLevel() && !lock ? ' cur' : '');
     let inner = '';
-    if (L.boss) { const bo = L.objs.find(o => o.t === 'boss'); inner += '<span class="tag">' + M.BOSSES[bo.id].ad.toLocaleUpperCase('tr') + '</span>'; }
-    inner += '<span class="n">' + (lock ? '<svg width="22" height="26" viewBox="0 0 22 26" aria-label="kilitli"><rect x="2" y="11" width="18" height="14" rx="3" fill="currentColor"/><path d="M6 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="3" fill="none"/></svg>' : (i + 1)) + '</span><span class="nm">' + L.ad + '</span><span class="st">' + starHtml(S.stars[i] || 0).replace(/ style="[^"]*"/g, '') + '</span>';
-    b.innerHTML = inner; b.disabled = lock; b.setAttribute('aria-label', 'Bölüm ' + (i + 1) + ', ' + L.ad + (lock ? ', kilitli' : ''));
+    if (L.boss) { const bo = L.objs.find(o => o.t === 'boss'); inner += '<span class="tag">' + M.BOSSES[bo.id].ad.toLocaleUpperCase(D.lang) + '</span>'; }
+    inner += '<span class="n">' + (lock ? '<svg width="22" height="26" viewBox="0 0 22 26" aria-label="' + t('kilitli') + '"><rect x="2" y="11" width="18" height="14" rx="3" fill="currentColor"/><path d="M6 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="3" fill="none"/></svg>' : (i + 1)) + '</span><span class="nm">' + L.ad + '</span><span class="st">' + starHtml(S.stars[i] || 0).replace(/ style="[^"]*"/g, '') + '</span>';
+    b.innerHTML = inner; b.disabled = lock; b.setAttribute('aria-label', t('Bölüm {n}', { n: i + 1 }) + ', ' + L.ad + (lock ? ', ' + t('kilitli') : '')); if (!lock && !canPlay(i)) b.classList.add('pay');
     if (!lock) b.addEventListener('click', () => { SFX.click(); openBrief(i); });
     grid.appendChild(b);
   }
@@ -882,18 +915,20 @@ function renderCamp() {
     const cap = upCapNow(), l = S.up[u.k], max = l >= cap, cost = max ? 0 : M.upCost(u, l);
     const card = document.createElement('div'); card.className = 'card';
     let pips = ''; for (let k = 0; k < cap; k++) pips += '<i' + (k < l ? ' class="on"' : '') + '></i>';
-    card.innerHTML = '<h3>' + u.ad + '</h3><div class="lvl">SEVİYE ' + l + ' / ' + cap + '</div><div class="pips">' + pips + '</div><div class="d">' + u.desc(l) + (max ? '' : '<br><b>Sonraki: ' + u.desc(l + 1) + '</b>') + '</div>';
+    card.innerHTML = '<h3>' + u.ad + '</h3><div class="lvl">' + t('SEVİYE {a} / {b}', { a: l, b: cap }) + '</div><div class="pips">' + pips + '</div><div class="d">' + u.desc(l) + (max ? '' : '<br><b>' + t('Sonraki: ') + u.desc(l + 1) + '</b>') + '</div>';
     const b = document.createElement('button'); b.className = 'buy'; b.disabled = max || S.coins < cost;
-    const capTxt = cap < M.UPMAX ? 'YENİ SEFERDE AÇILIR' : 'EN ÜST SEVİYE';
-    b.innerHTML = max ? capTxt : '<b class="akce"></b>' + fmt(cost); b.setAttribute('aria-label', max ? u.ad + ': ' + capTxt.toLocaleLowerCase('tr') : u.ad + ' geliştir, ' + cost + ' akçe');
-    b.addEventListener('click', () => { if (max || S.coins < cost) return; S.coins -= cost; S.up[u.k]++; persist(); SFX.buy(); renderCamp(); if (mode === 'menu') previewLevel(nextLevel()); });
+    const capTxt = t(cap < M.UPMAX ? 'YENİ SEFERDE AÇILIR' : 'EN ÜST SEVİYE');
+    b.innerHTML = max ? capTxt : '<b class="akce"></b>' + fmt(cost); b.setAttribute('aria-label', max ? u.ad + ': ' + capTxt.toLocaleLowerCase(D.lang) : t('{a} geliştir, {b} akçe', { a: u.ad, b: cost }));
+    b.addEventListener('click', () => { if (max || S.coins < cost) return; S.coins -= cost; S.up[u.k]++; if (S.up[u.k] >= M.UPMAX) achieve('ORDUGAH'); persist(); SFX.buy(); renderCamp(); if (mode === 'menu') previewLevel(nextLevel()); });
     card.appendChild(b); camp.appendChild(card);
   });
 }
 let briefI = 0;
+function canPlay(i) { return S.full || i < FREE_LIMIT || !!MAC; }
 function openBrief(i) {
+  if (!canPlay(i)) { openFull(); return; }
   briefI = i; const L = M.LEVELS[i], R = M.REGIONS[L.reg];
-  $('scrBrief').querySelector('.topbar h2').textContent = 'Bölüm ' + (i + 1) + ' / ' + NL;
+  $('scrBrief').querySelector('.topbar h2').textContent = t('Bölüm {a} / {b}', { a: i + 1, b: NL });
   $('brReg').textContent = M.SEFERLER[L.sf].ad + ' · ' + R.ad; $('brName').textContent = L.ad; $('brText').textContent = L.brief;
   $('brStars').innerHTML = starHtml(S.stars[i] || 0).replace(/ style="[^"]*"/g, '');
   const kinds = new Set(); let boss = null; L.objs.forEach(o => { if (o.t === 'squad') kinds.add(o.ft); if (o.t === 'boss') boss = o; });
@@ -923,6 +958,115 @@ $('wMenu').addEventListener('click', () => { SFX.click(); previewLevel(nextLevel
 $('lRetry').addEventListener('click', () => { SFX.click(); startGame(lastRes.i); });
 $('lCamp').addEventListener('click', () => { SFX.click(); briefI = lastRes.i; openCamp('brief'); });
 $('lMenu').addEventListener('click', () => { SFX.click(); previewLevel(nextLevel()); show('menu'); });
+
+/* ================= AYARLAR ================= */
+let setFrom = 'menu';
+$('setBtn').addEventListener('click', () => { SFX.click(); setFrom = curScr || 'menu'; show('set'); });
+function segOn(id, v) { $(id).querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === String(v))); }
+function renderSet() {
+  segOn('setLang', D.lang); segOn('setQ', S.q); segOn('setFs', S.fs ? 1 : 0);
+  $('setSfx').value = S.vol.sfx; $('setMus').value = S.vol.mus;
+  $('setFsRow').hidden = !(HOST || document.fullscreenEnabled) || D.platform === 'android' || D.platform === 'ios';
+  $('setFullRow').hidden = !(D.platform === 'android' || D.platform === 'ios');
+  $('setQuit').hidden = !(HOST && HOST.quit);
+}
+$('setLang').addEventListener('click', e => { const v = e.target.dataset && e.target.dataset.v; if (!v) return; SFX.click(); S.lang = v; D.setLang(v); persist(); drawSnd(); renderSet(); if (G && mode === 'menu') previewLevel(nextLevel()); });
+$('setQ').addEventListener('click', e => { const v = e.target.dataset && e.target.dataset.v; if (!v) return; SFX.click(); S.q = v; persist(); applyQuality(); renderSet(); curTheme = -1; if (G && mode === 'menu') previewLevel(nextLevel()); });
+$('setFs').addEventListener('click', e => { const v = e.target.dataset && e.target.dataset.v; if (v === undefined) return; SFX.click(); S.fs = +v; persist(); applyFullscreen(); renderSet(); });
+$('setSfx').addEventListener('input', e => { S.vol.sfx = +e.target.value; applyVolume(); });
+$('setMus').addEventListener('input', e => { S.vol.mus = +e.target.value; applyVolume(); });
+['setSfx', 'setMus'].forEach(id => $(id).addEventListener('change', () => { persist(); unlockAudio(); id === 'setSfx' ? SFX.good() : davul(0, true); }));
+$('setOk').addEventListener('click', () => { SFX.click(); persist(); if (setFrom === 'pause') show('pause'); else { previewLevel(nextLevel()); show('menu'); } });
+$('setBack').addEventListener('click', () => $('setOk').click());
+$('setQuit').addEventListener('click', () => { persist(); HOST && HOST.quit && HOST.quit(); });
+$('setRestore').addEventListener('click', () => restorePurchases(true));
+function applyFullscreen() {
+  if (HOST && HOST.setFullscreen) { HOST.setFullscreen(!!S.fs); return; }
+  try { if (S.fs && !document.fullscreenElement && document.fullscreenEnabled) document.documentElement.requestFullscreen(); else if (!S.fs && document.fullscreenElement) document.exitFullscreen(); } catch (e) {}
+}
+if (HOST) applyFullscreen();
+
+/* ================= TAM SÜRÜM (mobil, tek seferlik 1 dolar) ================= */
+const PRODUCT = 'com.anduv.malazgirt.tamsurum';
+const IAP = () => window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.NativePurchases;
+let fullFrom = 'menu';
+function openFull() { fullFrom = curScr || 'menu'; $('fMsg').textContent = ''; show('full'); loadPrice(); }
+async function loadPrice() {
+  const P = IAP(); if (!P) return;
+  try { const r = await P.getProducts({ productIdentifiers: [PRODUCT], productType: 'inapp' }); const pr = r && r.products && r.products[0]; if (pr) $('fPrice').textContent = pr.priceString || ''; } catch (e) {}
+}
+function unlockFull(msg) { S.full = true; persist(); if (msg) $('fMsg').textContent = t('Tam sürüm açıldı. Hayırlı seferler!'); SFX.weapon(); setTimeout(() => { if (curScr === 'full') { previewLevel(nextLevel()); show(fullFrom === 'levels' ? 'levels' : 'menu'); } }, 1400); }
+$('fBuy').addEventListener('click', async () => {
+  SFX.click(); const P = IAP(); if (!P) { $('fMsg').textContent = t('Satın alma tamamlanamadı. Bağlantını kontrol edip yeniden dene.'); return; }
+  $('fBuy').disabled = true;
+  try { const r = await P.purchaseProduct({ productIdentifier: PRODUCT, productType: 'inapp', quantity: 1 }); if (r && r.transactionId) unlockFull(true); else $('fMsg').textContent = t('Satın alma tamamlanamadı. Bağlantını kontrol edip yeniden dene.'); }
+  catch (e) { $('fMsg').textContent = t('Satın alma tamamlanamadı. Bağlantını kontrol edip yeniden dene.'); }
+  $('fBuy').disabled = false;
+});
+async function restorePurchases(loud) {
+  const P = IAP(); if (!P) return;
+  try {
+    try { await P.restorePurchases(); } catch (e) {}
+    const r = await P.getPurchases({ productType: 'inapp' });
+    const ok = (r && r.purchases || []).some(p => p.productIdentifier === PRODUCT && (p.purchaseState === undefined || p.purchaseState === 'PURCHASED' || p.purchaseState === '1'));
+    if (ok) { if (!S.full) unlockFull(curScr === 'full'); }
+    else if (loud) $(curScr === 'full' ? 'fMsg' : 'fMsg').textContent = t('Geri yüklenecek satın alım bulunamadı.');
+  } catch (e) {}
+}
+$('fRestore').addEventListener('click', () => { SFX.click(); restorePurchases(true); });
+$('fLater').addEventListener('click', () => { SFX.click(); previewLevel(nextLevel()); show(fullFrom === 'levels' ? 'levels' : 'menu'); });
+if (!S.full && IAP()) setTimeout(() => restorePurchases(false), 2500);
+
+/* ================= BAŞARIMLAR (Steam) ================= */
+function achieve(id) { if (MAC || !HOST || !HOST.achieve) return; try { HOST.achieve(id); } catch (e) {} }
+function winAchievements(i, stars, last, sfi) {
+  achieve('ILK_ZAFER');
+  if (last) achieve('SEFER_' + (sfi + 1));
+  const ts = totalStars(); [100, 500, 1000, 2000, 3000].forEach(n => { if (ts >= n) achieve('YILDIZ_' + n); });
+  if (ts >= NL * 3) achieve('YILDIZ_TUM');
+  if (G.peak >= 999) achieve('ORDU_999');
+  if (G.wTier >= M.WEAPONS.length - 1) achieve('CIHAN_YAYI');
+  if (stars >= 3 && G.L.boss) achieve('DEV_3YILDIZ');
+  if (HOST && HOST.stat) try { HOST.stat('BOLUM', S.stars.filter(Boolean).length); } catch (e) {}
+}
+
+/* ================= OYUN KOLU ================= */
+let padActive = false, padPrev = {};
+function focusables() { const sc = curScr ? $(SCR[curScr]) : null; return sc ? [...sc.querySelectorAll('button:not([disabled]),input')].filter(b => b.offsetParent && !b.closest('[hidden]')) : []; }
+function moveFocus(dir) {
+  const els = focusables(); if (!els.length) return; const cur = document.activeElement, i = els.indexOf(cur);
+  if (i < 0) { els[0].focus(); return; }
+  const r0 = cur.getBoundingClientRect(), cx = r0.left + r0.width / 2, cy = r0.top + r0.height / 2; let best = null, bd = 1e9;
+  for (const e of els) { if (e === cur) continue; const r = e.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2, dx = x - cx, dy = y - cy;
+    const ok = dir === 'l' ? dx < -4 : dir === 'r' ? dx > 4 : dir === 'u' ? dy < -4 : dy > 4; if (!ok) continue;
+    const d = (dir === 'l' || dir === 'r' ? Math.abs(dx) + Math.abs(dy) * 2.5 : Math.abs(dy) + Math.abs(dx) * 2.5); if (d < bd) { bd = d; best = e; } }
+  if (best) { best.focus(); best.scrollIntoView({ block: 'nearest' }); }
+}
+function padBack() {
+  if (mode === 'play' && !paused) { pause(true); return; }
+  const back = { levels: () => $('scrLevels').querySelector('.back').click(), camp: () => $('cBack').click(), brief: () => $('scrBrief').querySelector('.back').click(), pause: () => $('pResume').click(), set: () => $('setOk').click(), full: () => $('fLater').click(), win: () => $('wMenu').click(), lose: () => $('lMenu').click() }[curScr];
+  if (back) back();
+}
+function pollPad(dt) {
+  const pads = navigator.getGamepads ? navigator.getGamepads() : []; let p = null; for (const g of pads) if (g && g.connected) { p = g; break; }
+  if (!p) return;
+  const b = k => !!(p.buttons[k] && p.buttons[k].pressed), edge = k => { const v = b(k), was = padPrev[k]; padPrev[k] = v; return v && !was; };
+  const ax = p.axes[0] || 0, ay = p.axes[1] || 0;
+  const stick = { l: ax < -0.6 || b(14), r: ax > 0.6 || b(15), u: ay < -0.6 || b(12), d: ay > 0.6 || b(13) };
+  if (!padActive && (Math.abs(ax) > 0.5 || p.buttons.some(x => x.pressed))) { padActive = true; }
+  if (mode === 'play' && !paused && G) {
+    const v = Math.abs(ax) > 0.15 ? ax : b(14) ? -1 : b(15) ? 1 : 0; G.tx += v * 14 * dt;
+    if (edge(9) || edge(1)) pause(true);
+    return;
+  }
+  for (const k of ['l', 'r', 'u', 'd']) { const v = stick[k], was = padPrev['s' + k]; padPrev['s' + k] = v; if (v && !was) {
+    const el = document.activeElement; if (el && el.type === 'range' && (k === 'l' || k === 'r')) { el.value = +el.value + (k === 'l' ? -10 : 10); el.dispatchEvent(new Event('input')); el.dispatchEvent(new Event('change')); } else moveFocus(k); } }
+  if (edge(0)) { const el = document.activeElement; if (el && el.tagName === 'BUTTON' && !el.closest('[hidden]')) el.click(); else { const f = focusables()[0]; if (f) f.focus(); } }
+  if (edge(1)) padBack();
+  if (edge(9)) { if (curScr === 'menu') $('bPlay').click(); }
+  if (curScr === 'levels') { if (edge(4)) $('sPrev').click(); if (edge(5)) $('sNext').click(); } else { edge(4); edge(5); }
+}
+window.addEventListener('gamepadconnected', () => { padActive = true; setTimeout(() => { const f = focusables()[0]; if (f) f.focus(); }, 50); });
 
 /* ================= DÜŞEN AKINCILAR ================= */
 const MAXD = 70, deadMesh = inst(akinciG, armyMat, MAXD), DEAD = [];
@@ -1003,6 +1147,7 @@ function renderObjs(dt, t) {
 let last = performance.now(), T = 0;
 function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000); last = now; T += dt;
+  pollPad(dt);
   if (G) {
     if (mode === 'play' && !paused) {
       G.tx += keyDir * 12 * dt;
