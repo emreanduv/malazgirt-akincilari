@@ -1,0 +1,48 @@
+name: Masaüstü (Steam: Windows, macOS, Linux)
+# Electron kabuğu (desktop/) + oyun (www/). Çıktılar GitHub Releases'a "masaustu-<sürüm>" etiketiyle yüklenir.
+on:
+  workflow_dispatch:
+    inputs:
+      version_name: { description: "Sürüm (ör. 1.5.0)", required: true }
+      steam_app_id: { description: "Steam App ID (bilinmiyorsa 0)", required: true, default: "0" }
+permissions:
+  contents: write
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: windows-latest, cmd: dist:win, name: windows }
+          - { os: macos-latest, cmd: dist:mac, name: macos }
+          - { os: ubuntu-latest, cmd: dist:linux, name: linux }
+    runs-on: ${{ matrix.os }}
+    defaults: { run: { shell: bash } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Oyunu kabuğa kopyala
+        run: |
+          rm -rf desktop/www && cp -r www desktop/www && cp assets/icon-only.png desktop/www/icon.png
+          echo '{ "appId": ${{ inputs.steam_app_id }} }' > desktop/steam.json
+          cd desktop && npm pkg set version=${{ inputs.version_name }}
+      - name: Derle
+        working-directory: desktop
+        env: { CSC_IDENTITY_AUTO_DISCOVERY: "false" }
+        run: npm install --no-audit --no-fund && npm run ${{ matrix.cmd }}
+      - name: Steam klasörünü paketle
+        working-directory: desktop/dist
+        run: |
+          ls -la
+          V=${{ inputs.version_name }}
+          if [ "${{ matrix.name }}" = windows ]; then 7z a ../steam-windows-$V.zip ./win-unpacked/* >/dev/null; fi
+          if [ "${{ matrix.name }}" = macos ]; then (cd mac-universal && ditto -c -k --keepParent "Malazgirt Akincilari.app" ../../steam-macos-$V.zip); fi
+          if [ "${{ matrix.name }}" = linux ]; then (cd linux-unpacked && zip -qry ../../steam-linux-$V.zip .); cp *.AppImage ../pardus-linux-$V.AppImage; cp *.deb ../pardus-linux-$V.deb; fi
+          ls -la ..
+      - name: GitHub Release'e yükle
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          TAG=masaustu-${{ inputs.version_name }}
+          gh release view $TAG >/dev/null 2>&1 || gh release create $TAG --title "Masaüstü ${{ inputs.version_name }}" --notes "Steam (Windows, macOS, Linux) ve Pardus paketleri" --prerelease || true
+          for f in desktop/steam-*.zip desktop/pardus-*; do [ -f "$f" ] && gh release upload $TAG "$f" --clobber; done
