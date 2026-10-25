@@ -56,7 +56,13 @@
         }
       ],
       "icon": "build/icon.png",
-      "artifactName": "steam-windows-${version}.${ext}"
+      "artifactName": "steam-windows-${version}.${ext}",
+      "extraFiles": [
+        {
+          "from": "node_modules/steamworks.js/dist/win64/steam_api64.dll",
+          "to": "steam_api64.dll"
+        }
+      ]
     },
     "mac": {
       "target": [
@@ -107,7 +113,13 @@
           "Categories": "Game;ArcadeGame;"
         }
       },
-      "artifactName": "linux-${version}.${ext}"
+      "artifactName": "linux-${version}.${ext}",
+      "extraFiles": [
+        {
+          "from": "node_modules/steamworks.js/dist/linux64/libsteam_api.so",
+          "to": "libsteam_api.so"
+        }
+      ]
     },
     "deb": {
       "depends": [

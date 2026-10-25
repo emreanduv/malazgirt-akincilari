@@ -59,7 +59,7 @@
 - Yol haritası: 750 → 1071 (1.4) → 1453 → 1923
 - Derlemeler: iOS 1.3.0 (9) TestFlight'a yüklendi; Android 6 (1.3.0) imzalı, `imza-anahtari/malazgirt-1.3.0-6-imzali.aab`, Play kapalı test Alpha'ya eklendi; App Store 1.3.0 sürümü metin ve görsellerle açıldı
 
-## 1.4.0 (hazırlanıyor): 1071 bölümlük özel sürüm, 22 sefer
+## 1.4.0 (24 Ekim 2026, onaylandı): 1071 bölümlük özel sürüm, 22 sefer
 - Yeni seferler: Zigetvar (751–800), Kıbrıs (801–850), Haçova (851–900), Girit (901–950), Uyvar ve Kamaniçe (951–1000), Prut (1001–1050), Malazgirt'e Dönüş (1051–1071, 3 bölge: 10+10+1)
 - Yapı değişti: seferler `nb` bölgeden, bölgeler `n` bölümden oluşabilir (mantik.js: levelPos, SEF0, SEFR0, REG0)
 - Yol: 1–300 2 şerit, 301–700 3 şerit, 701+ 4 şerit (lanesOf/roadOf); kapılar şerit sayısı kadar seçenek (`gate.opts`)
@@ -70,6 +70,20 @@
 - Mağaza metinleri: store/surum-1.4.md
 - Derlemeler: iOS 1.4.0 (10) TestFlight'a yüklendi; Android 7 (1.4.0) imzalı (`imza-anahtari/malazgirt-1.4.0-7-imzali.aab`), Play kapalı test Alpha'ya eklendi; App Store 1.4.0 sürümü metin ve görsellerle açıldı
 - Denge (bütün bölümleri sırayla oynayan botlar): ortalama oyuncu 16–100 arası ilk denemede %76, 751–1071 arası %44; takılan bölüm yok. Takılma çıkarsa: `LIMIT=8 node araclar/duzelt.js`
+
+## 1.5.0 (hazırlanıyor): 1453 bölüm, 30 sefer; Steam (Windows, macOS, Linux/Pardus)
+- Yeni seferler: Mora 1715, Belgrad 1739, Şebeş 1788, Akka 1799, Silistre 1854, Plevne 1877, Dömeke 1897, Fetih Yolu (1453. bölüm finali; 3 bölge: 10+10+12)
+- 5 yeni birlik (Avusturya piyadesi, Fransız piyadesi ve süvarisi, nişancı, Yunan piyadesi), 13 yeni dev, 2 yeni yay (Mehter, Cihan)
+- Dil: Türkçe + İngilizce (www/js/dil.js arayüz sözlüğü; içerik çevirisi araclar/en/r0–r5.js → `node araclar/en/derle.js` → www/js/icerik-en.js)
+- Ayarlar ekranı: dil, ses efekti ve mehter düzeyi, grafik kalitesi, tam ekran (masaüstü), satın alımı geri yükle (mobil)
+- Fiyat:
+  - Mobil: ücretsiz, ilk 100 bölüm açık; "Tam Sürüm" tek seferlik ürün `com.anduv.malazgirt.tamsurum` (0,99 $). 100. bölümü geçmiş eski oyuncular ücretsiz devam eder.
+  - Steam: 0,99 $ tam oyun (uygulama içi satın alım yok).
+- Masaüstü: `desktop/` (Electron + steamworks.js). Steam başarımları (42; araclar/steam/basarimlar.js → store/steam/basarimlar.json, ikonlar store/steam/basarim-ikon), Steam Cloud kayıt, oyun kolu, F11 tam ekran.
+  - Derleme: Actions → "Masaüstü (Steam)" (masaustu.yml), girdiler sürüm ve Steam App ID → GitHub sürümü `masaustu-<sürüm>`: Windows zip, macOS zip (universal), Linux tar.gz + AppImage + deb (Pardus için deb)
+- Steam görselleri: `node araclar/steam/gorseller.js` (kapsüller araclar/steam/kapak.html ile, ekran görüntüleri TR/EN 1920×1080) → store/steam/
+- Mağaza metinleri TR/EN ve Steam metinleri: store/surum-1.5.md; App Store metinleri store/appstore-metadata/{tr,en-US}; İngilizce ekran görüntüleri store/en/
+- Arayüz büyük masaüstü pencerelerinde 1,45× / 2× ölçeklenir (index.html @media)
 
 ## Sıradakiler
 - Apple ve Google'ın inceleme yanıtlarını bekle.

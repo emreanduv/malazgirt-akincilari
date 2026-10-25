@@ -26,16 +26,21 @@ const which = process.argv[2] || 'hepsi';
       ['02-dev', '/www/index.html?kare=19&ileri=40', 4000],
       ['03-gece', '/www/index.html?kare=720&ileri=330&hava=gece', 3500],
       ['04-harita', '/www/index.html?kare=1060&ekran=levels&bolge=105', 2500],
-      ['05-menu', '/www/index.html?kare=0&ekran=menu', 3000]
+      ['05-menu', '/www/index.html?kare=0&ekran=menu', 3000],
+      ['06-fetih-yolu', '/www/index.html?kare=1452&ileri=45&hava=sabah', 4000]
     ];
     const devices = [
       ['store/screenshots-ios/iphone', 430, 932, 3],   // 1290 × 2796 (6.7"/6.9")
       ['store/screenshots-ios/ipad', 1024, 1366, 2],   // 2048 × 2732 (12.9"/13")
       ['store/screenshots/android', 360, 640, 3]       // 1080 × 1920
     ];
-    for (const [pre, w, h, dpr] of devices) {
+    // Türkçe: store/screenshots(-ios)/ · İngilizce: store/en/screenshots(-ios)/
+    for (const dil of ['tr', 'en']) for (const [pre0, w, h, dpr] of devices) {
+      const pre = dil === 'tr' ? pre0 : pre0.replace('store/', 'store/en/');
+      require('fs').mkdirSync(path.dirname(path.join(ROOT, pre)), { recursive: true });
       for (const [ad, u, wait] of scenes) {
         const p = await b.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: dpr });
+        await p.addInitScript(l => localStorage.setItem('malazgirt-akincilari-v1', JSON.stringify({ lang: l, sound: false })), dil);
         await p.goto(URL + u); await p.waitForTimeout(wait);
         await p.screenshot({ path: path.join(ROOT, `${pre}-${ad}.png`) });
         await p.close(); console.log('✓', `${pre}-${ad}.png`);

@@ -38,7 +38,7 @@ const UI = {
   'Satın alma tamamlanamadı. Bağlantını kontrol edip yeniden dene.': 'The purchase could not be completed. Check your connection and try again.',
   'Tam sürüm açıldı. Hayırlı seferler!': 'Full Version unlocked. Good campaigning!', 'Geri yüklenecek satın alım bulunamadı.': 'No purchases to restore.',
   'Bir Mr. Anduv! yapımıdır.': 'Bir Mr. Anduv! yapımıdır.',
-  'Oyun kolu bağlandı': 'Controller connected'
+  'Oyun kolu bağlandı': 'Controller connected', '← → ya da A / D ile yönlendir': 'Steer with ← → or A / D'
 };
 const SPECIAL_TR = {};
 

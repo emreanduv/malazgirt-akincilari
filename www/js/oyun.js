@@ -1202,6 +1202,8 @@ function macBoot() {
 }
 function boot() {
   if (MAC) { macBoot(); requestAnimationFrame(t => { last = t; frame(t); }); return; }
+  if (Q.has('temiz')) document.body.classList.add('temiz');
+  if (D.platform === 'steam') $('hint').textContent = t('← → ya da A / D ile yönlendir');
   if (Q.has('kare')) {
     S.sound = false; S.unlocked = NL; const kq = +Q.get('kare') || 0, uq = Math.round(kq < 50 ? Math.max(8, kq * 0.2 + 2) : Math.min(M.upCap(M.seferOf(kq)), 12 + (kq - 50) * 0.1)); S.up = { start: uq, dmg: uq, rate: uq, zirh: uq }; S.coins = 1840;
     S.stars = [3, 3, 3, 2, 3, 3, 3, 3, 2, 3, 3, 3, 2, 3, 3, 1, 3, 3]; persist = () => {};
@@ -1209,7 +1211,8 @@ function boot() {
     if (ekran) { previewLevel(+Q.get('kare') || 0); if (ekran === 'brief') openBrief(+Q.get('kare')); else { regionSel = +(Q.get('bolge') || 0); seferSel = sefOfReg(regionSel); show(ekran); } }
     else {
       startGame(+Q.get('kare')); $('banner') && $('banner').remove(); hintT = 0;
-      if (Q.has('ileri')) { const stopZ = G.L.endZ + (+Q.get('ileri')); let n = 0; while (G.z > stopZ && G.state === 'play' && n++ < 20000) { autoSteer(); M.step(G, 1 / 30); handleEvents(); } $('pops').innerHTML = ''; updateWeapon(); }
+      if (Q.has('ileri')) { const stopZ = G.L.endZ + (+Q.get('ileri')); let n = 0; while (G.z > stopZ && G.state === 'play' && n++ < 20000) { autoSteer(); M.step(G, 1 / 30); handleEvents(); } $('pops').innerHTML = ''; }
+      if (Q.has('yay')) G.wTier = Math.min(M.WEAPONS.length - 1, +Q.get('yay')); updateWeapon();
     }
     const step0 = M.step; M.step = (g, dt) => { autoSteer(); for (let k = 0; k < sc; k++) step0(g, dt); };
     requestAnimationFrame(t => { last = t; frame(t); });

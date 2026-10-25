@@ -1,0 +1,506 @@
+[
+ {
+  "id": "ILK_ZAFER",
+  "tr": [
+   "İlk Zafer",
+   "İlk bölümü kazan."
+  ],
+  "en": [
+   "First Victory",
+   "Win your first level."
+  ],
+  "yil": "★"
+ },
+ {
+  "id": "SEFER_1",
+  "tr": [
+   "Malazgirt",
+   "Malazgirt seferini tamamla."
+  ],
+  "en": [
+   "Manzikert",
+   "Complete the Manzikert campaign."
+  ],
+  "yil": "1071"
+ },
+ {
+  "id": "SEFER_2",
+  "tr": [
+   "Anadolu'ya Akın",
+   "Anadolu'ya Akın seferini tamamla."
+  ],
+  "en": [
+   "Raid into Anatolia",
+   "Complete the Raid into Anatolia campaign."
+  ],
+  "yil": "1075"
+ },
+ {
+  "id": "SEFER_3",
+  "tr": [
+   "Haçlılara Karşı",
+   "Haçlılara Karşı seferini tamamla."
+  ],
+  "en": [
+   "Against the Crusaders",
+   "Complete the Against the Crusaders campaign."
+  ],
+  "yil": "1101"
+ },
+ {
+  "id": "SEFER_4",
+  "tr": [
+   "Miryokefalon",
+   "Miryokefalon seferini tamamla."
+  ],
+  "en": [
+   "Myriokephalon",
+   "Complete the Myriokephalon campaign."
+  ],
+  "yil": "1176"
+ },
+ {
+  "id": "SEFER_5",
+  "tr": [
+   "Selçuklu'nun Zirvesi",
+   "Selçuklu'nun Zirvesi seferini tamamla."
+  ],
+  "en": [
+   "Seljuk Zenith",
+   "Complete the Seljuk Zenith campaign."
+  ],
+  "yil": "1225"
+ },
+ {
+  "id": "SEFER_6",
+  "tr": [
+   "Uç Beylikleri",
+   "Uç Beylikleri seferini tamamla."
+  ],
+  "en": [
+   "Frontier Beyliks",
+   "Complete the Frontier Beyliks campaign."
+  ],
+  "yil": "1302"
+ },
+ {
+  "id": "SEFER_7",
+  "tr": [
+   "Rumeli'ye Geçiş",
+   "Rumeli'ye Geçiş seferini tamamla."
+  ],
+  "en": [
+   "Into Rumelia",
+   "Complete the Into Rumelia campaign."
+  ],
+  "yil": "1361"
+ },
+ {
+  "id": "SEFER_8",
+  "tr": [
+   "Kosova",
+   "Kosova seferini tamamla."
+  ],
+  "en": [
+   "Kosovo",
+   "Complete the Kosovo campaign."
+  ],
+  "yil": "1389"
+ },
+ {
+  "id": "SEFER_9",
+  "tr": [
+   "Niğbolu",
+   "Niğbolu seferini tamamla."
+  ],
+  "en": [
+   "Nicopolis",
+   "Complete the Nicopolis campaign."
+  ],
+  "yil": "1396"
+ },
+ {
+  "id": "SEFER_10",
+  "tr": [
+   "Varna",
+   "Varna seferini tamamla."
+  ],
+  "en": [
+   "Varna",
+   "Complete the Varna campaign."
+  ],
+  "yil": "1444"
+ },
+ {
+  "id": "SEFER_11",
+  "tr": [
+   "İstanbul'un Fethi",
+   "İstanbul'un Fethi seferini tamamla."
+  ],
+  "en": [
+   "Conquest of Constantinople",
+   "Complete the Conquest of Constantinople campaign."
+  ],
+  "yil": "1453"
+ },
+ {
+  "id": "SEFER_12",
+  "tr": [
+   "Fatih'in Seferleri",
+   "Fatih'in Seferleri seferini tamamla."
+  ],
+  "en": [
+   "Campaigns of the Conqueror",
+   "Complete the Campaigns of the Conqueror campaign."
+  ],
+  "yil": "1480"
+ },
+ {
+  "id": "SEFER_13",
+  "tr": [
+   "Belgrad ve Rodos",
+   "Belgrad ve Rodos seferini tamamla."
+  ],
+  "en": [
+   "Belgrade and Rhodes",
+   "Complete the Belgrade and Rhodes campaign."
+  ],
+  "yil": "1522"
+ },
+ {
+  "id": "SEFER_14",
+  "tr": [
+   "Mohaç",
+   "Mohaç seferini tamamla."
+  ],
+  "en": [
+   "Mohács",
+   "Complete the Mohács campaign."
+  ],
+  "yil": "1526"
+ },
+ {
+  "id": "SEFER_15",
+  "tr": [
+   "Budin",
+   "Budin seferini tamamla."
+  ],
+  "en": [
+   "Buda",
+   "Complete the Buda campaign."
+  ],
+  "yil": "1541"
+ },
+ {
+  "id": "SEFER_16",
+  "tr": [
+   "Zigetvar",
+   "Zigetvar seferini tamamla."
+  ],
+  "en": [
+   "Szigetvár",
+   "Complete the Szigetvár campaign."
+  ],
+  "yil": "1566"
+ },
+ {
+  "id": "SEFER_17",
+  "tr": [
+   "Kıbrıs",
+   "Kıbrıs seferini tamamla."
+  ],
+  "en": [
+   "Cyprus",
+   "Complete the Cyprus campaign."
+  ],
+  "yil": "1571"
+ },
+ {
+  "id": "SEFER_18",
+  "tr": [
+   "Haçova",
+   "Haçova seferini tamamla."
+  ],
+  "en": [
+   "Mezőkeresztes",
+   "Complete the Mezőkeresztes campaign."
+  ],
+  "yil": "1596"
+ },
+ {
+  "id": "SEFER_19",
+  "tr": [
+   "Girit",
+   "Girit seferini tamamla."
+  ],
+  "en": [
+   "Crete",
+   "Complete the Crete campaign."
+  ],
+  "yil": "1669"
+ },
+ {
+  "id": "SEFER_20",
+  "tr": [
+   "Uyvar ve Kamaniçe",
+   "Uyvar ve Kamaniçe seferini tamamla."
+  ],
+  "en": [
+   "Uyvar and Kamaniçe",
+   "Complete the Uyvar and Kamaniçe campaign."
+  ],
+  "yil": "1672"
+ },
+ {
+  "id": "SEFER_21",
+  "tr": [
+   "Prut",
+   "Prut seferini tamamla."
+  ],
+  "en": [
+   "Prut",
+   "Complete the Prut campaign."
+  ],
+  "yil": "1711"
+ },
+ {
+  "id": "SEFER_22",
+  "tr": [
+   "Malazgirt'e Dönüş",
+   "Malazgirt'e Dönüş seferini tamamla."
+  ],
+  "en": [
+   "Return to Manzikert",
+   "Complete the Return to Manzikert campaign."
+  ],
+  "yil": "1071"
+ },
+ {
+  "id": "SEFER_23",
+  "tr": [
+   "Mora",
+   "Mora seferini tamamla."
+  ],
+  "en": [
+   "The Morea",
+   "Complete the The Morea campaign."
+  ],
+  "yil": "1715"
+ },
+ {
+  "id": "SEFER_24",
+  "tr": [
+   "Belgrad",
+   "Belgrad seferini tamamla."
+  ],
+  "en": [
+   "Belgrade",
+   "Complete the Belgrade campaign."
+  ],
+  "yil": "1739"
+ },
+ {
+  "id": "SEFER_25",
+  "tr": [
+   "Şebeş",
+   "Şebeş seferini tamamla."
+  ],
+  "en": [
+   "Caransebeș",
+   "Complete the Caransebeș campaign."
+  ],
+  "yil": "1788"
+ },
+ {
+  "id": "SEFER_26",
+  "tr": [
+   "Akka",
+   "Akka seferini tamamla."
+  ],
+  "en": [
+   "Acre",
+   "Complete the Acre campaign."
+  ],
+  "yil": "1799"
+ },
+ {
+  "id": "SEFER_27",
+  "tr": [
+   "Silistre",
+   "Silistre seferini tamamla."
+  ],
+  "en": [
+   "Silistra",
+   "Complete the Silistra campaign."
+  ],
+  "yil": "1854"
+ },
+ {
+  "id": "SEFER_28",
+  "tr": [
+   "Plevne",
+   "Plevne seferini tamamla."
+  ],
+  "en": [
+   "Plevna",
+   "Complete the Plevna campaign."
+  ],
+  "yil": "1877"
+ },
+ {
+  "id": "SEFER_29",
+  "tr": [
+   "Dömeke",
+   "Dömeke seferini tamamla."
+  ],
+  "en": [
+   "Domokos",
+   "Complete the Domokos campaign."
+  ],
+  "yil": "1897"
+ },
+ {
+  "id": "SEFER_30",
+  "tr": [
+   "Fetih Yolu",
+   "Fetih Yolu seferini tamamla."
+  ],
+  "en": [
+   "Road to Conquest",
+   "Complete the Road to Conquest campaign."
+  ],
+  "yil": "1453"
+ },
+ {
+  "id": "YILDIZ_100",
+  "tr": [
+   "100 Yıldız",
+   "Toplam 100 yıldız topla."
+  ],
+  "en": [
+   "100 Stars",
+   "Collect 100 stars in total."
+  ],
+  "yil": "100★"
+ },
+ {
+  "id": "YILDIZ_500",
+  "tr": [
+   "500 Yıldız",
+   "Toplam 500 yıldız topla."
+  ],
+  "en": [
+   "500 Stars",
+   "Collect 500 stars in total."
+  ],
+  "yil": "500★"
+ },
+ {
+  "id": "YILDIZ_1000",
+  "tr": [
+   "1000 Yıldız",
+   "Toplam 1000 yıldız topla."
+  ],
+  "en": [
+   "1000 Stars",
+   "Collect 1000 stars in total."
+  ],
+  "yil": "1000★"
+ },
+ {
+  "id": "YILDIZ_2000",
+  "tr": [
+   "2000 Yıldız",
+   "Toplam 2000 yıldız topla."
+  ],
+  "en": [
+   "2000 Stars",
+   "Collect 2000 stars in total."
+  ],
+  "yil": "2000★"
+ },
+ {
+  "id": "YILDIZ_3000",
+  "tr": [
+   "3000 Yıldız",
+   "Toplam 3000 yıldız topla."
+  ],
+  "en": [
+   "3000 Stars",
+   "Collect 3000 stars in total."
+  ],
+  "yil": "3000★"
+ },
+ {
+  "id": "YILDIZ_TUM",
+  "tr": [
+   "Kusursuz Akıncı",
+   "Bütün bölümleri 3 yıldızla bitir."
+  ],
+  "en": [
+   "Flawless Raider",
+   "Earn 3 stars on every level."
+  ],
+  "yil": "★★★"
+ },
+ {
+  "id": "ORDU_999",
+  "tr": [
+   "Dev Ordu",
+   "Ordunu 999 akıncıya çıkar."
+  ],
+  "en": [
+   "A Giant Army",
+   "Grow your army to 999 raiders."
+  ],
+  "yil": "999"
+ },
+ {
+  "id": "ALP3",
+  "tr": [
+   "Üç Alp",
+   "Aynı bölümde üç Altın Alp topla."
+  ],
+  "en": [
+   "Three Alps",
+   "Gather three Golden Alps in one level."
+  ],
+  "yil": "ALP"
+ },
+ {
+  "id": "CIHAN_YAYI",
+  "tr": [
+   "Cihan Yayı",
+   "En güçlü yayı kazan."
+  ],
+  "en": [
+   "The World Bow",
+   "Win the strongest bow."
+  ],
+  "yil": "YAY"
+ },
+ {
+  "id": "DEV_3YILDIZ",
+  "tr": [
+   "Kusursuz Zafer",
+   "Bir dev savaşını 3 yıldızla kazan."
+  ],
+  "en": [
+   "Perfect Victory",
+   "Beat a giant with 3 stars."
+  ],
+  "yil": "DEV"
+ },
+ {
+  "id": "ORDUGAH",
+  "tr": [
+   "Usta Ordugâh",
+   "Bir geliştirmeyi en üst seviyeye çıkar."
+  ],
+  "en": [
+   "Master of the Camp",
+   "Raise an upgrade to the maximum level."
+  ],
+  "yil": "MAX"
+ }
+]

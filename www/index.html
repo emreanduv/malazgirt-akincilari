@@ -100,6 +100,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .setrow .alt{font-size:15px;padding:8px 12px 5px}
 #creditEn{display:block;font-size:12px;opacity:.8}
 :focus-visible{outline:3px solid #f0b232;outline-offset:3px}
+body.temiz #hud,body.temiz #weapon,body.temiz #bubble,body.temiz #sndBtn,body.temiz #setBtn,body.temiz #pops,body.temiz #hint,body.temiz #banner{display:none!important}
 
 /* Bölüm haritası */
 .sefer{flex:none;width:100%;max-width:560px;display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#2bb9be,var(--tq-d));border:3px solid var(--gold);border-radius:16px;padding:6px 8px;box-shadow:0 4px 0 var(--gold-d)}
@@ -172,6 +173,9 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .stats b{font-weight:800;font-variant-numeric:tabular-nums}
 .gain{font-size:30px;font-weight:800;color:var(--gold);display:flex;align-items:center}
 .epilog{font-size:16px;font-weight:600;line-height:1.4;background:var(--paper);color:var(--ink);border-radius:16px;padding:12px 16px;text-align:left}
+/* büyük masaüstü pencereleri: arayüzü ölçekle */
+@media (min-width:1400px) and (min-height:820px){#hud,#weapon,#banner,#hint,#setBtn,#sndBtn,body>section{zoom:1.45}}
+@media (min-width:2200px) and (min-height:1200px){#hud,#weapon,#banner,#hint,#setBtn,#sndBtn,body>section{zoom:2}}
 @media (prefers-reduced-motion:reduce){#hint{animation:none}.pop,#banner{animation-duration:.01s}.result .st .star{animation-duration:.01s}}
 </style>
 </head>

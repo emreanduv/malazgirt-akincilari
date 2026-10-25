@@ -1,7 +1,6 @@
-1071 bölümlük özel sürüm!
-• 7 yeni sefer: Zigetvar 1566, Kıbrıs 1571, Haçova 1596, Girit 1669, Uyvar ve Kamaniçe 1672, Prut 1711 ve 1071. bölümde Malazgirt'e Dönüş
-• Yol genişliyor: 301. bölümden 3, 701. bölümden 4 şerit
-• Akıncılar bölüm geçtikçe hızlanıyor, zorluk yeniden ayarlandı
-• Her bölümde farklı gün saati, hava ve mevsim
-• Düşen akıncılar artık görünüyor
-• 7 yeni düşman, 2 yeni yay
+1453 bölüm!
+• 8 yeni sefer: Mora 1715, Belgrad 1739, Şebeş 1788, Akka 1799, Silistre 1854, Plevne 1877, Dömeke 1897 ve 1453. bölümde Fetih Yolu
+• 5 yeni düşman birliği, 13 yeni dev, 2 yeni yay: Mehter Yayı ve Cihan Yayı
+• Ayarlar: dil (Türkçe / English), ses ve müzik düzeyi, grafik kalitesi
+• İngilizce dil desteği
+• İlk 100 bölüm ücretsiz; tam sürüm tek seferlik ödemeyle

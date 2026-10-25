@@ -18,11 +18,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Metin ve görselleri hazırla
         run: |
-          mkdir -p fastlane/screenshots/tr fastlane/metadata/tr
+          mkdir -p fastlane/screenshots/tr fastlane/screenshots/en-US fastlane/metadata
           echo '# deliver ayarları komut satırından veriliyor' > fastlane/Deliverfile
           cp store/screenshots-ios/*.png fastlane/screenshots/tr/
-          cp store/appstore-metadata/tr/*.txt fastlane/metadata/tr/
-          ls -la fastlane/screenshots/tr fastlane/metadata/tr
+          if [ -d store/en/screenshots-ios ]; then cp store/en/screenshots-ios/*.png fastlane/screenshots/en-US/; else rmdir fastlane/screenshots/en-US; fi
+          cp -r store/appstore-metadata/* fastlane/metadata/
+          ls -laR fastlane/screenshots fastlane/metadata
       - name: App Store Connect anahtarı
         env: { P8: "${{ secrets.ASC_KEY_P8 }}" }
         run: |
