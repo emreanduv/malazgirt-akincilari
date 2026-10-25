@@ -20,17 +20,22 @@ const NL = M.NL, NSF = M.SEFERLER.length;
 /* ================= KAYIT ================= */
 const SKEY = 'malazgirt-akincilari-v1';
 const D = window.DIL, t = D.t, HOST = D.HOST;
-const FREE_LIMIT = 100;   // mobilde ücretsiz bölüm sayısı (ilk iki sefer); gerisi Tam Sürüm
+const FREE_LIMIT = 100;   // mobilde yeni oyuncu için ücretsiz bölüm sayısı (ilk iki sefer); gerisi Tam Sürüm
+// 1.5'ten önce oynayanlar bulundukları yerden bir sonraki eşiğe kadar ücretsiz devam eder (ör. 244. bölümdeki oyuncu 250'ye kadar)
+const FREE_STEPS = [100, 250, 500, 1000];
 let S = { coins: 0, unlocked: 1, stars: [], up: { start: 0, dmg: 0, rate: 0, zirh: 0 }, sound: true, seen: 0, lang: D.lang, vol: { sfx: 80, mus: 80 }, q: D.platform === 'web' || D.platform === 'steam' ? 'yuksek' : 'orta', fs: 1 };
 try { const raw = HOST && HOST.load ? HOST.load() : null; const s = JSON.parse(raw || localStorage.getItem(SKEY)); if (s && typeof s === 'object') { S = Object.assign(S, s); S.up = Object.assign({ start: 0, dmg: 0, rate: 0, zirh: 0 }, s.up || {}); S.vol = Object.assign({ sfx: 80, mus: 80 }, s.vol || {}); } } catch (e) {}
 if (S.lang !== D.lang) D.setLang(S.lang);
-// tam sürüm: masaüstü (Steam) satın alınmış oyundur; mobilde ilk 100 bölümü geçmiş eski oyuncular ücretsiz devam eder
+// tam sürüm: masaüstü (Steam) satın alınmış oyundur; mobilde ücretsiz sınır FREE_STEPS'e göre (aşağıda, sürüm göçünden sonra)
 const DEMO = !!(HOST && HOST.demo);   // Steam ücretsiz demosu: ilk 100 bölüm, sonra mağaza sayfası
 if (DEMO) S.full = false;
 else if (D.platform !== 'android' && D.platform !== 'ios') S.full = true;
-else if (!S.fullChecked) { if (S.unlocked > FREE_LIMIT + 1) S.full = true; S.fullChecked = 1; }
 // sürüm göçü: önceki sürümün son bölümünü bitirmiş oyuncu yeni seferi açık bulsun
 for (let i = S.stars.length - 1; i >= 0; i--) if (S.stars[i]) { if (S.unlocked < i + 2) S.unlocked = Math.min(NL, i + 2); break; }
+// mobil ücretsiz sınır bir kez belirlenir: yeni oyuncu 100, eski oyuncu bulunduğu yerin üstündeki ilk eşik (250 / 500 / 1000; 1000'i geçmişse hepsi)
+if (DEMO) S.freeLim = FREE_LIMIT;
+else if (!S.freeLim) { S.freeLim = FREE_STEPS.find(m => m >= S.unlocked) || NL; setTimeout(persist, 0); }
+const freeLim = () => S.freeLim || FREE_LIMIT;
 function persist() { const j = JSON.stringify(S); try { localStorage.setItem(SKEY, j); } catch (e) {} if (HOST && HOST.save) try { HOST.save(j); } catch (e) {} }
 if (MAC) { const sf = M.seferOf(MAC.lv), i = MAC.lv, nom = i < 50 ? i * 0.2 : Math.min(M.upCap(sf), i < 500 ? 10 + (i - 50) * 0.09 : 50.5 + (i - 500) * 0.03);
   const u = MAC.ud === null ? MAC.up : Math.max(0, Math.min(M.upCap(sf), Math.round(nom + MAC.ud))); MAC.up = u;
@@ -926,7 +931,7 @@ function renderCamp() {
   });
 }
 let briefI = 0;
-function canPlay(i) { return S.full || i < FREE_LIMIT || !!MAC; }
+function canPlay(i) { return S.full || i < freeLim() || !!MAC; }
 function openBrief(i) {
   if (!canPlay(i)) { openFull(); return; }
   briefI = i; const L = M.LEVELS[i], R = M.REGIONS[L.reg];
@@ -994,6 +999,8 @@ const IAP = () => window.Capacitor && window.Capacitor.Plugins && window.Capacit
 let fullFrom = 'menu';
 function openFull() {
   fullFrom = curScr || 'menu'; $('fMsg').textContent = '';
+  if (!DEMO) $('fInfo').textContent = freeLim() === FREE_LIMIT ? t('İlk iki sefer, yani 100 bölüm ücretsiz. Tam sürümle 1453 bölümün, 30 seferin hepsi tek seferlik ödemeyle açılır. Reklam yok, abonelik yok.')
+    : t('İlk {n} bölüm ücretsiz. Tam sürümle 1453 bölümün, 30 seferin hepsi tek seferlik ödemeyle açılır. Reklam yok, abonelik yok.', { n: freeLim() });
   if (DEMO) {
     $('fInfo').textContent = t('Bu ücretsiz demo ilk iki seferi, yani 100 bölümü içerir. Tam sürümde 1453 bölüm ve 30 sefer seni bekliyor. İlerlemen tam sürüme aktarılır.');
     $('fBuy').firstElementChild.textContent = t("STEAM'DE TAM SÜRÜM"); $('fRestore').hidden = true;

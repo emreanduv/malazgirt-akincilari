@@ -3,7 +3,7 @@
 Fiyatlandırma:
 - Mobil: ücretsiz indirme. İlk 100 bölüm (ilk iki sefer) ücretsiz. "Tam Sürüm" tek seferlik 1,99 $ (Apple ve Play: 1,99 $ fiyat noktası).
   - Ürün kimliği: `com.anduv.malazgirt.tamsurum` (Apple: Non-Consumable, Play: tek seferlik ürün).
-  - 1.4 ve öncesinde 100. bölümü geçmiş oyuncular tam sürüme ücretsiz devam eder.
+  - Eski oyuncular bulundukları yerin üstündeki ilk eşiğe kadar (100 / 250 / 500 / 1000) ücretsiz devam eder, sonra tek seferlik 1,99 $.
 - Steam: 1,99 $ tam oyun. Uygulama içi satın alım yok.
 
 ---

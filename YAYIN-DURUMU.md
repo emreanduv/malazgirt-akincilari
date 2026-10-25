@@ -77,7 +77,7 @@
 - Dil: Türkçe + İngilizce (www/js/dil.js arayüz sözlüğü; içerik çevirisi araclar/en/r0–r5.js → `node araclar/en/derle.js` → www/js/icerik-en.js)
 - Ayarlar ekranı: dil, ses efekti ve mehter düzeyi, grafik kalitesi, tam ekran (masaüstü), satın alımı geri yükle (mobil)
 - Fiyat:
-  - Mobil: ücretsiz, ilk 100 bölüm açık; "Tam Sürüm" tek seferlik ürün `com.anduv.malazgirt.tamsurum` (1,99 $). 100. bölümü geçmiş eski oyuncular ücretsiz devam eder.
+  - Mobil: ücretsiz, ilk 100 bölüm açık; "Tam Sürüm" tek seferlik ürün `com.anduv.malazgirt.tamsurum` (1,99 $). Eski oyuncular bulundukları yerin üstündeki ilk eşiğe kadar ücretsiz devam eder: 100 / 250 / 500 / 1000 (ör. 244. bölümdeki oyuncu 250'ye kadar; 1000'i geçmiş olan hepsini açık bulur). Sonra tek seferlik 1,99 $.
   - Steam: 1,99 $ tam oyun (uygulama içi satın alım yok).
 - Masaüstü: `desktop/` (Electron + steamworks.js). Steam başarımları (42; araclar/steam/basarimlar.js → store/steam/basarimlar.json, ikonlar store/steam/basarim-ikon), Steam Cloud kayıt, oyun kolu, F11 tam ekran.
   - Derleme: Actions → "Masaüstü (Steam)" (masaustu.yml), girdiler sürüm ve Steam App ID → GitHub sürümü `masaustu-<sürüm>`: Windows zip, macOS zip (universal), Linux tar.gz + AppImage + deb (Pardus için deb)

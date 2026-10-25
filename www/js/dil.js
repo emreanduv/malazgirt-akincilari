@@ -40,6 +40,8 @@ const UI = {
   'Bir Mr. Anduv! yapımıdır.': 'Bir Mr. Anduv! yapımıdır.',
   'Bu ücretsiz demo ilk iki seferi, yani 100 bölümü içerir. Tam sürümde 1453 bölüm ve 30 sefer seni bekliyor. İlerlemen tam sürüme aktarılır.':
     'This free demo includes the first two campaigns, 100 levels. The full game has 1453 levels and 30 campaigns waiting for you. Your progress carries over to the full game.',
+  'İlk {n} bölüm ücretsiz. Tam sürümle 1453 bölümün, 30 seferin hepsi tek seferlik ödemeyle açılır. Reklam yok, abonelik yok.':
+    'The first {n} levels are free. The Full Version unlocks all 1453 levels and 30 campaigns with a single payment. No ads, no subscription.',
   "STEAM'DE TAM SÜRÜM": 'FULL GAME ON STEAM',
   'Oyun kolu bağlandı': 'Controller connected', '← → ya da A / D ile yönlendir': 'Steer with ← → or A / D'
 };
