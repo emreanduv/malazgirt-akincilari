@@ -7,8 +7,8 @@ if (process.platform === 'linux') app.commandLine.appendSwitch('no-sandbox');   
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 app.commandLine.appendSwitch('ignore-gpu-blocklist');
 
-let APP_ID = 0;
-try { APP_ID = JSON.parse(fs.readFileSync(path.join(__dirname, 'steam.json'), 'utf8')).appId || 0; } catch (e) {}
+let APP_ID = 0, DEMO = false, FULL_ID = 0;
+try { const c = JSON.parse(fs.readFileSync(path.join(__dirname, 'steam.json'), 'utf8')); APP_ID = c.appId || 0; DEMO = !!c.demo; FULL_ID = c.fullAppId || 0; } catch (e) {}
 let steam = null;
 if (APP_ID) {
   try {
@@ -54,6 +54,13 @@ ipcMain.on('basarim', (e, id) => { if (steam) try { if (!steam.achievement.isAct
 ipcMain.on('istatistik', (e, name, v) => { if (steam) try { steam.stats.setInt(name, v | 0); steam.stats.store(); } catch (x) {} });
 ipcMain.on('tam-ekran', (e, on) => { if (win) win.setFullScreen(!!on); });
 ipcMain.on('cik', () => app.quit());
+ipcMain.on('demo', e => { e.returnValue = DEMO; });
+// demo: tam sürümün Steam mağaza sayfasını aç (önce Steam arayüzünde, olmazsa tarayıcıda)
+ipcMain.on('magaza', () => {
+  if (!FULL_ID) return;
+  if (steam) try { steam.overlay.activateToStore(FULL_ID, 0); return; } catch (x) {}
+  require('electron').shell.openExternal('https://store.steampowered.com/app/' + FULL_ID + '/');
+});
 ipcMain.on('dil', e => { let l = ''; if (steam) try { l = steam.apps.currentGameLanguage(); } catch (x) {} e.returnValue = l; });
 
 app.whenReady().then(createWindow);

@@ -38,6 +38,9 @@ const UI = {
   'Satın alma tamamlanamadı. Bağlantını kontrol edip yeniden dene.': 'The purchase could not be completed. Check your connection and try again.',
   'Tam sürüm açıldı. Hayırlı seferler!': 'Full Version unlocked. Good campaigning!', 'Geri yüklenecek satın alım bulunamadı.': 'No purchases to restore.',
   'Bir Mr. Anduv! yapımıdır.': 'Bir Mr. Anduv! yapımıdır.',
+  'Bu ücretsiz demo ilk iki seferi, yani 100 bölümü içerir. Tam sürümde 1453 bölüm ve 30 sefer seni bekliyor. İlerlemen tam sürüme aktarılır.':
+    'This free demo includes the first two campaigns, 100 levels. The full game has 1453 levels and 30 campaigns waiting for you. Your progress carries over to the full game.',
+  "STEAM'DE TAM SÜRÜM": 'FULL GAME ON STEAM',
   'Oyun kolu bağlandı': 'Controller connected', '← → ya da A / D ile yönlendir': 'Steer with ← → or A / D'
 };
 const SPECIAL_TR = {};

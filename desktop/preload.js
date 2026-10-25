@@ -8,5 +8,7 @@ contextBridge.exposeInMainWorld('MalazgirtHost', {
   achieve: id => ipcRenderer.send('basarim', String(id)),
   stat: (name, v) => ipcRenderer.send('istatistik', String(name), +v),
   setFullscreen: on => ipcRenderer.send('tam-ekran', !!on),
-  quit: () => ipcRenderer.send('cik')
+  quit: () => ipcRenderer.send('cik'),
+  demo: ipcRenderer.sendSync('demo'),
+  openStore: () => ipcRenderer.send('magaza')
 });

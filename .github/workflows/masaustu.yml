@@ -5,7 +5,9 @@ on:
   workflow_dispatch:
     inputs:
       version_name: { description: "Sürüm (ör. 1.5.0)", required: true }
-      steam_app_id: { description: "Steam App ID (bilinmiyorsa 0)", required: true, default: "0" }
+      steam_app_id: { description: "Bu paketin Steam App ID'si (bilinmiyorsa 0)", required: true, default: "0" }
+      demo: { description: "Ücretsiz demo mu? (ilk 100 bölüm)", type: boolean, default: false }
+      tam_app_id: { description: "Demo için: tam oyunun Steam App ID'si (mağaza düğmesi)", required: false, default: "0" }
 permissions:
   contents: write
 jobs:
@@ -26,7 +28,8 @@ jobs:
       - name: Oyunu kabuğa kopyala
         run: |
           rm -rf desktop/www && cp -r www desktop/www && cp assets/icon-only.png desktop/www/icon.png
-          echo '{ "appId": ${{ inputs.steam_app_id }} }' > desktop/steam.json
+          echo '{ "appId": ${{ inputs.steam_app_id }}, "demo": ${{ inputs.demo }}, "fullAppId": ${{ inputs.tam_app_id || 0 }} }' > desktop/steam.json
+          cat desktop/steam.json
           cd desktop && npm pkg set version=${{ inputs.version_name }}
       - name: Derle
         working-directory: desktop
@@ -39,6 +42,7 @@ jobs:
         run: |
           ls -la desktop/dist >> gunluk-${{ matrix.name }}.txt 2>&1 || true
           mkdir -p cikti && cp desktop/dist/*.zip desktop/dist/*.tar.gz desktop/dist/*.AppImage desktop/dist/*.deb cikti/ 2>/dev/null || true
+          if [ "${{ inputs.demo }}" = "true" ]; then (cd cikti && for f in *; do mv "$f" "demo-$f"; done); fi
           ls -la cikti
       - uses: actions/upload-artifact@v4
         with: { name: "paket-${{ matrix.name }}", path: cikti/*, if-no-files-found: warn }
@@ -63,7 +67,7 @@ jobs:
       - name: GitHub Release
         env: { GH_TOKEN: "${{ github.token }}" }
         run: |
-          TAG=masaustu-${{ inputs.version_name }}
+          TAG=masaustu-${{ inputs.demo && 'demo-' || '' }}${{ inputs.version_name }}
           ls -laR indir | grep -v gunluk || true
           gh release view $TAG -R ${{ github.repository }} >/dev/null 2>&1 || gh release create $TAG -R ${{ github.repository }} --title "Masaüstü ${{ inputs.version_name }}" --notes "Steam (Windows, macOS, Linux) ve Pardus paketleri" --prerelease --target ${{ github.sha }}
           for f in indir/paket-*/*; do gh release upload $TAG "$f" -R ${{ github.repository }} --clobber; done

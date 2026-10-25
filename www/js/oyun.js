@@ -25,7 +25,9 @@ let S = { coins: 0, unlocked: 1, stars: [], up: { start: 0, dmg: 0, rate: 0, zir
 try { const raw = HOST && HOST.load ? HOST.load() : null; const s = JSON.parse(raw || localStorage.getItem(SKEY)); if (s && typeof s === 'object') { S = Object.assign(S, s); S.up = Object.assign({ start: 0, dmg: 0, rate: 0, zirh: 0 }, s.up || {}); S.vol = Object.assign({ sfx: 80, mus: 80 }, s.vol || {}); } } catch (e) {}
 if (S.lang !== D.lang) D.setLang(S.lang);
 // tam sürüm: masaüstü (Steam) satın alınmış oyundur; mobilde ilk 100 bölümü geçmiş eski oyuncular ücretsiz devam eder
-if (D.platform !== 'android' && D.platform !== 'ios') S.full = true;
+const DEMO = !!(HOST && HOST.demo);   // Steam ücretsiz demosu: ilk 100 bölüm, sonra mağaza sayfası
+if (DEMO) S.full = false;
+else if (D.platform !== 'android' && D.platform !== 'ios') S.full = true;
 else if (!S.fullChecked) { if (S.unlocked > FREE_LIMIT + 1) S.full = true; S.fullChecked = 1; }
 // sürüm göçü: önceki sürümün son bölümünü bitirmiş oyuncu yeni seferi açık bulsun
 for (let i = S.stars.length - 1; i >= 0; i--) if (S.stars[i]) { if (S.unlocked < i + 2) S.unlocked = Math.min(NL, i + 2); break; }
@@ -986,17 +988,25 @@ function applyFullscreen() {
 }
 if (HOST) applyFullscreen();
 
-/* ================= TAM SÜRÜM (mobil, tek seferlik 1 dolar) ================= */
+/* ================= TAM SÜRÜM (mobil: tek seferlik 1,99 $ · Steam demo: mağaza sayfası) ================= */
 const PRODUCT = 'com.anduv.malazgirt.tamsurum';
 const IAP = () => window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.NativePurchases;
 let fullFrom = 'menu';
-function openFull() { fullFrom = curScr || 'menu'; $('fMsg').textContent = ''; show('full'); loadPrice(); }
+function openFull() {
+  fullFrom = curScr || 'menu'; $('fMsg').textContent = '';
+  if (DEMO) {
+    $('fInfo').textContent = t('Bu ücretsiz demo ilk iki seferi, yani 100 bölümü içerir. Tam sürümde 1453 bölüm ve 30 sefer seni bekliyor. İlerlemen tam sürüme aktarılır.');
+    $('fBuy').firstElementChild.textContent = t("STEAM'DE TAM SÜRÜM"); $('fRestore').hidden = true;
+  }
+  show('full'); loadPrice();
+}
 async function loadPrice() {
   const P = IAP(); if (!P) return;
   try { const r = await P.getProducts({ productIdentifiers: [PRODUCT], productType: 'inapp' }); const pr = r && r.products && r.products[0]; if (pr) $('fPrice').textContent = pr.priceString || ''; } catch (e) {}
 }
 function unlockFull(msg) { S.full = true; persist(); if (msg) $('fMsg').textContent = t('Tam sürüm açıldı. Hayırlı seferler!'); SFX.weapon(); setTimeout(() => { if (curScr === 'full') { previewLevel(nextLevel()); show(fullFrom === 'levels' ? 'levels' : 'menu'); } }, 1400); }
 $('fBuy').addEventListener('click', async () => {
+  if (DEMO) { SFX.click(); if (HOST.openStore) HOST.openStore(); return; }
   SFX.click(); const P = IAP(); if (!P) { $('fMsg').textContent = t('Satın alma tamamlanamadı. Bağlantını kontrol edip yeniden dene.'); return; }
   $('fBuy').disabled = true;
   try { const r = await P.purchaseProduct({ productIdentifier: PRODUCT, productType: 'inapp', quantity: 1 }); if (r && r.transactionId) unlockFull(true); else $('fMsg').textContent = t('Satın alma tamamlanamadı. Bağlantını kontrol edip yeniden dene.'); }
