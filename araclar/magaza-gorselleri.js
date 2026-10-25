@@ -23,11 +23,11 @@ const which = process.argv[2] || 'hepsi';
     // [ad, adres, bekleme(ms)]
     const scenes = [
       ['01-sefer', '/www/index.html?kare=7&ileri=130', 3500],
-      ['02-dev', '/www/index.html?kare=19&ileri=40', 4000],
-      ['03-gece', '/www/index.html?kare=720&ileri=330&hava=gece', 3500],
-      ['04-harita', '/www/index.html?kare=1060&ekran=levels&bolge=105', 2500],
+      ['02-dev', '/www/index.html?kare=19&ileri=40&yay=2', 4000],
+      ['03-gece', '/www/index.html?kare=720&ileri=330&hava=gece&yay=10', 3500],
+      ['04-harita', '/www/index.html?kare=1452&ekran=levels&bolge=131', 2500],
       ['05-menu', '/www/index.html?kare=0&ekran=menu', 3000],
-      ['06-fetih-yolu', '/www/index.html?kare=1452&ileri=45&hava=sabah', 4000]
+      ['06-fetih-yolu', '/www/index.html?kare=1452&ileri=45&hava=sabah&yay=15', 4000]
     ];
     const devices = [
       ['store/screenshots-ios/iphone', 430, 932, 3],   // 1290 × 2796 (6.7"/6.9")
