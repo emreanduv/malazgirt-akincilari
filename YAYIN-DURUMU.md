@@ -90,6 +90,7 @@
 - Steam (25 Ekim): Steam Direct ücreti ödendi, banka (Enpara, SWIFT ENASTRISXXX, USD) ve W-8BEN girildi; vergi/kimlik doğrulaması bekleniyor: KYC belgeleri (kimlik + kimlikle selfie) 25 Ekim'de Dropbox'a yüklendi, inceleme 10–15 iş günü. Sonra vergi görüşmesi yeniden yapılacak: Foreign TIN = T.C. kimlik no, anlaşma Türkiye Madde 12 %10 (şu an %30 kesinti görünüyor). Doğrulama bitince "Hesap Oluşturmayı Tamamla" → uygulama oluştur → App ID → masaustu.yml.
 - 26 Ekim: Apple Paid Apps Agreement Active; iOS 1.5.0 (13) + "Tam Sürüm" ürünü birlikte incelemeye gönderildi (Waiting for Review).
 - 27 Ekim: Google ödeme profili banka doğrulaması tamam (₺0,23). Üretim kilitli: kapalı testte 12 kayıtlı test kullanıcısı × 14 gün şartı (şu an 2 kişi). Katılım linki: https://play.google.com/apps/testing/com.anduv.malazgirt
+- 27 Ekim: Play kapalı test kullanıcıları → Google Grubu testers-community@googlegroups.com (Testers Community, Starter 15 test kullanıcısı, 16 günlük süreç; panel: testerscommunity.com/dashboard). 14 gün dolunca üretim başvurusu.
 - Önemli: mobil 1.5 yayına çıkmadan önce satın alma çalışır olmalı (100. bölümden sonra ödeme ekranı çıkıyor).
 - Steam ücretsiz demo: ilk 100 bölüm. Aynı paket, masaustu.yml'de `demo: true` + `tam_app_id` ile derlenir (GitHub sürümü `masaustu-demo-<sürüm>`). 101. bölümde "Steam'de tam sürüm" ekranı tam oyunun mağaza sayfasını Steam arayüzünde açar; aynı bilgisayarda ilerleme tam sürüme geçer.
 - Arayüz büyük masaüstü pencerelerinde 1,45× / 2× ölçeklenir (index.html @media)
