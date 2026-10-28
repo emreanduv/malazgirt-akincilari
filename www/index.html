@@ -173,6 +173,8 @@ body.temiz #hud,body.temiz #weapon,body.temiz #bubble,body.temiz #sndBtn,body.te
 .stats b{font-weight:800;font-variant-numeric:tabular-nums}
 .gain{font-size:30px;font-weight:800;color:var(--gold);display:flex;align-items:center}
 .epilog{font-size:16px;font-weight:600;line-height:1.4;background:var(--paper);color:var(--ink);border-radius:16px;padding:12px 16px;text-align:left}
+.fullchip{align-self:center;border:2px solid var(--gold);background:rgba(12,28,52,.55);color:var(--gold);border-radius:999px;padding:6px 18px 4px;font-weight:800;font-size:16px;letter-spacing:.04em;cursor:pointer}
+#setFullRow{flex-wrap:wrap;gap:8px}
 #scrFull.screen.veil{background:radial-gradient(ellipse at 50% 35%,rgba(29,63,110,.78),rgba(8,18,36,.94))}
 #scrFull h2{font-size:clamp(40px,11vw,62px);color:var(--gold);text-shadow:0 4px 0 #12305a,0 10px 24px rgba(0,0,0,.5)}
 #scrFull h2::before{content:"☾";display:block;font-size:.7em;margin-bottom:.1em}
@@ -210,6 +212,7 @@ body.temiz #hud,body.temiz #weapon,body.temiz #bubble,body.temiz #sndBtn,body.te
     <div class="meta"><div class="pill"><b class="akce"></b><span id="mCoins">0</span> <span data-t>akçe</span></div><div class="pill" id="mStars">0 / 150 yıldız</div></div>
     <button class="big" id="bPlay" data-t>SEFERE ÇIK<small id="bPlaySub">Bölüm 1 · Halep Kapısı</small></button>
     <div class="row"><button class="alt" id="bLevels" data-t>Bölümler</button><button class="alt dark" id="bCamp" data-t>Ordugâh</button></div>
+    <button class="fullchip" id="bFull" hidden><span aria-hidden="true">★ </span><span data-t>Tam Sürüm</span></button>
     <p class="credit">Bir Mr. Anduv! yapımıdır.<span id="creditEn"></span></p>
   </div>
 </section>
@@ -292,7 +295,7 @@ body.temiz #hud,body.temiz #weapon,body.temiz #bubble,body.temiz #sndBtn,body.te
     <label class="setrow"><span data-t>Mehter (müzik)</span><input type="range" id="setMus" min="0" max="100" step="5"></label>
     <div class="setrow"><span data-t>Grafik kalitesi</span><div class="seg" id="setQ"><button data-v="dusuk" data-t>Düşük</button><button data-v="orta" data-t>Orta</button><button data-v="yuksek" data-t>Yüksek</button></div></div>
     <div class="setrow" id="setFsRow"><span data-t>Tam ekran</span><div class="seg" id="setFs"><button data-v="1" data-t>Açık</button><button data-v="0" data-t>Kapalı</button></div></div>
-    <div class="setrow" id="setFullRow" hidden><span data-t>Tam Sürüm</span><button class="alt" id="setRestore" data-t>Satın alımları geri yükle</button></div>
+    <div class="setrow" id="setFullRow" hidden><span data-t>Tam Sürüm</span><button class="alt" id="setBuy" data-t>Satın al</button><button class="alt" id="setRestore" data-t>Satın alımları geri yükle</button></div>
   </div>
   <div class="stack"><button class="big" id="setOk" data-t>Tamam</button><button class="alt dark" id="setQuit" hidden data-t>Oyundan çık</button></div>
   <p class="credit">Bir Mr. Anduv! yapımıdır.</p>

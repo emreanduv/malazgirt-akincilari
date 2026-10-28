@@ -975,6 +975,7 @@ function renderSet() {
   $('setSfx').value = S.vol.sfx; $('setMus').value = S.vol.mus;
   $('setFsRow').hidden = !(HOST || document.fullscreenEnabled) || D.platform === 'android' || D.platform === 'ios';
   $('setFullRow').hidden = !(D.platform === 'android' || D.platform === 'ios');
+  $('setBuy').hidden = !!S.full;
   $('setQuit').hidden = !(HOST && HOST.quit);
 }
 $('setLang').addEventListener('click', e => { const v = e.target.dataset && e.target.dataset.v; if (!v) return; SFX.click(); S.lang = v; D.setLang(v); persist(); drawSnd(); renderSet(); if (G && mode === 'menu') previewLevel(nextLevel()); });
@@ -1011,7 +1012,7 @@ async function loadPrice() {
   const P = IAP(); if (!P) return;
   try { const r = await P.getProducts({ productIdentifiers: [PRODUCT], productType: 'inapp' }); const pr = r && r.products && r.products[0]; if (pr) $('fPrice').textContent = pr.priceString || ''; } catch (e) {}
 }
-function unlockFull(msg) { S.full = true; persist(); if (msg) $('fMsg').textContent = t('Tam sürüm açıldı. Hayırlı seferler!'); SFX.weapon(); setTimeout(() => { if (curScr === 'full') { previewLevel(nextLevel()); show(fullFrom === 'levels' ? 'levels' : 'menu'); } }, 1400); }
+function unlockFull(msg) { S.full = true; persist(); drawFullChip(); if (msg) $('fMsg').textContent = t('Tam sürüm açıldı. Hayırlı seferler!'); SFX.weapon(); setTimeout(() => { if (curScr === 'full') { previewLevel(nextLevel()); show(fullFrom === 'levels' ? 'levels' : 'menu'); } }, 1400); }
 $('fBuy').addEventListener('click', async () => {
   if (DEMO) { SFX.click(); if (HOST.openStore) HOST.openStore(); return; }
   SFX.click(); const P = IAP(); if (!P) { $('fMsg').textContent = t('Satın alma tamamlanamadı. Bağlantını kontrol edip yeniden dene.'); return; }
@@ -1031,7 +1032,12 @@ async function restorePurchases(loud) {
   } catch (e) {}
 }
 $('fRestore').addEventListener('click', () => { SFX.click(); restorePurchases(true); });
-$('fLater').addEventListener('click', () => { SFX.click(); previewLevel(nextLevel()); show(fullFrom === 'levels' ? 'levels' : 'menu'); });
+$('fLater').addEventListener('click', () => { SFX.click(); if (fullFrom === 'set') { show('set'); return; } previewLevel(nextLevel()); show(fullFrom === 'levels' ? 'levels' : 'menu'); });
+// tam sürüm her zaman bulunabilsin: ana menüde ★ Tam Sürüm, Ayarlar'da Satın al (mobil, henüz alınmadıysa)
+$('setBuy').addEventListener('click', () => { SFX.click(); openFull(); });
+$('bFull').addEventListener('click', () => { SFX.click(); openFull(); });
+function drawFullChip() { $('bFull').hidden = !(D.platform === 'android' || D.platform === 'ios') || !!S.full || freeLim() >= NL; }
+drawFullChip();
 if (!S.full && IAP()) setTimeout(() => restorePurchases(false), 2500);
 
 /* ================= BAŞARIMLAR (Steam) ================= */
