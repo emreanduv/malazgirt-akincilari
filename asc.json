@@ -1,0 +1,28 @@
+{
+ "zaman": "2026-10-29T20:19:34Z",
+ "surumler": [
+  [
+   "1.5.0",
+   "READY_FOR_SALE"
+  ],
+  [
+   "1.4.0",
+   "READY_FOR_SALE"
+  ],
+  [
+   "1.3.0",
+   "READY_FOR_SALE"
+  ]
+ ],
+ "urun": "APPROVED",
+ "inceleme": [
+  [
+   "COMPLETE",
+   "2026-10-28T14:04:24.528Z"
+  ],
+  [
+   "COMPLETE",
+   "2026-10-23T20:49:15.429Z"
+  ]
+ ]
+}
