@@ -93,6 +93,7 @@
 - 27 Ekim: Play kapalı test kullanıcıları → Google Grubu testers-community@googlegroups.com (Testers Community, Starter 15 test kullanıcısı, 16 günlük süreç; panel: testerscommunity.com/dashboard). 14 gün dolunca üretim başvurusu.
 - 28 Ekim: Apple 2.1(b) — inceleyici satın almayı bulamadı (ödeme ekranı 101. bölümde). Düzeltme: ana menüde ★ Tam Sürüm, Ayarlar'da Satın al. iOS 1.5.0 (14) bağlandı, inceleme notu güncellendi, yanıt hazırlandı. Android 1.5.0 (11) derlendi (henüz yüklenmedi). GitHub Actions dakika sınırı yüzünden depo geçici olarak herkese açık; 1 Kasım'da yeniden gizliye alınacak.
 - 29 Ekim: ✅ App Store 1.5.0 (14) onaylandı ve yayında (Ready for Sale); "Tam Sürüm" (1,99 $) onaylandı.
+- 30 Ekim: Android 1.5.0 (11, ★ Tam Sürüm düğmeli) imzalandı (`imza-anahtari/malazgirt-1.5.0-11-imzali.aab`) ve kapalı test kanalında TASLAK olarak kaydedildi (gönderilmedi). Kapalı test 10 ile sürüyor; 14 gün bitince üretime 11 çıkılacak.
 - Önemli: mobil 1.5 yayına çıkmadan önce satın alma çalışır olmalı (100. bölümden sonra ödeme ekranı çıkıyor).
 - Steam ücretsiz demo: ilk 100 bölüm. Aynı paket, masaustu.yml'de `demo: true` + `tam_app_id` ile derlenir (GitHub sürümü `masaustu-demo-<sürüm>`). 101. bölümde "Steam'de tam sürüm" ekranı tam oyunun mağaza sayfasını Steam arayüzünde açar; aynı bilgisayarda ilerleme tam sürüme geçer.
 - Arayüz büyük masaüstü pencerelerinde 1,45× / 2× ölçeklenir (index.html @media)
