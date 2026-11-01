@@ -1199,7 +1199,7 @@ function frame(now) {
 }
 // VR (Harp Masası) modülüne oyunun sahnesini ve durumunu ver
 if (window.VR_KUR) window.VR_KUR({ scene, renderer, camera, $, t, fmt, D, SFX, NL, canPlay, startGame, previewLevel, show, unlockAudio, nextLevel, resize, frame,
-  G: () => G, mode: () => mode, lastRes: () => lastRes, setMode: v => { mode = v; }, setPaused: v => { paused = v; }, setLast: v => { last = v; } });
+  G: () => G, mode: () => mode, mood: () => curMood, MOODS, precip: [rainLines, snowPts], lastRes: () => lastRes, setMode: v => { mode = v; }, setPaused: v => { paused = v; }, setLast: v => { last = v; } });
 
 // Mağaza görselleri için sahne modu: ?kare=BÖLÜM&hiz=2 (araclar/magaza-gorselleri.js kullanır)
 const Q = new URLSearchParams(location.search);

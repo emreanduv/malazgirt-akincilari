@@ -45,7 +45,7 @@ const UI = {
   "STEAM'DE TAM SÜRÜM": 'FULL GAME ON STEAM',
   'Satın al': 'Buy',
   'Harp Masası': 'War Table', 'Harp Masasına Gir': 'Enter the War Table', 'Tetiğe bas · Oturarak oyna': 'Pull the trigger · Play seated', 'Tetik: başla / sürükle': 'Trigger: start / drag', 'Çubuk: yönlendir': 'Stick: steer', 'Çubuk ↕: masa yüksekliği': 'Stick ↕: table height', 'Tetiğe bas: sefere çık · Çubukla yönlendir': 'Trigger: march out · Stick: steer', 'Harp Masası (VR)': 'War Table (VR)', 'Tetiğe bas: sefere çık': 'Pull the trigger: march out', 'Tetiğe bas: devam': 'Pull the trigger: continue',
-  'Tetiğe bas: yeniden dene': 'Pull the trigger: try again', 'Tam Sürüm gerekli: ana menüden alabilirsin': 'Full Version needed: get it from the main menu', 'Masa yüksekliği sıfırlandı': 'Table height reset',
+  'Tetiğe bas: yeniden dene': 'Pull the trigger: try again', 'Tam Sürüm gerekli: ana menüden alabilirsin': 'Full Version needed: get it from the main menu', 'Masa yüksekliği sıfırlandı': 'Table height reset', 'Masa önüne alındı': 'Table re-centred', 'Y: masayı önüne al': 'Y: re-centre the table', 'B: masayı önüne al': 'B: re-centre the table',
   'Oyun kolu bağlandı': 'Controller connected', '← → ya da A / D ile yönlendir': 'Steer with ← → or A / D'
 };
 const SPECIAL_TR = {};
