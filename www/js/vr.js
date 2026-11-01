@@ -331,13 +331,20 @@ window.VR_KUR = function (O) {
     });
     VR['ctrl' + k] = c;
   }
+  // kilitli bölüm: mağaza destekliyorsa (Quest) ödeme ekranı gözlükte açılır, alınınca bölüm başlar
+  let buying = false;
+  function locked(i) {
+    if (!O.buyFull) { say(t('Tam Sürüm gerekli: ana menüden alabilirsin'), 4); return; }
+    if (buying) return; buying = true; say(t('Tam Sürüm: ödeme ekranı açılıyor…'), 3);
+    O.buyFull().then(ok => { buying = false; if (ok) { say(t('Tam sürüm açıldı. Hayırlı seferler!'), 3); startGame(i); } else say(t('Tam Sürüm\'ü Quest\'te Meta Horizon Store uygulamasından alabilirsin.'), 4); });
+  }
   function act() {
     if (O.mode() === 'over' && O.lastRes()) {
       const i = O.lastRes().win ? Math.min(NL - 1, O.lastRes().i + 1) : O.lastRes().i;
-      if (!canPlay(i)) { say(t('Tam Sürüm gerekli: ana menüden alabilirsin'), 4); return; }
+      if (!canPlay(i)) { locked(i); return; }
       startGame(i); return;
     }
-    if (O.mode() === 'menu' || O.mode() === 'over') { const i = nextLevel(); if (!canPlay(i)) { say(t('Tam Sürüm gerekli: ana menüden alabilirsin'), 4); return; } startGame(i); }
+    if (O.mode() === 'menu' || O.mode() === 'over') { const i = nextLevel(); if (!canPlay(i)) { locked(i); return; } startGame(i); }
   }
 
   /* ---------- oturum ---------- */

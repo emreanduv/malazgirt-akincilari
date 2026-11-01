@@ -28,8 +28,9 @@ try { const raw = HOST && HOST.load ? HOST.load() : null; const s = JSON.parse(r
 if (S.lang !== D.lang) D.setLang(S.lang);
 // tam sürüm: masaüstü (Steam) satın alınmış oyundur; mobilde ücretsiz sınır FREE_STEPS'e göre (aşağıda, sürüm göçünden sonra)
 const DEMO = !!(HOST && HOST.demo);   // Steam ücretsiz demosu: ilk 100 bölüm, sonra mağaza sayfası
+const PAID = D.platform === 'android' || D.platform === 'ios' || D.platform === 'quest';   // ücretsiz sınır + Tam Sürüm satın alımı olan mağazalar
 if (DEMO) S.full = false;
-else if (D.platform !== 'android' && D.platform !== 'ios') S.full = true;
+else if (!PAID) S.full = true;
 // sürüm göçü: önceki sürümün son bölümünü bitirmiş oyuncu yeni seferi açık bulsun
 for (let i = S.stars.length - 1; i >= 0; i--) if (S.stars[i]) { if (S.unlocked < i + 2) S.unlocked = Math.min(NL, i + 2); break; }
 // mobil ücretsiz sınır bir kez belirlenir: yeni oyuncu 100, eski oyuncu bulunduğu yerin üstündeki ilk eşik (250 / 500 / 1000; 1000'i geçmişse hepsi)
@@ -974,7 +975,7 @@ function renderSet() {
   segOn('setLang', D.lang); segOn('setQ', S.q); segOn('setFs', S.fs ? 1 : 0);
   $('setSfx').value = S.vol.sfx; $('setMus').value = S.vol.mus;
   $('setFsRow').hidden = !(HOST || document.fullscreenEnabled) || D.platform === 'android' || D.platform === 'ios';
-  $('setFullRow').hidden = !(D.platform === 'android' || D.platform === 'ios');
+  $('setFullRow').hidden = !PAID;
   $('setBuy').hidden = !!S.full;
   $('setQuit').hidden = !(HOST && HOST.quit);
 }
@@ -997,6 +998,10 @@ if (HOST) applyFullscreen();
 /* ================= TAM SÜRÜM (mobil: tek seferlik 1,99 $ · Steam demo: mağaza sayfası) ================= */
 const PRODUCT = 'com.anduv.malazgirt.tamsurum';
 const IAP = () => window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.NativePurchases;
+// Meta Quest (Horizon Store PWA): Digital Goods API + PaymentRequest; ürün (SKU) Meta panelinde kalıcı (durable) eklenti
+const MQ_BILL = 'https://quest.meta.com/billing', MQ_SKU = 'tamsurum';
+const QIAP = () => D.platform === 'quest' && 'getDigitalGoodsService' in window;
+const mqSvc = () => window.getDigitalGoodsService(MQ_BILL);
 let fullFrom = 'menu';
 function openFull() {
   fullFrom = curScr || 'menu'; $('fMsg').textContent = '';
@@ -1009,19 +1014,34 @@ function openFull() {
   show('full'); loadPrice();
 }
 async function loadPrice() {
+  if (QIAP()) { try { const d = (await (await mqSvc()).getDetails([MQ_SKU])).find(x => x.itemId === MQ_SKU); if (d && d.price) $('fPrice').textContent = new Intl.NumberFormat(D.lang === 'en' ? 'en-US' : 'tr-TR', { style: 'currency', currency: d.price.currency }).format(+d.price.value); } catch (e) {} return; }
   const P = IAP(); if (!P) return;
   try { const r = await P.getProducts({ productIdentifiers: [PRODUCT], productType: 'inapp' }); const pr = r && r.products && r.products[0]; if (pr) $('fPrice').textContent = pr.priceString || ''; } catch (e) {}
 }
 function unlockFull(msg) { S.full = true; persist(); drawFullChip(); if (msg) $('fMsg').textContent = t('Tam sürüm açıldı. Hayırlı seferler!'); SFX.weapon(); setTimeout(() => { if (curScr === 'full') { previewLevel(nextLevel()); show(fullFrom === 'levels' ? 'levels' : 'menu'); } }, 1400); }
 $('fBuy').addEventListener('click', async () => {
   if (DEMO) { SFX.click(); if (HOST.openStore) HOST.openStore(); return; }
-  SFX.click(); const P = IAP(); if (!P) { $('fMsg').textContent = t('Satın alma tamamlanamadı. Bağlantını kontrol edip yeniden dene.'); return; }
-  $('fBuy').disabled = true;
-  try { const r = await P.purchaseProduct({ productIdentifier: PRODUCT, productType: 'inapp', quantity: 1 }); if (r && r.transactionId) unlockFull(true); else $('fMsg').textContent = t('Satın alma tamamlanamadı. Bağlantını kontrol edip yeniden dene.'); }
-  catch (e) { $('fMsg').textContent = t('Satın alma tamamlanamadı. Bağlantını kontrol edip yeniden dene.'); }
+  SFX.click(); $('fBuy').disabled = true;
+  const ok = await buyFull(); if (!ok && !$('fMsg').textContent) $('fMsg').textContent = t('Satın alma tamamlanamadı. Bağlantını kontrol edip yeniden dene.');
+  else if (ok) unlockFull(true);
   $('fBuy').disabled = false;
 });
+// satın alma: başarılıysa true (tam sürümü açmak çağırana kalır)
+async function buyFull() {
+  $('fMsg').textContent = '';
+  if (D.platform === 'quest') {
+    if (!QIAP()) { $('fMsg').textContent = t('Tam Sürüm\'ü Quest\'te Meta Horizon Store uygulamasından alabilirsin.'); return false; }
+    try {
+      const req = new PaymentRequest([{ supportedMethods: MQ_BILL, data: { sku: MQ_SKU } }], { total: { label: 'Total', amount: { currency: 'USD', value: '0' } } });
+      const res = await req.show(); const tok = res.details && res.details.purchaseToken; await res.complete(tok ? 'success' : 'fail'); return !!tok;
+    } catch (e) { return false; }
+  }
+  const P = IAP(); if (!P) return false;
+  try { const r = await P.purchaseProduct({ productIdentifier: PRODUCT, productType: 'inapp', quantity: 1 }); return !!(r && r.transactionId); }
+  catch (e) { return false; }
+}
 async function restorePurchases(loud) {
+  if (QIAP()) { try { const ok = (await (await mqSvc()).listPurchases()).some(p => p.itemId === MQ_SKU); if (ok) { if (!S.full) unlockFull(curScr === 'full'); } else if (loud) $('fMsg').textContent = t('Geri yüklenecek satın alım bulunamadı.'); } catch (e) {} return; }
   const P = IAP(); if (!P) return;
   try {
     try { await P.restorePurchases(); } catch (e) {}
@@ -1036,9 +1056,9 @@ $('fLater').addEventListener('click', () => { SFX.click(); if (fullFrom === 'set
 // tam sürüm her zaman bulunabilsin: ana menüde ★ Tam Sürüm, Ayarlar'da Satın al (mobil, henüz alınmadıysa)
 $('setBuy').addEventListener('click', () => { SFX.click(); openFull(); });
 $('bFull').addEventListener('click', () => { SFX.click(); openFull(); });
-function drawFullChip() { $('bFull').hidden = !(D.platform === 'android' || D.platform === 'ios') || !!S.full || freeLim() >= NL; }
+function drawFullChip() { $('bFull').hidden = !PAID || !!S.full || freeLim() >= NL; }
 drawFullChip();
-if (!S.full && IAP()) setTimeout(() => restorePurchases(false), 2500);
+if (!S.full && (IAP() || QIAP())) setTimeout(() => restorePurchases(false), 2500);
 
 /* ================= BAŞARIMLAR (Steam) ================= */
 function achieve(id) { if (MAC || !HOST || !HOST.achieve) return; try { HOST.achieve(id); } catch (e) {} }
@@ -1199,7 +1219,7 @@ function frame(now) {
 }
 // VR (Harp Masası) modülüne oyunun sahnesini ve durumunu ver
 if (window.VR_KUR) window.VR_KUR({ scene, renderer, camera, $, t, fmt, D, SFX, NL, canPlay, startGame, previewLevel, show, unlockAudio, nextLevel, resize, frame,
-  G: () => G, mode: () => mode, mood: () => curMood, MOODS, precip: [rainLines, snowPts], lastRes: () => lastRes, setMode: v => { mode = v; }, setPaused: v => { paused = v; }, setLast: v => { last = v; } });
+  buyFull: PAID ? () => buyFull().then(ok => { if (ok) { S.full = true; persist(); drawFullChip(); } return ok; }) : null, G: () => G, mode: () => mode, mood: () => curMood, MOODS, precip: [rainLines, snowPts], lastRes: () => lastRes, setMode: v => { mode = v; }, setPaused: v => { paused = v; }, setLast: v => { last = v; } });
 
 // Mağaza görselleri için sahne modu: ?kare=BÖLÜM&hiz=2 (araclar/magaza-gorselleri.js kullanır)
 const Q = new URLSearchParams(location.search);

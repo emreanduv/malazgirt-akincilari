@@ -1,0 +1,37 @@
+name: Quest APK
+on:
+  push:
+    branches: [quest-apk]
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - name: Bubblewrap
+        run: |
+          npm i -g @meta-quest/bubblewrap-cli@1.24.1
+          sudo ln -sfn $ANDROID_HOME/cmdline-tools/latest/bin $ANDROID_HOME/bin
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;34.0.0" "platforms;android-35" > /dev/null
+          mkdir -p ~/.bubblewrap
+          echo "{\"jdkPath\":\"$JAVA_HOME\",\"androidSdkPath\":\"$ANDROID_HOME\"}" > ~/.bubblewrap/config.json
+          mkdir app && cp twa-manifest.json app/ && cd app
+          # geçici anahtar: asıl imza Emre'nin bilgisayarındaki anahtarla sonradan atılır
+          keytool -genkeypair -keystore android.keystore -alias android -keyalg RSA -keysize 2048 -validity 100 -storepass gecici123 -keypass gecici123 -dname "CN=gecici"
+          yes "" | bubblewrap update --skipVersionUpgrade --manifest=./twa-manifest.json
+          ls
+          bubblewrap build --skipSigning --skipPwaValidation --manifest=./twa-manifest.json < /dev/null
+          ls -la; find . -name "*.apk"
+      - name: Çıktıları dala koy
+        run: |
+          mkdir out
+          cp $(find app -name "app-release-unsigned-aligned.apk" | head -1) out/ || cp $(find app -name "*release-unsigned*.apk" | head -1) out/app-release-unsigned.apk
+          cp $(find app -name "app-release-signed.apk" | head -1) out/ || true
+          BT=$ANDROID_HOME/build-tools/34.0.0; cp $BT/lib/apksigner.jar out/; cp $BT/zipalign out/ || true
+          cd out && git init -q && git checkout -q -b quest-cikti && git add -A && git -c user.name=ci -c user.email=ci@x commit -qm "apk ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" quest-cikti
