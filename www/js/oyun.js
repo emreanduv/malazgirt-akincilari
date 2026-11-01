@@ -1182,18 +1182,24 @@ function frame(now) {
     renderCrowd(T); renderFoes(T); renderArrows(); renderObjs(dt, T); updateDead(dt);
     const tx = G.x * 0.55, tz = G.z;
     camX += (tx - camX) * Math.min(1, dt * 5); camZ += (tz - camZ) * Math.min(1, dt * 8);
-    const far = mode === 'menu' ? 1 : 0, ck = 1 + (G.road - 6) * 0.075;   // geniş yolda kamera geri çekilir
-    camera.position.set(camX + (far ? Math.sin(T * 0.25) * 1.5 : 0), (12.5 + far * 1.5) * ck, camZ + (12.5 + far * 2) * ck); camera.lookAt(camX * 0.7, 0, camZ - 12 * ck);
+    if (window.VR && VR.on) { VR.update(dt); if (VR.test) VR.testCam(); }   // VR: savaş alanı harp masasının üstünde (js/vr.js)
+    else {
+      const far = mode === 'menu' ? 1 : 0, ck = 1 + (G.road - 6) * 0.075;   // geniş yolda kamera geri çekilir
+      camera.position.set(camX + (far ? Math.sin(T * 0.25) * 1.5 : 0), (12.5 + far * 1.5) * ck, camZ + (12.5 + far * 2) * ck); camera.lookAt(camX * 0.7, 0, camZ - 12 * ck);
+    }
     updatePrecip(dt, camX, camZ - 20);
     sun.position.set(G.x + 8, 24, G.z + 8); sun.target.position.set(G.x, 0, G.z - 8);
-    const showBubble = (mode === 'play' || mode === 'menu' || mode === 'dying') && G.count + G.heroes > 0 && $('scrLevels').hidden && $('scrCamp').hidden;
+    const showBubble = !(window.VR && VR.on) && (mode === 'play' || mode === 'menu' || mode === 'dying') && G.count + G.heroes > 0 && $('scrLevels').hidden && $('scrCamp').hidden;
     const b = $('bubble');
     if (showBubble) { const p = toScreen(G.x, 2.4 + (G.heroes ? 2.6 : 0), G.z); b.hidden = !p.vis; b.style.left = p.x + 'px'; b.style.top = p.y + 'px'; const label = fmt(G.count) + (G.heroes ? '<small>+' + G.heroes + ' Alp</small>' : ''); if (b.innerHTML !== label) b.innerHTML = label; } else b.hidden = true;
     $('progFill').style.width = (M.progress(G) * 100).toFixed(1) + '%';
   }
   renderer.render(scene, camera);
-  requestAnimationFrame(frame);
+  if (!renderer.xr.isPresenting) requestAnimationFrame(frame);
 }
+// VR (Harp Masası) modülüne oyunun sahnesini ve durumunu ver
+if (window.VR_KUR) window.VR_KUR({ scene, renderer, camera, $, t, fmt, D, SFX, NL, canPlay, startGame, previewLevel, show, unlockAudio, nextLevel, resize, frame,
+  G: () => G, mode: () => mode, lastRes: () => lastRes, setMode: v => { mode = v; }, setPaused: v => { paused = v; }, setLast: v => { last = v; } });
 
 // Mağaza görselleri için sahne modu: ?kare=BÖLÜM&hiz=2 (araclar/magaza-gorselleri.js kullanır)
 const Q = new URLSearchParams(location.search);

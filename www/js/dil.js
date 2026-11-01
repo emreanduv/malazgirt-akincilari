@@ -44,6 +44,8 @@ const UI = {
     'The first {n} levels are free. The Full Version unlocks all 1453 levels and 30 campaigns with a single payment. No ads, no subscription.',
   "STEAM'DE TAM SÜRÜM": 'FULL GAME ON STEAM',
   'Satın al': 'Buy',
+  'Harp Masası': 'War Table', 'Harp Masası (VR)': 'War Table (VR)', 'Tetiğe bas: sefere çık': 'Pull the trigger: march out', 'Tetiğe bas: devam': 'Pull the trigger: continue',
+  'Tetiğe bas: yeniden dene': 'Pull the trigger: try again', 'Tam Sürüm gerekli: ana menüden alabilirsin': 'Full Version needed: get it from the main menu', 'Masa yüksekliği sıfırlandı': 'Table height reset',
   'Oyun kolu bağlandı': 'Controller connected', '← → ya da A / D ile yönlendir': 'Steer with ← → or A / D'
 };
 const SPECIAL_TR = {};

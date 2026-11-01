@@ -178,6 +178,7 @@ body.temiz #hud,body.temiz #weapon,body.temiz #bubble,body.temiz #sndBtn,body.te
 #scrFull.screen.veil{background:radial-gradient(ellipse at 50% 35%,rgba(29,63,110,.78),rgba(8,18,36,.94))}
 #scrFull h2{font-size:clamp(40px,11vw,62px);color:var(--gold);text-shadow:0 4px 0 #12305a,0 10px 24px rgba(0,0,0,.5)}
 #scrFull h2::before{content:"☾";display:block;font-size:.7em;margin-bottom:.1em}
+body.vr-on #hud,body.vr-on #weapon,body.vr-on #bubble,body.vr-on #pops,body.vr-on #hint,body.vr-on #banner{display:none!important}
 /* büyük masaüstü pencereleri: arayüzü ölçekle */
 @media (min-width:1400px) and (min-height:820px){#hud,#weapon,#banner,#hint,#setBtn,#sndBtn,body>section{zoom:1.45}}
 @media (min-width:2200px) and (min-height:1200px){#hud,#weapon,#banner,#hint,#setBtn,#sndBtn,body>section{zoom:2}}
@@ -318,6 +319,7 @@ body.temiz #hud,body.temiz #weapon,body.temiz #bubble,body.temiz #sndBtn,body.te
 <script src="js/mantik.js"></script>
 <script src="js/icerik-en.js"></script>
 <script src="js/dil.js"></script>
+<script src="js/vr.js"></script>
 <script src="js/oyun.js"></script>
 </body>
 </html>
