@@ -85,7 +85,7 @@ const heroGlow = new THREE.Mesh(new THREE.CircleGeometry(2.2, 32), new THREE.Mes
 // kadraj ve logo yerleşimi
 const L = document.getElementById('logo'); let logo = true, lx = .5, ly = .5, ls = 1;
 if (tur === 'hero' || tur === 'bg') logo = false;
-if (portrait) { cam.position.set(0, 4.2, 15); cam.lookAt(0, 1.6, -12); hero.position.set(0, 0, 3); hero.rotation.y = Math.PI - .3; lx = .5; ly = .17; ls = W / 560; }
+if (portrait || H >= W * 0.85) { cam.position.set(0, 4.2, 15); cam.lookAt(0, 1.6, -12); hero.position.set(0, 0, 3); hero.rotation.y = Math.PI - .3; lx = .5; ly = portrait ? .17 : .2; ls = W / 560; }
 else if (tur === 'small') { cam.position.set(4, 3.2, 10); cam.lookAt(1, 2.2, -14); hero.position.set(5, 0, 1); lx = .5; ly = .5; ls = H / 210; }
 else if (tur === 'hero') { cam.position.set(0, 3.2, 14); cam.lookAt(-2, 2.6, -16); hero.position.set(4.2, 0, 3); }
 else { cam.position.set(-2.5, 3.6, 12.5); cam.lookAt(-4.5, 2.1, -12); hero.position.set(-0.6, 0, 3.2); lx = .29; ly = .5; ls = H / 440; }

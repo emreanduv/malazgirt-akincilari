@@ -612,9 +612,10 @@ window.VR_KUR = function (O) {
     VR.on = true; scene.add(W); renderer.localClippingEnabled = true;
     rig.head = new V3(0, 1.2, 0); rig.yaw = 0; rig.floor.set(0, 0, 0); needCal = false;
     const bak = new URLSearchParams(location.search).get('bak');
+    if (new URLSearchParams(location.search).has('atsirti')) VR.ride = true;
     VR.testCam = () => {
       const h = rig.head; camera.position.copy(h); camera.fov = 90; camera.near = 0.03; camera.updateProjectionMatrix();
-      const tg = { sol: [-3, 1.2, -0.5], sag: [3, 1.4, -0.8], arka: [0.4, 1.3, 3], yukari: [0, 3.6, -0.6] }[bak] || [0, h.y - 0.3, -0.75];
+      const tg = { sol: [-3, 1.2, -0.5], sag: [3, 1.4, -0.8], arka: [0.4, 1.3, 3], yukari: [0, 3.6, -0.6] }[bak] || (VR.ride ? [0, h.y - 0.35, -3] : [0, h.y - 0.3, -0.75]);
       camera.lookAt(tg[0], tg[1], tg[2]);
     };
   }
