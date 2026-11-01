@@ -82,7 +82,14 @@ window.VR_KUR = function (O) {
   }
   function say(m, sec) { msg = m; msgT = sec || 2.5; }
 
+  // VR'da öğrenirken daha kolay: her bölüm başında ordu biraz daha büyük başlar
+  let boosted = null;
+  function easyStart() {
+    const g = O.G(); if (!g || O.mode() !== 'play' || boosted === g) return;
+    boosted = g; const k = g.i < 20 ? 2 : 1.4; g.count = Math.round(g.count * k) + (g.i < 20 ? 6 : 3);
+  }
   function readInput(dt) {
+    easyStart();
     const session = renderer.xr.getSession(); if (!session) return;
     for (const src of session.inputSources) {
       const gp = src.gamepad; if (!gp) continue;
@@ -102,6 +109,15 @@ window.VR_KUR = function (O) {
     }
   }
 
+  function labelPlane(lines) {
+    const c2 = document.createElement('canvas'); c2.width = 512; c2.height = 64 + 56 * lines.length; const g = c2.getContext('2d');
+    g.fillStyle = 'rgba(12,28,52,.85)'; g.fillRect(0, 0, c2.width, c2.height); g.strokeStyle = '#f0b232'; g.lineWidth = 6; g.strokeRect(3, 3, c2.width - 6, c2.height - 6);
+    g.fillStyle = '#fff'; g.font = '700 40px "Baloo 2", sans-serif'; g.textAlign = 'center';
+    lines.forEach((l, i) => g.fillText(l, 256, 70 + i * 56));
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(0.12, 0.12 * c2.height / 512), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c2), transparent: true, depthTest: false }));
+    m.renderOrder = 10; return m;
+  }
+
   /* ---------- kumandalar ve eller ---------- */
   for (let k = 0; k < 2; k++) {
     const c = renderer.xr.getController(k);
@@ -113,6 +129,9 @@ window.VR_KUR = function (O) {
     c.addEventListener('selectend', () => { if (grab && grab.ctrl === c) grab = null; });
     // kumanda ucunda küçük altın ok
     const tip = new THREE.Mesh(new THREE.ConeGeometry(0.008, 0.05, 8), brass); tip.rotation.x = -Math.PI / 2; tip.position.z = -0.03; c.add(tip);
+    // kumandanın üstünde ne işe yaradığını yazan küçük etiket
+    const lab = labelPlane(k === 0 ? [t('Tetik: başla / sürükle'), t('Çubuk: yönlendir')] : [t('Tetik: başla / sürükle'), t('Çubuk ↕: masa yüksekliği')]);
+    lab.position.set(0, 0.06, -0.02); lab.rotation.x = -0.7; c.add(lab);
     VR['ctrl' + k] = c;
   }
   function act() {
@@ -126,7 +145,7 @@ window.VR_KUR = function (O) {
 
   /* ---------- oturum ---------- */
   function enter(session) {
-    VR.on = true; document.body.classList.add('vr-on');
+    VR.on = true; document.body.classList.add('vr-on'); const gt = document.getElementById('vrGate'); if (gt) gt.hidden = true;
     renderer.xr.enabled = true; renderer.xr.setReferenceSpaceType('local-floor');
     renderer.localClippingEnabled = true;
     scene.add(fixed); scene.add(VR.ctrl0); scene.add(VR.ctrl1);
@@ -134,12 +153,12 @@ window.VR_KUR = function (O) {
     renderer.xr.setSession(session);
     renderer.setAnimationLoop(frame);
     session.addEventListener('end', leave);
-    tableY = TABLE.y; camXv = G ? O.G().x * 0.6 : 0; camZv = G ? O.G().z : 0;
-    say(t('Harp Masası'), 3);
+    tableY = TABLE.y; camXv = O.G() ? O.G().x * 0.6 : 0; camZv = O.G() ? O.G().z : 0;
+    say(t('Tetiğe bas: sefere çık · Çubukla yönlendir'), 6);
   }
   let fogNear = 70, fogFar = 200;
   function leave() {
-    VR.on = false; document.body.classList.remove('vr-on'); grab = null;
+    VR.on = false; document.body.classList.remove('vr-on'); grab = null; const gt = document.getElementById('vrGate'); if (gt) gt.hidden = false;
     renderer.setAnimationLoop(null); renderer.xr.enabled = false;
     unclipAll(); scene.remove(fixed); scene.remove(VR.ctrl0); scene.remove(VR.ctrl1);
     scene.scale.setScalar(1); scene.position.set(0, 0, 0); scene.updateMatrix();
@@ -148,6 +167,7 @@ window.VR_KUR = function (O) {
     if (O.mode() === 'play') { O.setPaused(true); show('pause'); } else { previewLevel(nextLevel()); show('menu'); }
     requestAnimationFrame(ts => { O.setLast(ts); frame(ts); });
   }
+  VR.state = () => ({ mode: O.mode(), lvl: O.G() && O.G().i, count: O.G() && O.G().count, x: O.G() && O.G().x });
   VR.start = async function () {
     try {
       const session = await xr.requestSession('immersive-vr', { optionalFeatures: ['local-floor', 'hand-tracking'] });
@@ -165,7 +185,15 @@ window.VR_KUR = function (O) {
     const row = $('bLevels').parentElement; row.parentElement.insertBefore(b, row.nextSibling);
     D.applyStatic();
   }
-  if (xr && xr.isSessionSupported) xr.isSessionSupported('immersive-vr').then(ok => { if (ok) addButton(); }).catch(() => {});
+  // Quest'te (gözlük tarayıcısı ya da mağaza uygulaması) oyun doğrudan harp masasına açılsın: tek dokunuşluk büyük giriş ekranı
+  function addGate() {
+    const d = document.createElement('div'); d.id = 'vrGate';
+    d.innerHTML = '<div class="vg"><div class="vgT">MALAZGİRT</div><div class="vgR">AKINCILARI</div><button id="vgGo">🥽 <span>' + t('Harp Masasına Gir') + '</span></button><p>' + t('Tetiğe bas · Oturarak oyna') + '</p><p class="vgC">Bir Mr. Anduv! yapımıdır.</p></div>';
+    document.body.appendChild(d);
+    d.querySelector('#vgGo').addEventListener('click', () => { SFX.click(); VR.start(); });
+  }
+  const quest = /OculusBrowser|Quest|Meta Quest/i.test(navigator.userAgent);
+  if (xr && xr.isSessionSupported) xr.isSessionSupported('immersive-vr').then(ok => { if (ok) { addButton(); if (quest || new URLSearchParams(location.search).has('vr')) addGate(); } }).catch(() => {});
 
   /* ---------- gözlüksüz deneme: ?vrtest=1 (masayı oturan bir oyuncunun gözünden gösterir) ---------- */
   if (VR.test) {
