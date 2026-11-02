@@ -391,6 +391,7 @@ window.VR_KUR = function (O) {
   const ptex = new THREE.CanvasTexture(pcv);
   const panel = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.9), basic(0xffffff, { map: ptex, transparent: true, depthTest: false }));   // masanın ve atın önünde kalsın
   const panelG = new THREE.Group(); panelG.matrixAutoUpdate = false; panelG.add(panel); W.add(panelG); panel.renderOrder = 30;
+  let eraseTxt = '';
   let pScr = 'ana', pDirty = true, pHover = -1, pBtns = [], lvSef = -1, lvPage = 0, pRedrawT = 0;
   const S_ = () => O.S();
   function rr(x, y, w, h, r) { px.beginPath(); px.moveTo(x + r, y); px.arcTo(x + w, y, x + w, y + h, r); px.arcTo(x + w, y + h, x, y + h, r); px.arcTo(x, y + h, x, y, r); px.arcTo(x, y, x + w, y, r); px.closePath(); }
@@ -468,6 +469,7 @@ window.VR_KUR = function (O) {
       const vol = d => () => { const el = document.getElementById('setMus'); el.value = Math.max(0, Math.min(100, S_().vol.mus + d)); el.dispatchEvent(new Event('input')); O.persist(); pDirty = true; SFX.click(); };
       btn(440, 350, 240, 80, '−', '', vol(-20), { fs: 50 }); btn(700, 350, 240, 80, '+', '', vol(20), { fs: 50 });
       row(460, t('Görüş')); btn(440, 460, 240, 80, t('Harp masası'), '', () => { if (VR.ride) toggleRide(); pDirty = true; }, { sel: !VR.ride, fs: 32 }); btn(700, 460, 240, 80, t('At sırtı'), '', () => { if (!VR.ride) toggleRide(); pDirty = true; }, { sel: !!VR.ride, fs: 32 });
+      row(660, t('Oyun verileri')); btn(440, 660, 500, 72, eraseTxt || t('Verilerimi sil'), '', () => { const done = O.eraseData && O.eraseData(); eraseTxt = done ? t('Silindi') : t('Emin misin? Tekrar dokun'); if (!done) setTimeout(() => { eraseTxt = ''; pDirty = true; }, 4000); pDirty = true; }, { fs: 30 });
       if (O.buyFull && !s.full) { row(570, t('Tam Sürüm')); btn(440, 570, 500, 80, '★ ' + t('Satın al'), '', () => locked(nextLevel()), { gold: 1 }); }
     } else if (pScr === 'durak') {
       head(t('Duraklatıldı'));

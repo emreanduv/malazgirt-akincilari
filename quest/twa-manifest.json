@@ -18,7 +18,7 @@
   "signingKey": { "path": "./android.keystore", "alias": "android" },
   "appVersionName": "1.5.0",
   "appVersion": "1.5.0",
-  "appVersionCode": 1,
+  "appVersionCode": 2,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://emreanduv.github.io/malazgirt/vr/manifest.webmanifest",
