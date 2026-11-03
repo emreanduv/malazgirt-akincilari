@@ -14,6 +14,8 @@ Swipe left and right and pick the right side at every gate: plus and times grow 
 • 36 enemy units, from Byzantine infantry to winged hussars, from crusader knights to French sharpshooters
 • Caravans, catapult stones, narrow passes, ditches, wagon forts, city walls and cannonballs
 • Time of day, weather and season change from level to level: dawn, sunset, torch-lit nights, rain, fog, snow, autumn
+• Sipahi's Eye: play from the saddle of a mounted sipahi in first-person view if you like
+• Raider's Guide: step-by-step tips for new players and a "How to Play" screen any time
 • Permanent upgrades in the Camp
 • Mehter drums and a victory tune in the hijaz mode
 • Turkish and English

@@ -14,6 +14,8 @@ Parmağını sağa sola kaydır, kapılardan doğru tarafı seç: artı ve çarp
 • Bizans piyadesinden kanatlı Leh süvarisine, Haçlı şövalyesinden Fransız nişancısına 36 düşman birliği
 • Kervanlar, mancınık taşları, dar geçitler, hendekler, araba tabyaları, sur duvarları, top gülleleri
 • Her bölümde değişen gün saati, hava ve mevsim: sabah, gün batımı, meşaleli gece, yağmur, sis, kar, güz
+• Sipahi Gözü: istersen savaşı atlı sipahinin sırtından, birinci şahıs görüşle oyna
+• Akıncı Rehberi: yeni oyunculara adım adım ipuçları ve her an açılabilen "Nasıl Oynanır" ekranı
 • Ordugâh'ta kalıcı geliştirmeler
 • Mehter davulu ve hicaz makamında zafer nağmesi
 • Türkçe ve İngilizce
