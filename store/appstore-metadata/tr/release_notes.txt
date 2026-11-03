@@ -1,5 +1,5 @@
 Akıncı Rehberi ve Sipahi Gözü geldi!
-• Sipahi Gözü: savaşı ordunun önündeki atlı sipahinin sırtından gör, kısa dokunarak kılıç vur. 🐎 düğmesiyle kuşbakışına geç.
+• Sipahi Gözü: savaşı ordunun önündeki atlı sipahinin sırtından gör, kısa dokunarak kılıç vur. at simgeli düğmeyle kuşbakışına geç.
 • Akıncı Rehberi: yeni bir engelle ilk karşılaştığında kısa bir ipucu kartı çıkar (kapılar, kaideler, devler, kervanlar, mancınık taşları, top gülleleri…)
 • Ana menüde ve molada "Nasıl Oynanır" ekranı
 • Zaferini arkadaşlarınla paylaş
