@@ -1,0 +1,40 @@
+name: App Store tüm uygulamalar durum
+# Hesaptaki BÜTÜN uygulamaların sürüm ve inceleme gönderimi durumlarını okur (yalnız okuma), "durum-tum" dalına yazar.
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+env:
+  ASC_KEY_ID: DJSHKK6T3P
+  ASC_ISSUER_ID: f4943ef8-df6f-42c8-a561-58554097ea35
+jobs:
+  durum:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Durumu oku
+        env: { P8: "${{ secrets.ASC_KEY_P8 }}" }
+        run: |
+          python3 -m pip install -q --break-system-packages pyjwt cryptography requests
+          python3 - <<'PY' 2>&1 | tee asc.log || true
+          import jwt, time, os, json, requests
+          tok = jwt.encode({'iss': os.environ['ASC_ISSUER_ID'], 'iat': int(time.time()), 'exp': int(time.time()) + 900, 'aud': 'appstoreconnect-v1'},
+                           os.environ['P8'], algorithm='ES256', headers={'kid': os.environ['ASC_KEY_ID']})
+          H = {'Authorization': 'Bearer ' + tok}
+          B = 'https://api.appstoreconnect.apple.com'
+          out = {'zaman': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'uygulamalar': []}
+          apps = requests.get(B + '/v1/apps?limit=50&fields[apps]=name,bundleId', headers=H).json()
+          for a in apps.get('data', []):
+              aid = a['id']; u = {'id': aid, 'ad': a['attributes']['name'], 'paket': a['attributes']['bundleId']}
+              v = requests.get(B + f'/v1/apps/{aid}/appStoreVersions?limit=4&fields[appStoreVersions]=versionString,appStoreState,createdDate', headers=H).json()
+              u['surumler'] = [[d['id'], d['attributes']['versionString'], d['attributes']['appStoreState'], d['attributes'].get('createdDate')] for d in v.get('data', [])]
+              r = requests.get(B + f'/v1/apps/{aid}/reviewSubmissions?limit=6&fields[reviewSubmissions]=state,submittedDate,platform', headers=H).json()
+              u['incelemeler'] = [[d['id'], d['attributes'].get('state'), d['attributes'].get('submittedDate')] for d in r.get('data', [])]
+              out['uygulamalar'].append(u)
+          json.dump(out, open('asc.json', 'w'), ensure_ascii=False, indent=1)
+          print(json.dumps(out, ensure_ascii=False)[:3000])
+          PY
+      - name: Dala yaz
+        run: |
+          git init -q d && cd d && cp ../asc.json ../asc.log . 2>/dev/null; git add -A
+          git -c user.name=gha -c user.email=gha@x commit -qm durum
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" HEAD:durum-tum
