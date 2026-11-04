@@ -101,3 +101,9 @@
 ## Sıradakiler
 - Apple ve Google'ın inceleme yanıtlarını bekle.
 - 12+ test kullanıcısının Gmail adresini "Hisar Testçileri" listesine ekle, 14 gün sonra üretim başvurusu.
+
+## Apple başvuru sırası (4 Kasım 2026)
+- Reddedilmiş (spam/4.3 dahil) 5 gönderim iptal edildi (asc-iptal.yml): Kaptan Mecit 1.0.0, Topçular 1.0.0, Legend Heads 1.0.0, Kırmızı Yalı 1.0.0, Hisar: Kara Gece 1.1.0. Sürümleri REJECTED olarak duruyor; içerik farklılaştırılmadan yeniden gönderilmeyecek.
+- Kuyrukta tek gönderim: Kurt Yolu 1.1.0 (25 Ekim'den beri Waiting for Review). Sonuç gelene kadar yeni gönderim yok.
+- Sıra (her biri bir öncekinin sonucu gelince): 1) Kurt Yolu (bekliyor) 2) Champion Battle Manager 4.4.0 (var olan uygulama güncellemesi) 3) Saat Vitrini 4) Nutuk Akışı 5) Fırsat Akışı; reddedilen oyunlar en sona, her biri kendine özgü içerikle.
+- Durum: Actions → "App Store tüm uygulamalar durum" → `durum-tum` dalında asc.json.
