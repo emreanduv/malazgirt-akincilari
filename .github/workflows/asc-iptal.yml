@@ -1,0 +1,39 @@
+name: App Store inceleme gönderimi iptal
+# Verilen reviewSubmission kimliklerini iptal eder. Güvenlik: yalnız UNRESOLVED_ISSUES (reddedilmiş) durumundakiler iptal edilir.
+on:
+  workflow_dispatch:
+    inputs:
+      kimlikler: { description: "Virgülle ayrılmış reviewSubmission kimlikleri", required: true }
+permissions:
+  contents: write
+env:
+  ASC_KEY_ID: DJSHKK6T3P
+  ASC_ISSUER_ID: f4943ef8-df6f-42c8-a561-58554097ea35
+jobs:
+  iptal:
+    runs-on: ubuntu-latest
+    steps:
+      - name: İptal et
+        env: { P8: "${{ secrets.ASC_KEY_P8 }}", KIM: "${{ inputs.kimlikler }}" }
+        run: |
+          python3 -m pip install -q --break-system-packages pyjwt cryptography requests
+          python3 - <<'PY' 2>&1 | tee iptal.log || true
+          import jwt, time, os, json, requests
+          tok = jwt.encode({'iss': os.environ['ASC_ISSUER_ID'], 'iat': int(time.time()), 'exp': int(time.time()) + 900, 'aud': 'appstoreconnect-v1'},
+                           os.environ['P8'], algorithm='ES256', headers={'kid': os.environ['ASC_KEY_ID']})
+          H = {'Authorization': 'Bearer ' + tok, 'Content-Type': 'application/json'}
+          B = 'https://api.appstoreconnect.apple.com'
+          for k in [x.strip() for x in os.environ['KIM'].split(',') if x.strip()]:
+              r = requests.get(B + f'/v1/reviewSubmissions/{k}', headers=H).json()
+              st = r.get('data', {}).get('attributes', {}).get('state')
+              if st != 'UNRESOLVED_ISSUES':
+                  print(k, 'ATLANDI, durum:', st); continue
+              p = requests.patch(B + f'/v1/reviewSubmissions/{k}', headers=H, json={'data': {'type': 'reviewSubmissions', 'id': k, 'attributes': {'canceled': True}}})
+              son = p.json().get('data', {}).get('attributes', {}).get('state') if p.ok else p.text[:400]
+              print(k, 'PATCH', p.status_code, '->', son)
+          PY
+      - name: Dala yaz
+        run: |
+          git init -q d && cd d && cp ../iptal.log . ; git add -A
+          git -c user.name=gha -c user.email=gha@x commit -qm iptal
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" HEAD:durum-iptal
