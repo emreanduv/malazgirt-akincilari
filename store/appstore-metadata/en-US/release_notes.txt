@@ -1,3 +1,7 @@
-Turkish text fix for iPhone and iPad: the letter "ı" that was missing on some screens now shows everywhere; forward and back arrows are drawn as plain symbols.
-Raider's Guide, Sipahi's Eye, How to Play, sharing, rating and Delete my data are all here.
-Thanks for playing!
+1923 levels: the game is complete!
+• 10 new campaigns, 470 new levels: Tripolitania, Edirne, Gallipoli, Kut al-Amara, Eastern Front, İnönü, Sakarya, The Great Offensive, Road to İzmir
+• The grand finale at level 1923
+• 47 regions, 23 new giants, 11 new enemy units: machine-gun nests, ANZAC infantry, evzones, cavalry
+• 3 new bows: the Çanakkale, Sakarya and Kocatepe bows
+• Desert, snowy mountains, the shores of Gallipoli and the plains of the Aegean
+Thanks to all our players!

@@ -372,6 +372,126 @@
   "yil": "1453"
  },
  {
+  "id": "SEFER_31",
+  "tr": [
+   "Trablusgarp",
+   "Trablusgarp seferini tamamla."
+  ],
+  "en": [
+   "Tripolitania",
+   "Complete the Tripolitania campaign."
+  ],
+  "yil": "1912"
+ },
+ {
+  "id": "SEFER_32",
+  "tr": [
+   "Edirne",
+   "Edirne seferini tamamla."
+  ],
+  "en": [
+   "Edirne",
+   "Complete the Edirne campaign."
+  ],
+  "yil": "1913"
+ },
+ {
+  "id": "SEFER_33",
+  "tr": [
+   "Çanakkale",
+   "Çanakkale seferini tamamla."
+  ],
+  "en": [
+   "Gallipoli",
+   "Complete the Gallipoli campaign."
+  ],
+  "yil": "1915"
+ },
+ {
+  "id": "SEFER_34",
+  "tr": [
+   "Kut'ül Amare",
+   "Kut'ül Amare seferini tamamla."
+  ],
+  "en": [
+   "Kut al-Amara",
+   "Complete the Kut al-Amara campaign."
+  ],
+  "yil": "1916"
+ },
+ {
+  "id": "SEFER_35",
+  "tr": [
+   "Doğu Cephesi",
+   "Doğu Cephesi seferini tamamla."
+  ],
+  "en": [
+   "Eastern Front",
+   "Complete the Eastern Front campaign."
+  ],
+  "yil": "1920"
+ },
+ {
+  "id": "SEFER_36",
+  "tr": [
+   "İnönü",
+   "İnönü seferini tamamla."
+  ],
+  "en": [
+   "İnönü",
+   "Complete the İnönü campaign."
+  ],
+  "yil": "1921"
+ },
+ {
+  "id": "SEFER_37",
+  "tr": [
+   "Sakarya",
+   "Sakarya seferini tamamla."
+  ],
+  "en": [
+   "Sakarya",
+   "Complete the Sakarya campaign."
+  ],
+  "yil": "1921"
+ },
+ {
+  "id": "SEFER_38",
+  "tr": [
+   "Büyük Taarruz",
+   "Büyük Taarruz seferini tamamla."
+  ],
+  "en": [
+   "The Great Offensive",
+   "Complete the The Great Offensive campaign."
+  ],
+  "yil": "1922"
+ },
+ {
+  "id": "SEFER_39",
+  "tr": [
+   "İzmir Yolu",
+   "İzmir Yolu seferini tamamla."
+  ],
+  "en": [
+   "Road to İzmir",
+   "Complete the Road to İzmir campaign."
+  ],
+  "yil": "1922"
+ },
+ {
+  "id": "SEFER_40",
+  "tr": [
+   "1923",
+   "1923 seferini tamamla."
+  ],
+  "en": [
+   "1923",
+   "Complete the 1923 campaign."
+  ],
+  "yil": "1923"
+ },
+ {
   "id": "YILDIZ_100",
   "tr": [
    "100 Yıldız",
@@ -471,11 +591,11 @@
   "id": "CIHAN_YAYI",
   "tr": [
    "Cihan Yayı",
-   "En güçlü yayı kazan."
+   "Cihan Yayı'nı kazan."
   ],
   "en": [
    "The World Bow",
-   "Win the strongest bow."
+   "Win the World Bow."
   ],
   "yil": "YAY"
  },

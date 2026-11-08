@@ -18,30 +18,28 @@ const UI = {
   'KÖPRÜ': 'BRIDGE', 'DAR GEÇİT · {n} kişi sığar': 'NARROW PASS · fits {n}', '+{n} akçe': '+{n} coins', 'Altın Alp katıldı!': 'A Golden Alp joins!', '+{n} akıncı': '+{n} raiders',
   'Sıkıştı −': 'Squeezed −', 'Hendek −': 'Ditch −', 'Gülle −': 'Cannonball −', '{a} geçildi.': '{a} cleared.', 'Sağ kalan akıncı': 'Raiders left', 'Altın Alp': 'Golden Alp',
   'Dağıtılan düşman askeri': 'Enemy soldiers scattered', 'Kervan ganimeti': 'Caravan loot', 'Ordugâh\'ta yeni geliştirme alabilirsin!': 'You can buy a new upgrade in the Camp!',
-  ' Sıradaki sefer: {a}!': ' Next campaign: {a}!', ' Yeni seferler pek yakında: hedef 1923 bölüm.': ' New campaigns coming soon: next goal, 1923 levels.',
+  ' Sıradaki sefer: {a}!': ' Next campaign: {a}!', ' Bütün seferleri tamamladın: 1923 bölümün hepsi senin.': ' You have completed every campaign: all 1923 levels are yours.',
   'SEFER HARİTASI': 'CAMPAIGN MAP', 'YENİ SEFER': 'NEW CAMPAIGN',
   'Kaideleri okla sıfırla: daha güçlü bir yay, ordunun gücünü katlar.': 'Shoot the pedestals down to zero: a stronger bow multiplies your army\'s power.',
   'Kapılarda doğru tarafı seç. Ordun büyük olmadan bölüm sonuna varma.': 'Pick the right side at the gates. Don\'t reach the end of the level without a big army.',
   'Dev, ok gücünle eriyor. Ordugâh\'ta Ok Ucu ve Kemankeşhane\'yi geliştir.': 'Giants melt under your arrow power. Upgrade Arrowheads and the Archery School in the Camp.',
   'Ordugâh\'ta akıncılarını güçlendir ya da eski bölümleri yıldızlayıp akçe topla.': 'Strengthen your raiders in the Camp, or earn stars on old levels to collect coins.',
   'Sıradaki sefer': 'Next campaign', 'Pek yakında': 'Coming soon',
-  'Bin dört yüz elli üç bölümün hepsini bitirdin! Yeni seferler güncellemelerle geliyor: hedef 1923 bölüm. Bu arada eski bölümleri yıldızla, Ordugâh\'ı güçlendir.':
-    'You have finished all one thousand four hundred and fifty-three levels! New campaigns are coming with updates: next goal, 1923 levels. Meanwhile, earn stars on old levels and strengthen your Camp.',
   '{n}. Sefer: {a}': 'Campaign {n}: {a}', 'Kilitli': 'Locked', 'kilitli': 'locked', 'SEVİYE {a} / {b}': 'LEVEL {a} / {b}', 'Sonraki: ': 'Next: ',
   'YENİ SEFERDE AÇILIR': 'UNLOCKS NEXT CAMPAIGN', 'EN ÜST SEVİYE': 'MAX LEVEL', '{a} geliştir, {b} akçe': 'Upgrade {a}, {b} coins',
   'Geri': 'Back', 'Önceki sefer': 'Previous campaign', 'Sonraki sefer': 'Next campaign', 'Duraklat': 'Pause', 'Oyun alanı': 'Game area',
   'Ayarlar': 'Settings', 'Dil': 'Language', 'Ses efektleri': 'Sound effects', 'Mehter (müzik)': 'Mehter (music)', 'Grafik kalitesi': 'Graphics quality',
   'Düşük': 'Low', 'Orta': 'Medium', 'Yüksek': 'High', 'Tam ekran': 'Fullscreen', 'Açık': 'On', 'Kapalı': 'Off', 'Oyundan çık': 'Quit game', 'Tamam': 'Done',
   'Tam Sürüm': 'Full Version', 'TAM SÜRÜMÜ AL': 'GET THE FULL VERSION', 'Satın alımları geri yükle': 'Restore purchases', 'Şimdi değil': 'Not now',
-  'İlk iki sefer, yani 100 bölüm ücretsiz. Tam sürümle 1453 bölümün, 30 seferin hepsi tek seferlik ödemeyle açılır. Reklam yok, abonelik yok.':
-    'The first two campaigns, 100 levels, are free. The Full Version unlocks all 1453 levels and 30 campaigns with a single payment. No ads, no subscription.',
+  'İlk iki sefer, yani 100 bölüm ücretsiz. Tam sürümle 1923 bölümün, 40 seferin hepsi tek seferlik ödemeyle açılır. Reklam yok, abonelik yok.':
+    'The first two campaigns, 100 levels, are free. The Full Version unlocks all 1923 levels and 40 campaigns with a single payment. No ads, no subscription.',
   'Satın alma tamamlanamadı. Bağlantını kontrol edip yeniden dene.': 'The purchase could not be completed. Check your connection and try again.',
   'Tam sürüm açıldı. Hayırlı seferler!': 'Full Version unlocked. Good campaigning!', 'Geri yüklenecek satın alım bulunamadı.': 'No purchases to restore.',
   'Bir Mr. Anduv! yapımıdır.': 'Bir Mr. Anduv! yapımıdır.',
-  'Bu ücretsiz demo ilk iki seferi, yani 100 bölümü içerir. Tam sürümde 1453 bölüm ve 30 sefer seni bekliyor. İlerlemen tam sürüme aktarılır.':
-    'This free demo includes the first two campaigns, 100 levels. The full game has 1453 levels and 30 campaigns waiting for you. Your progress carries over to the full game.',
-  'İlk {n} bölüm ücretsiz. Tam sürümle 1453 bölümün, 30 seferin hepsi tek seferlik ödemeyle açılır. Reklam yok, abonelik yok.':
-    'The first {n} levels are free. The Full Version unlocks all 1453 levels and 30 campaigns with a single payment. No ads, no subscription.',
+  'Bu ücretsiz demo ilk iki seferi, yani 100 bölümü içerir. Tam sürümde 1923 bölüm ve 40 sefer seni bekliyor. İlerlemen tam sürüme aktarılır.':
+    'This free demo includes the first two campaigns, 100 levels. The full game has 1923 levels and 40 campaigns waiting for you. Your progress carries over to the full game.',
+  'İlk {n} bölüm ücretsiz. Tam sürümle 1923 bölümün, 40 seferin hepsi tek seferlik ödemeyle açılır. Reklam yok, abonelik yok.':
+    'The first {n} levels are free. The Full Version unlocks all 1923 levels and 40 campaigns with a single payment. No ads, no subscription.',
   "STEAM'DE TAM SÜRÜM": 'FULL GAME ON STEAM',
   'Satın al': 'Buy',
   'Harp Masası': 'War Table', 'Harp Masasına Gir': 'Enter the War Table', 'Tetiğe bas · Oturarak oyna': 'Pull the trigger · Play seated', 'Tetik: başla / sürükle': 'Trigger: start / drag', 'Çubuk: yönlendir': 'Stick: steer', 'Çubuk ↕: masa yüksekliği': 'Stick ↕: table height', 'Tetiğe bas: sefere çık · Çubukla yönlendir': 'Trigger: march out · Stick: steer', 'Harp Masası (VR)': 'War Table (VR)', 'Tetiğe bas: sefere çık': 'Pull the trigger: march out', 'Tetiğe bas: devam': 'Pull the trigger: continue',
@@ -51,7 +49,7 @@ const UI = {
   'Akın nasıl gidiyor?': 'How is the raid going?', 'Önerim var': 'I have feedback', 'Sonra': 'Later', 'Harika!': 'Great!',
   'Malazgirt Akıncıları\'nı beğendiysen birkaç saniyeni ayırıp puan verir misin? Bu, oyunu daha çok kişinin bulmasını sağlar.': 'If you enjoy Malazgirt Akıncıları, could you take a few seconds to rate it? It helps more players find the game.',
   'Bağlantı kopyalandı, istediğin yere yapıştır.': 'Link copied, paste it anywhere.', 'Merhaba, oyunla ilgili görüşüm:': 'Hi, my feedback about the game:', 'Bölüm': 'Level',
-  'Malazgirt Akıncıları: akıncılarını büyüt, doğru kapıyı seç! Malazgirt\'ten Fetih Yolu\'na 1453 bölüm, ilk 100 bölüm ücretsiz.': 'Malazgirt Akıncıları: grow your raiders, pick the right gate! 1453 levels from Manzikert to the Road to Conquest, first 100 levels free.',
+  'Malazgirt Akıncıları: akıncılarını büyüt, doğru kapıyı seç! 1071 Malazgirt\'ten 1923\'e 1923 bölüm, ilk 100 bölüm ücretsiz.': 'Malazgirt Akıncıları: grow your raiders, pick the right gate! 1923 levels from Manzikert in 1071 to 1923, first 100 levels free.',
   'Malazgirt Akıncıları\'nda {n}. bölümü {s} yıldızla geçtim! Sen de akına katıl:': 'I beat level {n} of Malazgirt Akıncıları with {s} stars! Join the raid:',
   'Ordunu yönet': 'Lead your army', 'Parmağını sağa sola kaydır (klavyede ← → ya da A / D). Akıncıların kendiliğinden ilerler ve durmadan ok atar.': 'Swipe left and right (← → or A / D on a keyboard). Your raiders ride forward on their own and shoot non-stop.',
   'Kapıyı seç': 'Pick a gate', 'Her kapının iki yüzü var: + ve × ordunu büyütür, − ve ÷ eritir. Büyüten tarafa geç.': 'Every gate has two sides: + and × grow your army, − and ÷ shrink it. Ride through the side that grows it.',

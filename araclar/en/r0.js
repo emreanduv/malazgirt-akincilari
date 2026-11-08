@@ -30,7 +30,17 @@ module.exports = {
     ['Silistra', 'The Crimean War on the Danube', 'SILISTRA!', 'June 1854. After a forty-day siege the Russian army withdrew from Silistra. The defence of Arab Tabia became a legend.'],
     ['Plevna', 'Gazi Osman Pasha\'s defence', 'PLEVNA!', '11 September 1877. The third great assault also broke before the redoubts. Gazi Osman Pasha\'s months-long defence became a legend around the world.'],
     ['Domokos', 'Edhem Pasha\'s campaign', 'DOMOKOS!', '17 May 1897. The victory on the ridges of Domokos opened the road through Thessaly; the Thirty Days\' War ended in an Ottoman victory.'],
-    ['Road to Conquest', 'To level one thousand four hundred and fifty-three', 'CONQUEST!', 'An age had passed through the breach opened on 29 May 1453. 1453 levels later the banner stands on the walls of Istanbul again. The city is yours, Raider Bey.']
+    ['Road to Conquest', 'To level one thousand four hundred and fifty-three', 'CONQUEST!', 'An age had passed through the breach opened on 29 May 1453. 1453 levels later the banner stands on the walls of Istanbul again. The city is yours, Raider Bey.'],
+    ['Tripolitania', 'Volunteers at Derna and Tobruk', 'TOBRUK!', '22 December 1911. Before Tobruk, volunteers led by Major Mustafa Kemal Bey drove back the Italian units. After a year of resistance at Derna and Tobruk the Treaty of Ouchy was signed in October 1912; the young officers marched to the Balkan front.'],
+    ['Edirne', 'From Çatalca to the Selimiye', 'EDIRNE!', '21 July 1913. In the Second Balkan War the advancing vanguard entered Edirne. The city lost in March was taken back; the minarets of the Selimiye stand on the army\'s horizon once more.'],
+    ['Gallipoli', 'Defending the Straits and the ridges', 'GALLIPOLI!', '9 January 1916. The Straits could not be forced from the sea on 18 March, nor from the land after 25 April. After eight and a half months of fighting the Entente armies withdrew from the Gallipoli Peninsula.'],
+    ['Kut al-Amara', 'A siege on the Tigris', 'KUT!', '29 April 1916. Stopped at Ctesiphon and besieged at Kut for five months, the British division surrendered to Halil Pasha. The relief columns could not get through along the Tigris.'],
+    ['Eastern Front', 'Kâzım Karabekir Pasha\'s campaign', 'KARS!', '30 October 1920. After Sarıkamış, Kars was taken too; in November the army reached Gyumri. The Treaty of Gyumri, signed in December 1920, was the first treaty signed by the Grand National Assembly government in Ankara.'],
+    ['İnönü', 'Two victories of the Western Front', 'İNÖNÜ!', '1 April 1921. With Metristepe retaken, the Second Battle of İnönü was won. In January and again in March, the troops of Western Front commander İsmet Bey stopped the enemy on the same ridges; the regular army had shown its strength.'],
+    ['Sakarya', 'Twenty-two days, twenty-two nights', 'SAKARYA!', '13 September 1921. At the end of a pitched battle lasting twenty-two days, the enemy army withdrew west of the Sakarya. The Grand National Assembly gave Commander-in-Chief Mustafa Kemal Pasha the rank of marshal and the title of Gazi.'],
+    ['The Great Offensive', 'From Kocatepe to Dumlupınar', 'DUMLUPINAR!', '30 August 1922. Launched from Kocatepe at dawn on 26 August, the Great Offensive ended in victory at Dumlupınar in the Battle of the Commander-in-Chief. The main force of the enemy army was broken in four days.'],
+    ['Road to İzmir', 'First objective: the Mediterranean', 'İZMİR!', '9 September 1922. Cavalry units entered İzmir and the banner was raised over the Government House. The march that began at Kocatepe reached the Aegean coast in two weeks; on 11 October the Armistice of Mudanya was signed.'],
+    ['1923', 'To level one thousand nine hundred and twenty-three', '1923!', '29 October 1923. The Grand National Assembly of Turkey proclaimed the Republic; Mustafa Kemal Pasha was elected its first President. The road that began at Manzikert with a handful of raiders ends 1923 levels later, in the founding year. The banner is in your hands, Raider Bey.'],
   ],
   soon: ['New Campaigns', 'Coming soon'],
   bosses: {
@@ -51,7 +61,13 @@ module.exports = {
     ruskomutani: 'Russian General', carmuhafizi: 'Tsar\'s Guard', malazgirtfinal: 'Byzantine Imperial Army', proveditor: 'Venetian Provveditore', avusturyamaresal: 'Austrian Field Marshal',
     belgradmuhafizi: 'Guard of Belgrade Castle', habsburgsancagi: 'The Habsburg Emperor\'s Banner', fransizsuvaribasi: 'French Cavalry Captain', fransizgeneral2: 'French General', fransizmuhafiz: 'French Guard Regiment',
     nisancibasi: 'Sharpshooter Captain', rusmaresal: 'Russian Field Marshal', grandukmuhafizi: 'The Grand Duke\'s Guard', yunankomutani: 'Greek Commander', yunanbaskomutani: 'Greek Commander-in-Chief',
-    fetihfinal: 'The Last Emperor\'s Army'
+    fetihfinal: 'The Last Emperor\'s Army',
+    italyankomutani: 'Italian Commander', italyansuvaribasi: 'Italian Cavalry Captain', mitralyozbasi: 'Machine-Gun Captain', italyanbaskomutani: 'Italian Commander-in-Chief',
+    bulgarkomutani: 'Bulgarian Commander', edirnegarnizon: 'Edirne Garrison Commander', ingilizkomutani: 'British Commander', anzakkomutani: 'ANZAC Commander',
+    itilafbaskomutani: 'Entente Commander-in-Chief', hintsuvaribasi: 'Cavalry Brigade Commander', kurtarmakomutani: 'Relief Column Commander', kutgarnizon: 'Kut Garrison Commander',
+    dagkomutani: 'Mountain Regiment Commander', kalekomutani: 'Kars Fortress Commander', gumrugarnizon: 'Gyumri Garrison Commander', yunanalaykomutani: 'Greek Regimental Commander',
+    evzonbasi: 'Evzone Captain', yunansuvaribasi: 'Greek Cavalry Captain', yunankolordu: 'Greek Corps Commander', yunanordu: 'Greek Army Commander',
+    yunankarargah: 'Greek Army Headquarters', yunanartci: 'Greek Rearguard Commander', final1923: 'The Armies of Every Front'
   },
   bossTxt: {
     kumandan: 'The Vanguard Commander waits at the end of the level. A giant; melt him with a rain of arrows.',
@@ -139,7 +155,30 @@ module.exports = {
     grandukmuhafizi: 'The Grand Duke\'s Guard holds the last line. The final move at Plevna.',
     yunankomutani: 'The Greek Commander has lined up his infantry on the ridges. Melt the crowd first.',
     yunanbaskomutani: 'The Greek Commander-in-Chief holds the last position. The final move at Domokos.',
-    fetihfinal: 'The last emperor\'s army stands before the walls. The final move of a thousand four hundred and fifty-three levels, Raider Bey.'
+    fetihfinal: 'The last emperor\'s army stands before the walls. The final move of a thousand four hundred and fifty-three levels, Raider Bey.',
+    italyankomutani: 'The Italian Commander has lined his infantry up on the sand hills. Melt the crowd first.',
+    italyansuvaribasi: 'The Italian Cavalry Captain rides out of the oasis. He comes fast; meet him early with arrows.',
+    mitralyozbasi: 'The Machine-Gun Captain has set up behind sandbags. Melt his nest before you get in range.',
+    italyanbaskomutani: 'The Italian Commander-in-Chief holds the last line before Tobruk. The final move in Tripolitania.',
+    bulgarkomutani: 'The Bulgarian Commander has lined his infantry up in the trenches. Melt the crowd first.',
+    edirnegarnizon: 'The Edirne Garrison Commander makes a last stand at the bridges. The final move at Edirne.',
+    ingilizkomutani: 'The British Commander leads the battalions coming ashore. Keep the arrows raining.',
+    anzakkomutani: 'The ANZAC Commander drives his men up the ridges. Stubborn and fast; don\'t give up the ridge.',
+    itilafbaskomutani: 'The Entente Commander-in-Chief leads the last line on the peninsula. The final move at Gallipoli.',
+    hintsuvaribasi: 'The Cavalry Brigade Commander charges from the bank of the Tigris. Meet him early with arrows.',
+    kurtarmakomutani: 'The Relief Column Commander is trying to break through to Kut. Close the road.',
+    kutgarnizon: 'The Kut Garrison Commander holds the town\'s last position. The final move at Kut al-Amara.',
+    dagkomutani: 'The Mountain Regiment Commander holds the mouth of the pass. Be ready before you enter it.',
+    kalekomutani: 'The Kars Fortress Commander is on the towers of the upper castle. Scatter his soldiers.',
+    gumrugarnizon: 'The Gyumri Garrison Commander holds the last line on the plain. The final move on the Eastern Front.',
+    yunanalaykomutani: 'The Greek Regimental Commander has lined his infantry up on the ridges. Melt the crowd first.',
+    evzonbasi: 'The Evzone Captain leads his elite infantry. Heavy and fast; keep the arrows raining.',
+    yunansuvaribasi: 'The Greek Cavalry Captain charges. Heavy and fast; meet him early with arrows.',
+    yunankolordu: 'The Greek Corps Commander is at his hilltop headquarters. Ready your strongest bow.',
+    yunanordu: 'The Greek Army Commander leads his main force. The final move of the pitched battle.',
+    yunankarargah: 'The Greek Army Headquarters is in the middle of the fleeing columns. The final move of the Great Offensive.',
+    yunanartci: 'The Greek Rearguard Commander holds the last column falling back to the quay. The final move on the Road to İzmir.',
+    final1923: 'The armies of every front stand against you one last time. The final move of one thousand nine hundred and twenty-three levels, Raider Bey.'
   },
   unlock: {
     2: 'Shoot the number on a pedestal down to zero: a new bow, a horsetail standard or a Golden Alp becomes yours.',
@@ -194,7 +233,23 @@ module.exports = {
     1271: 'New campaign: Silistra! Sharpshooters take the field: they fire accurately from afar. The World Bow is on the pedestals.',
     1321: 'New campaign: Plevna! Hold the redoubts, beat back the Russian assaults.',
     1371: 'New campaign: Domokos! Greek infantry on the ridges of Thessaly.',
-    1421: 'Final campaign: Road to Conquest! Thirty-two steps to level one thousand four hundred and fifty-three.'
+    1421: 'Final campaign: Road to Conquest! Thirty-two steps to level one thousand four hundred and fifty-three.',
+    1453: 'New campaign: Tripolitania! Italian infantry has landed on the African coast. Don\'t miss the caravans on the desert roads.',
+    1455: 'Italian cavalry on the field: they come fast between the oases, meet them early with arrows.',
+    1503: 'New campaign: Edirne! Bulgarian infantry in Thrace. Redoubts, ditches and walls await you.',
+    1553: 'New campaign: Gallipoli! British infantry has come ashore. Machine gunners hold the trenches: they never move and open fire once you are in range. The Çanakkale Bow is on the pedestals.',
+    1555: 'ANZAC infantry on the field: stubborn soldiers climbing the ridges at Arıburnu.',
+    1560: 'French infantry at Seddülbahir: after Kumkale they moved over to Kerevizdere.',
+    1603: 'New campaign: Kut al-Amara! Indian infantry and British battalions along the Tigris.',
+    1605: 'Indian cavalry on the field: they come fast and hit hard.',
+    1653: 'New campaign: Eastern Front! Snowy mountain passes from here on: be ready before you enter a narrow gorge.',
+    1703: 'New campaign: İnönü! Greek infantry before Bozüyük.',
+    1705: 'Evzones on the field: the elite infantry of the Greek army, heavy and fast.',
+    1753: 'New campaign: Sakarya! A pitched battle of twenty-two days begins. The Sakarya Bow is on the pedestals.',
+    1755: 'Greek cavalry on the field: heavy and fast, meet them early with arrows.',
+    1803: 'New campaign: The Great Offensive! At dawn, from Kocatepe. The Kocatepe Bow is on the pedestals.',
+    1853: 'New campaign: Road to İzmir! The objective is the Mediterranean coast.',
+    1903: 'Final campaign: 1923! Twenty steps to level one thousand nine hundred and twenty-three.'
   },
   lane: {
     300: 'The road has widened: there are three lanes now. Gates offer three choices; look at all of them and pick the best.',
@@ -203,7 +258,8 @@ module.exports = {
   special: {
     0: 'Sultan Alp Arslan\'s raiders are on the march. Swipe your finger, go through the plus gates, break the blue blocks with arrows. Scatter the Byzantine outriders at the end.',
     1070: 'Level one thousand and seventy-one. The plain where it all began: Manzikert. With the army you grew over the centuries, you face the Byzantine Imperial Army. Hold the banner high, Raider Bey.',
-    1452: 'Level one thousand four hundred and fifty-three. 29 May 1453, at dawn. The army you grew over the centuries stands before the walls of Istanbul. The breach is open, Raider Bey: the city awaits you.'
+    1452: 'Level one thousand four hundred and fifty-three. 29 May 1453, at dawn. The army you grew over the centuries stands before the walls of Istanbul. The breach is open, Raider Bey: the city awaits you.',
+    1922: 'Level one thousand nine hundred and twenty-three. 29 October 1923, evening. The army you have grown over the centuries since Manzikert lines up one last time. Finish this level, Raider Bey: the road ends here.'
   },
   foes: {
     piyade: 'Byzantine Infantry', okcu: 'Byzantine Archer', katafrakt: 'Cataphract', varang: 'Varangian Guard', akrit: 'Akritai Rider', frank: 'Crusader Infantry',
@@ -211,10 +267,12 @@ module.exports = {
     sirppiyade: 'Serbian Infantry', sirpsovalye: 'Serbian Heavy Cavalry', macar: 'Hungarian Horseman', tufekci: 'Wagon Gunner', ceneviz: 'Genoese Man-at-Arms', venedik: 'Venetian Infantry',
     arkebuz: 'Arquebusier', hirvat: 'Croatian Infantry', zirhli: 'Armoured Hungarian Knight', rodos: 'Knight of Rhodes', husar: 'Hungarian Light Horseman', landsknecht: 'German Mercenary',
     kirasiyer: 'Habsburg Cuirassier', muskeci: 'Musketeer', stradiot: 'Stradiot Horseman', kanatlihusar: 'Winged Hussar', kazak: 'Cossack Horseman', rusasker: 'Russian Infantry',
-    grenadiyer: 'Russian Grenadier', avusturyapiyade: 'Austrian Infantry', fransizpiyade: 'French Infantry', fransizsuvari: 'French Dragoon', nisanci: 'Sharpshooter', yunanpiyade: 'Greek Infantry'
+    grenadiyer: 'Russian Grenadier', avusturyapiyade: 'Austrian Infantry', fransizpiyade: 'French Infantry', fransizsuvari: 'French Dragoon', nisanci: 'Sharpshooter', yunanpiyade: 'Greek Infantry',
+    italyan: 'Italian Infantry', italyansuvari: 'Italian Cavalry', bulgar: 'Bulgarian Infantry', ingiliz: 'British Infantry', anzak: 'ANZAC Infantry', hint: 'Indian Infantry',
+    hintsuvari: 'Indian Cavalry', dagpiyade: 'Mountain Infantry', evzon: 'Evzone', yunansuvari: 'Greek Cavalry', mitralyoz: 'Machine Gunner'
   },
   weapons: ['Plain Bow', 'Kemankeş Bow', 'Double Bow', 'Fire Arrow', 'Sky Standard Bow', 'Steel-Strung Bow', 'Sultan\'s Bow', 'White-String Bow', 'Gazi Bow', 'Thunderbolt Bow',
-    'Conqueror\'s Bow', 'Lawgiver\'s Bow', 'Köprülü Bow', 'Alp Arslan Bow', 'Mehter Bow', 'World Bow'],
+    'Conqueror\'s Bow', 'Lawgiver\'s Bow', 'Köprülü Bow', 'Alp Arslan Bow', 'Mehter Bow', 'World Bow', 'Çanakkale Bow', 'Sakarya Bow', 'Kocatepe Bow'],
   upg: {
     start: ['Raider Hearth', 'Set out with {n} raiders'],
     dmg: ['Arrowheads', 'Arrow power ×{n}'],

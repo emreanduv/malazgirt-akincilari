@@ -98,6 +98,14 @@
 - Steam ücretsiz demo: ilk 100 bölüm. Aynı paket, masaustu.yml'de `demo: true` + `tam_app_id` ile derlenir (GitHub sürümü `masaustu-demo-<sürüm>`). 101. bölümde "Steam'de tam sürüm" ekranı tam oyunun mağaza sayfasını Steam arayüzünde açar; aynı bilgisayarda ilerleme tam sürüme geçer.
 - Arayüz büyük masaüstü pencerelerinde 1,45× / 2× ölçeklenir (index.html @media)
 
+## 2.0.0 (hazırlanıyor): 1923 bölüm, 40 sefer — son sürüm
+- Yeni seferler (1454–1923): Trablusgarp 1911, Edirne 1913, Çanakkale 1915, Kut'ül Amare 1916, Doğu Cephesi 1920, İnönü 1921, Sakarya 1921, Büyük Taarruz 1922, İzmir Yolu 1922, 1923 (1923. bölüm finali; 2 bölge: 10+10). Ayrıntı ve mağaza metinleri: store/surum-2.0.md
+- 11 yeni birlik, 23 yeni dev, 3 yeni yay (Çanakkale, Sakarya, Kocatepe); seferlere göre engel ağırlığı (mantik.js `MECH_BIAS`); 47 yeni bölge teması (oyun.js THEMES)
+- 1–1453 aynen kaldı (bölüm üretimi ve CAL bayt bayt aynı; 1453. bölümün dev canı ×2 ve şafak havası korundu). Son bölümden sonra "Pek yakında" yok
+- Kalibrasyon: `node araclar/kalibre.js 1454 1923` (2.0'da hedef: Ordugâh tavanı dolu olduğu için +0,10; sonuç belli olunca duran `reaches()` ile ≈2 kat hızlı). Sonra `FROM=1454` ile araclar/duzelt.js (yalnız yeni bölümler yumuşatılır): 24 bölüm %12 yumuşatıldı
+- Denge (bütün 1923 bölümü sırayla oynayan botlar, takılan yok): iyi oyuncu ilk denemede 1072–1453 %61, 1454–1923 %56; ortalama oyuncu 1072–1453 %48, 1454–1923 %43 (en çok 21–22 deneme, eski bölümlerle aynı)
+- Steam başarımları SEFER_31 … SEFER_40 (store/steam/basarimlar.json) Steamworks'e eklenmeli; Steam kapsül görselleri hâlâ "1071 · 1453" yazıyor (araclar/steam/kapak.html, gorseller.js)
+
 ## Sıradakiler
 - Apple ve Google'ın inceleme yanıtlarını bekle.
 - 12+ test kullanıcısının Gmail adresini "Hisar Testçileri" listesine ekle, 14 gün sonra üretim başvurusu.

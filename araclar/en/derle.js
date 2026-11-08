@@ -2,7 +2,7 @@
 const fs = require('fs'), path = require('path');
 const M = require('../../www/js/mantik.js');
 const r0 = require('./r0.js');
-const regions = [].concat(...[1, 2, 3, 4, 5].map(k => require('./r' + k + '.js')));
+const regions = [].concat(...[1, 2, 3, 4, 5, 6].map(k => require('./r' + k + '.js')));
 const err = [];
 if (regions.length !== M.REGIONS.length) err.push('bölge sayısı ' + regions.length + ' / ' + M.REGIONS.length);
 M.REGIONS.forEach((R, r) => { const E = regions[r]; if (!E) return;

@@ -1,6 +1,6 @@
 // Her bölümün zorluk katsayısını (CAL) ayarlar. Ölçüt: "ortalama" oyuncuların (ara sıra hata yapan botlar)
 // ilk denemede kazanma oranı. Eğri testere dişi: her bölge içinde zorlaşır, yeni sefer biraz nefes aldırır,
-// 1.4 eğrisi: target() içinde; yol genişliği ve hız mantik.js'te (lanesOf, speedOf).
+// 1.4 eğrisi: target() içinde (2.0: 1923 bölüm); yol genişliği ve hız mantik.js'te (lanesOf, speedOf).
 // Oyuncu kazandığı akçenin %85'ini Ordugâh'a harcar, sefer tavanını aşamaz.
 // Çalıştır: node araclar/kalibre.js [başlangıç bölümü, 1'den]   (≈10 dakika)
 const fs = require('fs'), path = require('path');
@@ -12,8 +12,10 @@ const NL = M.NL;
 function target(i) {
   const P = M.levelPos(i), kk = P.k / Math.max(1, P.rlen - 1);
   // 1.4: daha zor eğri. İlk 15 bölüm rahat, 100. bölümde %41, 500'de %26, 1071'de %22 (bölge içinde %8 daha sert)
-  let t = 0.30 + 0.62 * Math.exp(-i / 60) - 0.08 * (i / 1070) - 0.08 * kk;
+  // 2.0 (1454–1923. bölümler): genel eğim yavaşlar (470 bölümde −%2), testere dişi sürer; 1453'e kadar hedefler aynı
+  let t = 0.30 + 0.62 * Math.exp(-i / 60) - 0.08 * (Math.min(i, 1452) / 1070) - 0.02 * (Math.max(0, i - 1452) / 470) - 0.08 * kk;
   if (P.li < 3) t += 0.06;                       // yeni sefer: ilk bölümler nefes aldırır
+  if (i > 1452) t += 0.10;                       // 2.0: Ordugâh tavanı (60) dolu; oyuncunun geliştirme üstünlüğü kalmadığı için hedef yükselir (denge testinde 1072–1453 ile aynı his)
   return Math.min(0.97, Math.max(0.15, t));
 }
 const SEEDS = 16;
@@ -29,6 +31,16 @@ function winRate(i, f, up) {
   let w = 0;
   for (let s = 1; s <= SEEDS; s++) { const G = game(i, f, up, ACEMI(s * 977 + i * 13)); if (G.state !== 'lose' && G.state !== 'play') w++; }
   return w / SEEDS;
+}
+// winRate(i, f, up) >= tg ile aynı sonucu verir, ama sonuç belli olunca durur (aynı tohumlar, ≈2 kat hızlı)
+function reaches(i, f, up, tg) {
+  const need = Math.ceil(tg * SEEDS - 1e-9); let w = 0;
+  for (let s = 1; s <= SEEDS; s++) {
+    if (w >= need) return true;
+    if (w + (SEEDS - s + 1) < need) return false;
+    const G = game(i, f, up, ACEMI(s * 977 + i * 13)); if (G.state !== 'lose' && G.state !== 'play') w++;
+  }
+  return w >= need;
 }
 const up = { start: 0, dmg: 0, rate: 0, zirh: 0 }; let coins = 0;
 function shop(cap) {
@@ -51,7 +63,7 @@ for (let i = 0; i < to; i++) {
   if (i >= from) {
     const tg = target(i);
     let lo = Math.log(0.2), hi = Math.log(6);
-    for (let k = 0; k < 10; k++) { const mid = (lo + hi) / 2; if (winRate(i, Math.exp(mid), up) >= tg) lo = mid; else hi = mid; }
+    for (let k = 0; k < 10; k++) { const mid = (lo + hi) / 2; if (reaches(i, Math.exp(mid), up, tg)) lo = mid; else hi = mid; }
     out[i] = +Math.exp(lo).toFixed(3);
     process.stdout.write(`B${i + 1}:${out[i]}(%${Math.round(100 * winRate(i, out[i], up))}/%${Math.round(100 * tg)}) `);
     if ((i + 1) % 10 === 0) {

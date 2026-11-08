@@ -19,7 +19,7 @@ const NL = M.NL, NSF = M.SEFERLER.length;
 
 /* ================= KAYIT ================= */
 const SKEY = 'malazgirt-akincilari-v1';
-const SURUM = '1.6.3';
+const SURUM = '2.0.0';
 const D = window.DIL, t = D.t, HOST = D.HOST;
 const FREE_LIMIT = 100;   // mobilde yeni oyuncu için ücretsiz bölüm sayısı (ilk iki sefer); gerisi Tam Sürüm
 // 1.5'ten önce oynayanlar bulundukları yerden bir sonraki eşiğe kadar ücretsiz devam eder (ör. 244. bölümdeki oyuncu 250'ye kadar)
@@ -235,6 +235,28 @@ const BATAKLIK = { sky: 0xd2dcd4, ground: 0x7e9a64, hill: [0x6a8a52, 0x76945a, 0
  [56], [42], [18], [68], [19],                                       // Dömeke
  [30], [50], [54]                                                    // Fetih Yolu
 ].forEach(([k, o]) => THEMES.push(Object.assign({}, k < 0 ? BATAKLIK : THEMES[k], o || {})));
+// 31–40. seferler (1911–1923): çöl, Trakya, Gelibolu, Mezopotamya, karlı doğu, Anadolu bozkırı, Ege
+{
+  const COL = { sky: 0xf0dcae, ground: 0xe2c286, hill: [0xd8b474, 0xcfa866, 0xe2c48a, 0xc89e5e], mt: 0xc4a070, bush: 0x9a8a4a, sun: 0xfff2d4, hemiG: 0xa4825a, mtN: 14 };
+  const TRAKYA = { sky: 0xd8e4d8, ground: 0x9cb070, hill: [0x82985a, 0x90a664, 0x768c52, 0x9cae6e], mt: 0x7a8278, bush: 0x4e6a38, sun: 0xfff2e2, hemiG: 0x5a7046 };
+  const GELIBOLU = { sky: 0xd6e6ee, ground: 0xb8aa7a, hill: [0xa49a6a, 0xb0a474, 0x988e60, 0xbcae80], mt: 0x8a8678, bush: 0x5a6a3a, sun: 0xfff4e6, hemiG: 0x747050, lake: 0x2a7ab4, cliff: 0.6 };
+  const MEZO = { sky: 0xf0dcb4, ground: 0xd8bc84, hill: [0xccac70, 0xc4a266, 0xd6b87e, 0xbc9a5e], mt: 0xb89a70, bush: 0x7a8a46, sun: 0xfff0d0, hemiG: 0x9a7e56, river: 0x6a8a8a, mtN: 12 };
+  const KARLI = { sky: 0xe6edf4, ground: 0xeef2f6, hill: [0xdde4ec, 0xe6ecf2, 0xd2dae4, 0xeaeff4], mt: 0xc8d0dc, bush: 0x5a6a5a, sun: 0xf6f8ff, hemiG: 0xb8c2cc, mtN: 50, forest: 0.7 };
+  const BOZKIR = { sky: 0xeadcb8, ground: 0xd2b47a, hill: [0xc4a46a, 0xccac72, 0xb89a60, 0xd2b47e], mt: 0xa48a6a, bush: 0x8a8448, sun: 0xfff0d4, hemiG: 0x92784e };   // yaz: yağmur, kar yok
+  const YAYLA = { sky: 0xdde2d6, ground: 0xbcb48a, hill: [0xaaa27a, 0xb4ac82, 0x9e9670, 0xc0b88c], mt: 0x8e8a7c, bush: 0x6a7448, sun: 0xfff2e0, hemiG: 0x7a7656 };
+  const EGE = { sky: 0xd8e8ee, ground: 0xaab27a, hill: [0x8e9e62, 0x9ca86c, 0x82925a, 0xa6ae76], mt: 0x84887e, bush: 0x56703a, sun: 0xfff4e4, hemiG: 0x667050, forest: 0.3 };
+  [[COL, { lake: 0x2a8ac4 }], [COL, { lake: 0x2a90cc }], [COL, { ground: 0xd8bc84, bush: 0x6a7a3e, cliff: 0.5, mtN: 30 }], [COL, {}], [COL, { lake: 0x2a8ac4, mood: 'sabah' }],      // Trablusgarp
+   [TRAKYA, { lake: 0x3a86b0, mood: 'guz' }], [TRAKYA, { mood: 'kis', sur: 0.8 }], [TRAKYA, {}], [TRAKYA, { river: 0x4a86a8 }], [TRAKYA, { river: 0x4a86a8, sur: 1 }],  // Edirne
+   [GELIBOLU, { sur: 0.5 }], [GELIBOLU, {}], [GELIBOLU, { cliff: 1 }], [GELIBOLU, { cliff: 0.9, mtN: 40 }], [GELIBOLU, { lake: 0x2a86c0 }],                              // Çanakkale
+   [MEZO, { lake: 0x4a6a5e }], [MEZO, { sur: 0.4 }], [MEZO, {}], [MEZO, { lake: 0x4a6a5e }], [MEZO, { mood: 'sabah' }],                                                // Kut'ül Amare
+   [KARLI, { forest: 0.3 }], [KARLI, { forest: 1.2 }], [KARLI, { cliff: 0.4 }], [KARLI, { sur: 0.8, cliff: 0.5 }], [KARLI, { forest: 0.2, river: 0x6a8aa8 }],        // Doğu Cephesi
+   [KARLI, { forest: 0.9, mtN: 36 }], [KARLI, { forest: 0.8, mtN: 36 }], [YAYLA, { river: 0x4a86a8, mood: 'bulut' }], [YAYLA, { cliff: 0.6 }], [YAYLA, { mood: 'bahar' }],   // İnönü
+   [BOZKIR, {}], [BOZKIR, {}], [BOZKIR, { cliff: 0.4 }], [BOZKIR, { mtN: 34 }], [BOZKIR, { river: 0x4a86a8 }],                                                       // Sakarya
+   [BOZKIR, { mood: 'gece' }], [BOZKIR, { mood: 'sabah', mtN: 34 }], [BOZKIR, { sur: 0.6 }], [BOZKIR, { cliff: 0.4 }], [YAYLA, {}],                                    // Büyük Taarruz
+   [EGE, {}], [EGE, { river: 0x4a86a8 }], [EGE, { cliff: 0.4 }], [EGE, { cliff: 0.6, forest: 0.6 }], [EGE, { lake: 0x2a88c4, sur: 0.6 }],                              // İzmir Yolu
+   [BOZKIR, { mood: 'ikindi' }], [YAYLA, { sur: 0.7, mood: 'aksam' }]                                                                                                // 1923
+  ].forEach(([b, o]) => THEMES.push(Object.assign({}, b, o)));
+}
 
 /* geometri yardımcıları: renkli parçaları tek geometriye birleştir (az çizim çağrısı) */
 const _q = new THREE.Quaternion(), _e = new THREE.Euler();
@@ -415,13 +437,28 @@ const fransizG = batiPiyadeG({ tunik: 0x2a3a9a, zirh: 0xece6d6, kalkan: 0x2a3a9a
 const fransizSuvariG = agirAtliG({ ortu: 0x2a3a9a, tunik: 0x2a3a9a, kalkan: 0xd8b040, arma: 0xb02030 });
 const nisanciG = aticiG({ tunik: 0x3a4a3a, silah: 'tufek' });
 const yunanG = batiPiyadeG({ tunik: 0x2a5aa8, zirh: 0x2a5aa8, kalkan: 0x2a5aa8, arma: 0xece6d6, sapka: 1, mig: 0x2a2a3a });
+// 1911–1923: haki ve gri-yeşil üniformalar (kalkan yerine sırt çantası rengi)
+const italyanG = batiPiyadeG({ tunik: 0x6a7258, zirh: 0x5e664c, kalkan: 0x4e5640, arma: 0x2a6a3a, sapka: 1, mig: 0x3a3e30 });
+const italyanSuvariG = hafifAtliG({ at: 0x5a3a22, tunik: 0x6a7258, kalkan: 0x4e5640, mig: 0x3a3e30 });
+const bulgarG = batiPiyadeG({ tunik: 0x6e6450, zirh: 0x5e5644, kalkan: 0x4e4636, arma: 0xb02030, sapka: 1, mig: 0x4a4434 });
+const ingilizG = batiPiyadeG({ tunik: 0xa08a5a, zirh: 0x8e7a4e, kalkan: 0x7a6a44, arma: 0x8e7a4e, sapka: 1, mig: 0x6a6a4a });
+const anzakG = batiPiyadeG({ tunik: 0x9a8050, zirh: 0x8a7246, kalkan: 0x6e5c3a, arma: 0x8a7246, sapka: 1, mig: 0x8a7048 });
+const hintG = batiPiyadeG({ tunik: 0xa89060, zirh: 0x968052, kalkan: 0x7e6c46, arma: 0x968052, mig: 0xd8c8a0 });
+const hintSuvariG = hafifAtliG({ at: 0x6a4a2a, tunik: 0xa89060, kalkan: 0x7e6c46, mig: 0xd8c8a0 });
+const dagPiyadeG = batiPiyadeG({ tunik: 0x5a5a48, zirh: 0x4e4e3e, kalkan: 0x40402f, arma: 0x8a2a2a, sapka: 1, mig: 0x3a3a2e });
+const evzonG = batiPiyadeG({ tunik: 0x8a8460, zirh: 0x7a7452, kalkan: 0x605a40, arma: 0xb02030, mig: 0xb02030 });
+const yunanSuvariG = hafifAtliG({ at: 0x5a3a20, tunik: 0x7a7a52, kalkan: 0x5a5a3c, mig: 0x4a4a3a });
+const mitralyozG = aticiG({ tunik: 0x6a6a50, silah: 'tufek' });
 const FOE_GEO = { piyade: piyadeG(), okcu: okcuG, katafrakt: katafraktG, varang: varangG, akrit: akritG, frank: frankG, arbalet: arbaletG, sovalye: sovalyeG, kalkanli: kalkanliG,
   latin: latinG, alan: alanG, katalan: katalanG, sirppiyade: sirpPiyadeG, sirpsovalye: sirpSovalyeG, macar: macarG, tufekci: tufekciG,
   ceneviz: cenevizG, venedik: venedikG, arkebuz: arkebuzG, hirvat: hirvatG, rodos: rodosG, landsknecht: landsknechtG, zirhli: zirhliG, husar: husarG,
   kirasiyer: kirasiyerG, muskeci: muskeciG, stradiot: stradiotG, kanatlihusar: kanatliG, kazak: kazakG, rusasker: rusaskerG, grenadiyer: grenadiyerG,
-  avusturyapiyade: avusturyaG, fransizpiyade: fransizG, fransizsuvari: fransizSuvariG, nisanci: nisanciG, yunanpiyade: yunanG };
+  avusturyapiyade: avusturyaG, fransizpiyade: fransizG, fransizsuvari: fransizSuvariG, nisanci: nisanciG, yunanpiyade: yunanG,
+  italyan: italyanG, italyansuvari: italyanSuvariG, bulgar: bulgarG, ingiliz: ingilizG, anzak: anzakG, hint: hintG, hintsuvari: hintSuvariG,
+  dagpiyade: dagPiyadeG, evzon: evzonG, yunansuvari: yunanSuvariG, mitralyoz: mitralyozG };
 const ATLI_GEO = { katafrakt: katafraktG, akrit: akritG, sovalye: sovalyeG, alan: alanG, sirpsovalye: sirpSovalyeG, macar: macarG, zirhli: zirhliG, husar: husarG,
-  kirasiyer: kirasiyerG, stradiot: stradiotG, kanatlihusar: kanatliG, kazak: kazakG, fransizsuvari: fransizSuvariG };
+  kirasiyer: kirasiyerG, stradiot: stradiotG, kanatlihusar: kanatliG, kazak: kazakG, fransizsuvari: fransizSuvariG,
+  italyansuvari: italyanSuvariG, hintsuvari: hintSuvariG, yunansuvari: yunanSuvariG };
 
 // Sipahi: kızıl-altın çullu doru at, firuze kaftan, sorguçlu miğfer, yuvarlak kalkan, flamalı mızrak.
 // rider=false: binicisiz (Sipahi Gözü görünümünde oyuncu bu atın üstündedir; yalnızca eller ve dizginler görünür)
@@ -530,7 +567,10 @@ const ENEMY_FLAG_ASIL = () => [enemyFlag('#8e1f2a', '#e7c56a'), enemyFlag('#6a1b
   enemyFlag('#e0c040', '#1a1a1a', 'parti'), enemyFlag('#a01a24', '#e7c56a'), enemyFlag('#1a1a1a', '#e0c040', 'serit'), enemyFlag('#a01a24', '#e7c56a', 'parti'),
   enemyFlag('#b02030', '#ece6d6', 'serit'), enemyFlag('#2a5a3a', '#ece6d6', 'parti'), enemyFlag('#6a1b5a', '#e7c56a'),
   enemyFlag('#a01a24', '#e7c56a'), enemyFlag('#1a1a1a', '#e0c040', 'serit'), enemyFlag('#e0c040', '#1a1a1a', 'parti'), enemyFlag('#2a3a9a', '#ece6d6', 'serit'),
-  enemyFlag('#ece6d6', '#2a4a9a', 'serit'), enemyFlag('#2a5a3a', '#ece6d6', 'parti'), enemyFlag('#2a5aa8', '#ece6d6', 'serit'), enemyFlag('#6a1b5a', '#e7c56a')];
+  enemyFlag('#ece6d6', '#2a4a9a', 'serit'), enemyFlag('#2a5a3a', '#ece6d6', 'parti'), enemyFlag('#2a5aa8', '#ece6d6', 'serit'), enemyFlag('#6a1b5a', '#e7c56a'),
+  enemyFlag('#2a7a3a', '#ece6d6', 'serit'), enemyFlag('#2a6a3a', '#ece6d6', 'parti'), enemyFlag('#1a2a6a', '#ece6d6', 'parti'), enemyFlag('#8a2a2a', '#ece6d6', 'serit'),
+  enemyFlag('#7a3a2a', '#e0c040', 'parti'), enemyFlag('#2a5aa8', '#ece6d6', 'serit'), enemyFlag('#2a5aa8', '#ece6d6', 'parti'), enemyFlag('#1a3a7a', '#ece6d6', 'serit'),
+  enemyFlag('#2a5aa8', '#ece6d6'), enemyFlag('#3a3a4a', '#e7c56a')];
 const ENEMY_FLAG = MAC ? ENEMY_FLAG_ASIL().map(() => enemyFlag(MAC.r1, MAC.r2)) : ENEMY_FLAG_ASIL();
 
 /* ================= HAVA, GÜN SAATİ, MEVSİM ================= */
@@ -550,7 +590,8 @@ const MOODS = {
 const MOOD_W = [['ogle', 3], ['sabah', 1.1], ['ikindi', 1.1], ['aksam', 1], ['gece', .8, 25], ['bulut', 1, 15], ['yagmur', .8, 20], ['sis', .6, 40], ['bahar', .9, 10], ['guz', .9, 40], ['kis', .7, 60]];
 function moodOf(i, T) {
   if (Q.get('hava')) return Q.get('hava');
-  if (i === M.NL - 1) return 'sabah';      // fetih şafakta
+  if (i === 1452) return 'sabah';           // fetih şafakta
+  if (i === M.NL - 1) return 'aksam';       // 29 Ekim 1923 akşamı
   if (i === 1070) return 'aksam';            // Malazgirt'e dönüş gün batımında
   if (T.mood) return T.mood;
   if (i < 8) return 'ogle';
@@ -915,7 +956,7 @@ function finish(win) {
     $('wStats').innerHTML = (last ? '' : t('{a} geçildi.', { a: G.L.ad }) + '<br>') + t('Sağ kalan akıncı') + ': <b>' + G.count + '</b>' + (G.heroes ? ' · ' + t('Altın Alp') + ': <b>' + G.heroes + '</b>' : '') + '<br>' + t('Dağıtılan düşman askeri') + ': <b>' + fmt(G.kills) + '</b>' + (G.loot ? '<br>' + t('Kervan ganimeti') + ': <b>' + G.loot + ' ' + t('akçe') + '</b>' : '') + (!last && canUpgrade() ? '<br><span class="hint">' + t('Ordugâh\'ta yeni geliştirme alabilirsin!') + '</span>' : '');
     winAchievements(i, stars, last, sfi);
     $('wEpi').hidden = !last;
-    if (last) $('wEpi').textContent = SF.epilog + (i < NL - 1 ? t(' Sıradaki sefer: {a}!', { a: M.SEFERLER[sfi + 1].ad }) : t(' Yeni seferler pek yakında: hedef 1923 bölüm.'));
+    if (last) $('wEpi').textContent = SF.epilog + (i < NL - 1 ? t(' Sıradaki sefer: {a}!', { a: M.SEFERLER[sfi + 1].ad }) : t(' Bütün seferleri tamamladın: 1923 bölümün hepsi senin.'));
     $('wGain').textContent = gain;
     $('wNext').textContent = t(i === NL - 1 ? 'SEFER HARİTASI' : last ? 'YENİ SEFER' : 'DEVAM');
     show('win'); fanfare(); for (let k = 0; k < stars; k++) setTimeout(() => SFX.star(k), 300 + k * 250);
@@ -959,14 +1000,9 @@ function renderLevels() {
   if (regionSel < 0) regionSel = M.regionOf(nextLevel());
   if (seferSel < 0) seferSel = sefOfReg(regionSel);
   $('lStars').textContent = totalStars() + ' / ' + NL * 3;
-  $('sPrev').disabled = seferSel === 0; $('sNext').disabled = seferSel >= NSF;
+  if (seferSel >= NSF) seferSel = NSF - 1;   // 1923 bölüm: son sefer 1923, sonrası yok
+  $('sPrev').disabled = seferSel === 0; $('sNext').disabled = seferSel >= NSF - 1;
   const grid = $('grid'), tabs = $('tabs'); grid.innerHTML = ''; tabs.innerHTML = '';
-  if (seferSel >= NSF) {     // yakında
-    $('sName').textContent = M.SOON.ad; $('sSub').textContent = t('Sıradaki sefer');
-    $('regionHead').textContent = '';
-    grid.innerHTML = '<div class="soon" style="grid-column:1/-1"><h3>' + t('Pek yakında') + '</h3><p>' + t('Bin dört yüz elli üç bölümün hepsini bitirdin! Yeni seferler güncellemelerle geliyor: hedef 1923 bölüm. Bu arada eski bölümleri yıldızla, Ordugâh\'ı güçlendir.') + '</p></div>';
-    return;
-  }
   const SF = M.SEFERLER[seferSel];
   $('sName').textContent = t('{n}. Sefer: {a}', { n: seferSel + 1, a: SF.ad }); $('sSub').textContent = SF.yil + ' · ' + SF.alt;
   if (sefOfReg(regionSel) !== seferSel) regionSel = M.SEFR0[seferSel];
@@ -1025,7 +1061,7 @@ document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', 
 $('bPlay').addEventListener('click', () => { unlockAudio(); SFX.click(); openBrief(nextLevel()); });
 $('bLevels').addEventListener('click', () => { SFX.click(); regionSel = -1; seferSel = -1; show('levels'); });
 $('sPrev').addEventListener('click', () => { SFX.click(); seferSel = Math.max(0, seferSel - 1); regionSel = M.SEFR0[seferSel]; renderLevels(); });
-$('sNext').addEventListener('click', () => { SFX.click(); seferSel = Math.min(NSF, seferSel + 1); regionSel = M.SEFR0[Math.min(seferSel, NSF - 1)]; renderLevels(); });
+$('sNext').addEventListener('click', () => { SFX.click(); seferSel = Math.min(NSF - 1, seferSel + 1); regionSel = M.SEFR0[seferSel]; renderLevels(); });
 $('bCamp').addEventListener('click', () => { SFX.click(); openCamp('menu'); });
 $('brCamp').addEventListener('click', () => { SFX.click(); openCamp('brief'); });
 $('cBack').addEventListener('click', () => { SFX.click(); if (campFrom === 'brief') openBrief(briefI); else { previewLevel(nextLevel()); show('menu'); } });
@@ -1042,7 +1078,7 @@ drawViewBtn();
 $('pResume').addEventListener('click', () => { SFX.click(); pause(false); });
 $('pRestart').addEventListener('click', () => { SFX.click(); startGame(G.i); });
 $('pMenu').addEventListener('click', () => { SFX.click(); previewLevel(nextLevel()); show('menu'); });
-$('wNext').addEventListener('click', () => { SFX.click(); if (lastRes.i >= NL - 1) { seferSel = NSF; show('levels'); } else openBrief(lastRes.i + 1); });
+$('wNext').addEventListener('click', () => { SFX.click(); if (lastRes.i >= NL - 1) { seferSel = NSF - 1; regionSel = M.SEFR0[NSF - 1]; show('levels'); } else openBrief(lastRes.i + 1); });
 $('wRetry').addEventListener('click', () => { SFX.click(); startGame(lastRes.i); });
 $('wMenu').addEventListener('click', () => { SFX.click(); previewLevel(nextLevel()); show('menu'); });
 $('lRetry').addEventListener('click', () => { SFX.click(); startGame(lastRes.i); });
@@ -1096,10 +1132,10 @@ const mqSvc = () => window.getDigitalGoodsService(MQ_BILL);
 let fullFrom = 'menu';
 function openFull() {
   fullFrom = curScr || 'menu'; $('fMsg').textContent = '';
-  if (!DEMO) $('fInfo').textContent = freeLim() === FREE_LIMIT ? t('İlk iki sefer, yani 100 bölüm ücretsiz. Tam sürümle 1453 bölümün, 30 seferin hepsi tek seferlik ödemeyle açılır. Reklam yok, abonelik yok.')
-    : t('İlk {n} bölüm ücretsiz. Tam sürümle 1453 bölümün, 30 seferin hepsi tek seferlik ödemeyle açılır. Reklam yok, abonelik yok.', { n: freeLim() });
+  if (!DEMO) $('fInfo').textContent = freeLim() === FREE_LIMIT ? t('İlk iki sefer, yani 100 bölüm ücretsiz. Tam sürümle 1923 bölümün, 40 seferin hepsi tek seferlik ödemeyle açılır. Reklam yok, abonelik yok.')
+    : t('İlk {n} bölüm ücretsiz. Tam sürümle 1923 bölümün, 40 seferin hepsi tek seferlik ödemeyle açılır. Reklam yok, abonelik yok.', { n: freeLim() });
   if (DEMO) {
-    $('fInfo').textContent = t('Bu ücretsiz demo ilk iki seferi, yani 100 bölümü içerir. Tam sürümde 1453 bölüm ve 30 sefer seni bekliyor. İlerlemen tam sürüme aktarılır.');
+    $('fInfo').textContent = t('Bu ücretsiz demo ilk iki seferi, yani 100 bölümü içerir. Tam sürümde 1923 bölüm ve 40 sefer seni bekliyor. İlerlemen tam sürüme aktarılır.');
     $('fBuy').firstElementChild.textContent = t("STEAM'DE TAM SÜRÜM"); $('fRestore').hidden = true;
   }
   show('full'); loadPrice();
@@ -1159,7 +1195,7 @@ function winAchievements(i, stars, last, sfi) {
   const ts = totalStars(); [100, 500, 1000, 2000, 3000].forEach(n => { if (ts >= n) achieve('YILDIZ_' + n); });
   if (ts >= NL * 3) achieve('YILDIZ_TUM');
   if (G.peak >= 999) achieve('ORDU_999');
-  if (G.wTier >= M.WEAPONS.length - 1) achieve('CIHAN_YAYI');
+  if (G.wTier >= 15) achieve('CIHAN_YAYI');   // 16. yay: Cihan Yayı (2.0'da üç yay daha geldi)
   if (stars >= 3 && G.L.boss) achieve('DEV_3YILDIZ');
   if (HOST && HOST.stat) try { HOST.stat('BOLUM', S.stars.filter(Boolean).length); } catch (e) {}
 }
@@ -1456,7 +1492,7 @@ const STORE_URL = D.platform === 'ios' ? 'https://apps.apple.com/app/id682271867
 const CANRATE = D.platform === 'android' || D.platform === 'ios';
 function openUrl(u) { if (u.startsWith('mailto:')) { location.href = u; return; } try { window.open(u, '_blank'); } catch (e) { location.href = u; } }
 async function shareGame(text) {
-  text = text || t('Malazgirt Akıncıları: akıncılarını büyüt, doğru kapıyı seç! Malazgirt\'ten Fetih Yolu\'na 1453 bölüm, ilk 100 bölüm ücretsiz.');
+  text = text || t('Malazgirt Akıncıları: akıncılarını büyüt, doğru kapıyı seç! 1071 Malazgirt\'ten 1923\'e 1923 bölüm, ilk 100 bölüm ücretsiz.');
   const P = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Share;
   try {
     if (P && P.share) { await P.share({ title: 'Malazgirt Akıncıları', text, url: STORE_URL, dialogTitle: t('Arkadaşına öner') }); return; }

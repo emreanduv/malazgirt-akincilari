@@ -10,7 +10,7 @@ M.SEFERLER.forEach((S, i) => list.push({ id: 'SEFER_' + (i + 1), tr: [S.ad, S.ad
 list.push({ id: 'YILDIZ_TUM', tr: ['Kusursuz Akıncı', 'Bütün bölümleri 3 yıldızla bitir.'], en: ['Flawless Raider', 'Earn 3 stars on every level.'], yil: '★★★' });
 list.push({ id: 'ORDU_999', tr: ['Dev Ordu', 'Ordunu 999 akıncıya çıkar.'], en: ['A Giant Army', 'Grow your army to 999 raiders.'], yil: '999' });
 list.push({ id: 'ALP3', tr: ['Üç Alp', 'Aynı bölümde üç Altın Alp topla.'], en: ['Three Alps', 'Gather three Golden Alps in one level.'], yil: 'ALP' });
-list.push({ id: 'CIHAN_YAYI', tr: ['Cihan Yayı', 'En güçlü yayı kazan.'], en: ['The World Bow', 'Win the strongest bow.'], yil: 'YAY' });
+list.push({ id: 'CIHAN_YAYI', tr: ['Cihan Yayı', 'Cihan Yayı\'nı kazan.'], en: ['The World Bow', 'Win the World Bow.'], yil: 'YAY' });
 list.push({ id: 'DEV_3YILDIZ', tr: ['Kusursuz Zafer', 'Bir dev savaşını 3 yıldızla kazan.'], en: ['Perfect Victory', 'Beat a giant with 3 stars.'], yil: 'DEV' });
 list.push({ id: 'ORDUGAH', tr: ['Usta Ordugâh', 'Bir geliştirmeyi en üst seviyeye çıkar.'], en: ['Master of the Camp', 'Raise an upgrade to the maximum level.'], yil: 'MAX' });
 module.exports = list;

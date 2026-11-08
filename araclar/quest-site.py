@@ -24,7 +24,7 @@ for n in (192, 512): ik.resize((n, n), Image.LANCZOS).save(os.path.join(oyun, f'
 
 man = {
   'name': 'Malazgirt Akıncıları', 'short_name': 'Malazgirt', 'lang': 'tr',
-  'description': "Akıncılarını büyüt, kapıyı seç: Malazgirt'ten Fetih Yolu'na 1453 bölüm. Harp masasında VR.",
+  'description': "Akıncılarını büyüt, kapıyı seç: Malazgirt'ten 1923'e 1923 bölüm. Harp masasında VR.",
   'start_url': 'index.html?vr=1', 'scope': './', 'display': 'standalone', 'orientation': 'landscape',
   'background_color': '#081224', 'theme_color': '#12305a',
   'icons': [{'src': 'ikon-192.png', 'sizes': '192x192', 'type': 'image/png'},

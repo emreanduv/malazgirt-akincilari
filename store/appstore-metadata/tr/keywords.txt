@@ -1,1 +1,1 @@
-malazgirt,alparslan,akıncı,fetih,istanbul,plevne,mohaç,belgrad,prut,osmanlı,selçuklu,tarih
+malazgirt,alparslan,akıncı,fetih,istanbul,plevne,mohaç,belgrad,çanakkale,osmanlı,selçuklu,tarih

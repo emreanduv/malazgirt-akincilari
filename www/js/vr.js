@@ -484,7 +484,7 @@ window.VR_KUR = function (O) {
     px.fillStyle = 'rgba(10,24,46,.93)'; rr(6, 6, PW - 12, PH - 12, 40); px.fill(); px.strokeStyle = '#f0b232'; px.lineWidth = 8; rr(6, 6, PW - 12, PH - 12, 40); px.stroke();
     const s = S_(), g = O.G(), m = O.mode(), r = O.lastRes();
     if (pScr === 'ana') {
-      px.textAlign = 'center'; px.fillStyle = '#f0b232'; px.font = '800 30px "Baloo 2", sans-serif'; px.fillText('☾ 1071 · 1453 ✸', PW / 2, 70);
+      px.textAlign = 'center'; px.fillStyle = '#f0b232'; px.font = '800 30px "Baloo 2", sans-serif'; px.fillText('☾ 1071 · 1923 ✸', PW / 2, 70);
       px.fillStyle = '#fff'; px.font = '800 92px "Baloo 2", sans-serif'; px.fillText('MALAZGİRT', PW / 2, 160);
       px.fillStyle = '#2bb9be'; rr(PW / 2 - 190, 178, 380, 62, 14); px.fill(); px.fillStyle = '#fff'; px.font = '800 40px "Baloo 2", sans-serif'; px.fillText('AKINCILARI', PW / 2, 224);
       px.fillStyle = '#ffe9a8'; px.font = '700 30px "Baloo 2", sans-serif'; px.fillText(fmt(s.coins) + ' ' + t('akçe') + '   ·   ' + t('{a} / {b} yıldız', { a: O.totalStars(), b: NL * 3 }), PW / 2, 290);
