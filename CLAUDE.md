@@ -23,3 +23,13 @@ Yayın sırası: incelemedeki/testteki mağazada gönderilen sürüme onay gelen
 - Derlemeden önce depoyu güncelle (`git fetch`), başka bir oturumun son değişikliklerini ezme; birleştirmeden önce farkı kontrol et.
 - Mağaza incelemesine göndermeden önce derleme TestFlight / kapalı testte cihazda açılıp yeni özellikler gözle doğrulanır.
 - Yayınlanan her sürümden sonra `store/SON-SURUM` güncellenir.
+
+## Tek isim, tek gelişim (Emre'nin kuralı, bütün oyun ve uygulamalar)
+- Bir oyun/uygulamanın adı **her mağazada aynıdır**: App Store, Google Play, Meta Horizon (VR), Steam, saat uygulamaları. Mağazaya göre ek ("VR", "Mobile" vb.) konmaz.
+- Teknik olarak mümkün olan her geliştirme, güncelleme ve iyileştirme **o ürünün bütün mağazalardaki sürümlerine** yapılır (telefon ↔ VR ↔ masaüstü). Platforma özgü olanlar karşılığıyla taşınır (VR kumanda titreşimi → telefonda dokunuş titreşimi).
+
+## Türkçe yazı ve iOS işaretleri (Emre'nin kuralı: hiçbir oyunda/uygulamada görülmesin)
+- Yazı dosyaları (fontsource woff2) kendi @font-face'imizle tanımlanıyorsa **Türkçe "ı" (U+0131) latin dosyasındadır, latin-ext'te değil.** Latin aralığı fontsource'un resmî aralığıyla yazılır (U+0000-00FF,U+0131,U+0152-0153,…); "U+0000-00FF,U+2000-206F" gibi kısa aralık yazılırsa iPhone/iPad'de "ı" boş görünür (Mayıs → "May s"). Chrome/Quest fark ettirmez, iOS ettirir.
+- Tuvale (canvas) yazmadan önce yazı dosyaları Türkçe harflerle yüklenir: `document.fonts.load(font, 'ıİşŞğĞçÇöÖüÜ')`; geç gelirse yeniden çizilir.
+- ◀ ▶ ⏵ ⏸ ⏭ ⏮ gibi işaretlerin hemen arkasına metin biçimi seçicisi **U+FE0E** konur; yoksa iOS bunları mavi emoji kutusu olarak çizer.
+- `araclar/turkce-yazi-kontrol.py` yayın öncesi kontrolden çağrılır; tutmazsa derleme durur. Aynı denetim bütün repolara eklenir. (Kaynak: Nutuk Salonu TestFlight, Kasım 2026.)

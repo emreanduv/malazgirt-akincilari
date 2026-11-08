@@ -24,4 +24,6 @@ if [ -n "${SURUM:-}" ] && [ -f store/SON-SURUM ]; then
   son=$(cat store/SON-SURUM)
   if [ "$(printf '%s\n%s\n' "$son" "$SURUM" | sort -V | head -1)" != "$son" ]; then echo "::error::Sürüm geri gidiyor: $SURUM < $son"; hata=1; else echo "✓ Sürüm $SURUM ≥ $son"; fi
 fi
+# Türkçe yazı (iOS "ı") ve ◀ ▶ işaretleri — CLAUDE.md "Türkçe yazı ve iOS işaretleri"
+if python3 araclar/turkce-yazi-kontrol.py; then :; else hata=1; fi
 [ $hata -eq 0 ] && echo "Yayın kontrolü geçti." || { echo "Yayın kontrolü BAŞARISIZ — derleme durduruldu."; exit 1; }
