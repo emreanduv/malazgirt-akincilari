@@ -1,8 +1,3 @@
-Akıncı Rehberi ve Sipahi Gözü geldi!
-• Sipahi Gözü: savaşı ordunun önündeki atlı sipahinin sırtından gör, kısa dokunarak kılıç vur. at simgeli düğmeyle kuşbakışına geç.
-• Akıncı Rehberi: yeni bir engelle ilk karşılaştığında kısa bir ipucu kartı çıkar (kapılar, kaideler, devler, kervanlar, mancınık taşları, top gülleleri…)
-• Ana menüde ve molada "Nasıl Oynanır" ekranı
-• Zaferini arkadaşlarınla paylaş
-• Oyunu uygulamadan çıkmadan puanla, Ayarlar'dan bize doğrudan yaz
-• Ayarlar → "Verilerimi sil"
-Test ekibimize teşekkürler!
+iPhone ve iPad'de Türkçe yazı düzeltmesi: bazı ekranlarda görünmeyen "ı" harfi artık her yerde doğru görünüyor; ileri ve geri işaretleri düz işaret olarak çiziliyor.
+Akıncı Rehberi, Sipahi Gözü, Nasıl Oynanır, paylaşma, puanlama ve Verilerimi sil yerinde.
+Bizi oynadığınız için teşekkürler!

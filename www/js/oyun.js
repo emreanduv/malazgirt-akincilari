@@ -19,7 +19,7 @@ const NL = M.NL, NSF = M.SEFERLER.length;
 
 /* ================= KAYIT ================= */
 const SKEY = 'malazgirt-akincilari-v1';
-const SURUM = '1.6.0';
+const SURUM = '1.6.3';
 const D = window.DIL, t = D.t, HOST = D.HOST;
 const FREE_LIMIT = 100;   // mobilde yeni oyuncu için ücretsiz bölüm sayısı (ilk iki sefer); gerisi Tam Sürüm
 // 1.5'ten önce oynayanlar bulundukları yerden bir sonraki eşiğe kadar ücretsiz devam eder (ör. 244. bölümdeki oyuncu 250'ye kadar)

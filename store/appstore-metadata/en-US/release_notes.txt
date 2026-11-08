@@ -1,8 +1,3 @@
-Meet the Raider's Guide and Sipahi's Eye!
-• Sipahi's Eye: watch the battle from the saddle of the mounted sipahi leading your army, tap to strike with your sword. Switch back to bird's-eye with the horse button.
-• Raider's Guide: a short tip card appears the first time you meet something new (gates, pedestals, giants, caravans, catapult stones, cannonballs…)
-• "How to Play" screen in the main menu and pause menu
-• Share your victories with friends
-• Rate the game without leaving it, write to us straight from Settings
-• Settings → "Delete my data"
-Thanks to our testers!
+Turkish text fix for iPhone and iPad: the letter "ı" that was missing on some screens now shows everywhere; forward and back arrows are drawn as plain symbols.
+Raider's Guide, Sipahi's Eye, How to Play, sharing, rating and Delete my data are all here.
+Thanks for playing!
