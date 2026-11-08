@@ -1,0 +1,20 @@
+name: Quest yukle
+on:
+  push:
+    branches: [quest-yukle]
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ovr-platform-util ve APK
+        run: |
+          curl -sSL -o ovr-platform-util "https://www.oculus.com/download_app/?id=5159709737372459&access_token=OC%7C5159709737372459%7C"
+          chmod +x ovr-platform-util && ./ovr-platform-util version || true
+          curl -sSL -o m.apk "https://raw.githubusercontent.com/emreanduv/Deneme/gecici-apk/m.apk"
+          ls -la
+      - name: Meta ALPHA kanalina yukle
+        env:
+          META_APP_SECRET: ${{ secrets.META_APP_SECRET }}
+        run: |
+          test -n "$META_APP_SECRET" || { echo "META_APP_SECRET yok"; exit 1; }
+          ./ovr-platform-util upload-quest-build --age-group TEENS_AND_ADULTS --app-id 1485413637982573 --app-secret "$META_APP_SECRET" --apk m.apk --channel ALPHA --notes "1.5.0 (1): Harp Masasi VR ilk surum" --disable-progress-bar

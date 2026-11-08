@@ -19,6 +19,7 @@ const NL = M.NL, NSF = M.SEFERLER.length;
 
 /* ================= KAYIT ================= */
 const SKEY = 'malazgirt-akincilari-v1';
+const SURUM = '1.6.0';
 const D = window.DIL, t = D.t, HOST = D.HOST;
 const FREE_LIMIT = 100;   // mobilde yeni oyuncu için ücretsiz bölüm sayısı (ilk iki sefer); gerisi Tam Sürüm
 // 1.5'ten önce oynayanlar bulundukları yerden bir sonraki eşiğe kadar ücretsiz devam eder (ör. 244. bölümdeki oyuncu 250'ye kadar)
@@ -28,14 +29,22 @@ try { const raw = HOST && HOST.load ? HOST.load() : null; const s = JSON.parse(r
 if (S.lang !== D.lang) D.setLang(S.lang);
 // tam sürüm: masaüstü (Steam) satın alınmış oyundur; mobilde ücretsiz sınır FREE_STEPS'e göre (aşağıda, sürüm göçünden sonra)
 const DEMO = !!(HOST && HOST.demo);   // Steam ücretsiz demosu: ilk 100 bölüm, sonra mağaza sayfası
+const PAID = D.platform === 'android' || D.platform === 'ios' || D.platform === 'quest';   // ücretsiz sınır + Tam Sürüm satın alımı olan mağazalar
 if (DEMO) S.full = false;
-else if (D.platform !== 'android' && D.platform !== 'ios') S.full = true;
+else if (!PAID) S.full = true;
 // sürüm göçü: önceki sürümün son bölümünü bitirmiş oyuncu yeni seferi açık bulsun
 for (let i = S.stars.length - 1; i >= 0; i--) if (S.stars[i]) { if (S.unlocked < i + 2) S.unlocked = Math.min(NL, i + 2); break; }
 // mobil ücretsiz sınır bir kez belirlenir: yeni oyuncu 100, eski oyuncu bulunduğu yerin üstündeki ilk eşik (250 / 500 / 1000; 1000'i geçmişse hepsi)
 if (DEMO) S.freeLim = FREE_LIMIT;
 else if (!S.freeLim) { S.freeLim = FREE_STEPS.find(m => m >= S.unlocked) || NL; setTimeout(persist, 0); }
 const freeLim = () => S.freeLim || FREE_LIMIT;
+// Akıncı Rehberi: hangi ipuçları gösterildi. Güncellemeyle gelen eski oyuncuya ilk bölümlerin temel ipuçları gösterilmez.
+if (!S.tips || typeof S.tips !== 'object') {
+  S.tips = {};
+  if (S.unlocked > 5) ['move', 'gate', 'block', 'squad', 'final', 'ped_weapon', 'boss', 'ped_hero'].forEach(k => S.tips[k] = 1);
+  if (S.unlocked > 10) S.tips.barricade = 1;
+}
+if (!S.rate || typeof S.rate !== 'object') S.rate = { done: 0, n: 0 };
 function persist() { const j = JSON.stringify(S); try { localStorage.setItem(SKEY, j); } catch (e) {} if (HOST && HOST.save) try { HOST.save(j); } catch (e) {} }
 if (MAC) { const sf = M.seferOf(MAC.lv), i = MAC.lv, nom = i < 50 ? i * 0.2 : Math.min(M.upCap(sf), i < 500 ? 10 + (i - 50) * 0.09 : 50.5 + (i - 500) * 0.03);
   const u = MAC.ud === null ? MAC.up : Math.max(0, Math.min(M.upCap(sf), Math.round(nom + MAC.ud))); MAC.up = u;
@@ -104,6 +113,7 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPrefere
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 function applyQuality(first) { const q = S.q; renderer.setPixelRatio(q === 'dusuk' ? 1 : Math.min(window.devicePixelRatio || 1, q === 'orta' ? 1.5 : 2)); renderer.shadowMap.enabled = q !== 'dusuk'; renderer.shadowMap.needsUpdate = true; if (!first) resize(); }
 applyQuality(true);
+window.VRINFO = () => { let vis = 0; scene.traverseVisible(o => { if (o.isMesh || o.isPoints || o.isLine || o.isSprite) vis++; }); const by = {}; const cnt = (g, k) => { let n = 0; g.traverseVisible(o => { if (o.isMesh || o.isPoints || o.isLine || o.isSprite) n++; }); by[k] = (by[k] || 0) + n; }; scene.children.forEach((c, i) => cnt(c, c === world ? 'world' : c === levelGroup ? 'level' : (c.type + (c.isGroup ? i : '')))); return { by, calls: renderer.info.render.calls, tris: renderer.info.render.triangles, shadow: renderer.shadowMap.enabled, vis, prog: renderer.info.programs.length }; };   // performans ölçümü (VR testleri)
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xead09a); scene.fog = new THREE.Fog(0xead09a, 70, 200);
 const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 500);
@@ -413,6 +423,43 @@ const FOE_GEO = { piyade: piyadeG(), okcu: okcuG, katafrakt: katafraktG, varang:
 const ATLI_GEO = { katafrakt: katafraktG, akrit: akritG, sovalye: sovalyeG, alan: alanG, sirpsovalye: sirpSovalyeG, macar: macarG, zirhli: zirhliG, husar: husarG,
   kirasiyer: kirasiyerG, stradiot: stradiotG, kanatlihusar: kanatliG, kazak: kazakG, fransizsuvari: fransizSuvariG };
 
+// Sipahi: kızıl-altın çullu doru at, firuze kaftan, sorguçlu miğfer, yuvarlak kalkan, flamalı mızrak.
+// rider=false: binicisiz (Sipahi Gözü görünümünde oyuncu bu atın üstündedir; yalnızca eller ve dizginler görünür)
+function sipahiParts(rider) {
+  return [
+    P(BOX(.44, .48, 1.2), 0x6a3a1e, Mx(0, .94, 0)),
+    P(BOX(.5, .24, .78), 0xb3202a, Mx(0, 1.08, .1)), P(BOX(.51, .04, .79), 0xe3a92b, Mx(0, .96, .1)),
+    ...[[-.15, .45], [.15, .45], [-.15, -.45], [.15, -.45]].map(([x, z]) => P(BOX(.11, .72, .11), 0x3a2416, Mx(x, .36, z))),
+    P(BOX(.22, .5, .3), 0x6a3a1e, Mx(0, 1.34, -.62, 1, 1, 1, -.5, 0, 0)),
+    P(BOX(.18, .21, .42), 0x5a301a, Mx(0, 1.58, -.82, 1, 1, 1, -.2, 0, 0)),
+    P(BOX(.19, .07, .3), 0xd5dbe0, Mx(0, 1.7, -.84, 1, 1, 1, -.2, 0, 0)),
+    P(BOX(.06, .44, .12), 0x1a1210, Mx(0, 1.44, -.5, 1, 1, 1, -.5, 0, 0)),
+    P(BOX(.07, .5, .08), 0x1a1210, Mx(0, .86, .66, 1, 1, 1, .35, 0, 0)),
+    P(SPH(.07, 6, 4), 0xc8303a, Mx(0, 1.5, -.72)),
+    P(BOX(.035, .035, 2.0), 0x6b4a2b, Mx(.24, 1.5, -.5)),
+    P(CONE(.04, .2, 4), 0xd5dbe0, Mx(.24, 1.5, -1.6, 1, 1, 1, -Math.PI / 2, 0, 0)),
+    P(BOX(.012, .16, .34), 0xc8303a, Mx(.24, 1.58, -1.3)),
+    ...[-.1, .1].map(x => P(BOX(.02, .02, .5), 0x3a2416, Mx(x, 1.48, -.42, 1, 1, 1, .32, 0, 0))),
+    ...(rider ? [
+      P(BOX(.5, .14, .36), ARMY1D, Mx(0, 1.22, .02)),
+      P(CYL(.16, .21, .5, 7), ARMY1, Mx(0, 1.52, .02)),
+      P(CYL(.2, .2, .06, 7), ARMY2, Mx(0, 1.33, .02)),
+      P(SPH(.13, 7, 5), 0xe2b68c, Mx(0, 1.88, .02)),
+      P(CYL(.17, .17, .08, 7), 0xf3ead6, Mx(0, 1.96, .02)),
+      P(CONE(.15, .34, 7), 0xd5dbe0, Mx(0, 2.15, .02)),
+      P(BOX(.04, .24, .04), 0xc8303a, Mx(0, 2.4, .07, 1, 1, 1, .3, 0, 0)),
+      P(CYL(.24, .24, .05, 12), ARMY2, Mx(-.27, 1.5, .02, 1, 1, 1, 0, 0, Math.PI / 2)),
+      P(SPH(.06, 6, 4), 0xc8303a, Mx(-.3, 1.5, .02))
+    ] : [
+      ...[-.13, .13].map(x => P(SPH(.055, 6, 4), 0xe2b68c, Mx(x, 1.44, -.24))),
+      ...[-.13, .13].map(x => P(BOX(.09, .09, .3), ARMY1, Mx(x * 1.3, 1.48, -.08, 1, 1, 1, .4, 0, 0)))
+    ])
+  ];
+}
+const sipahiG = merge(sipahiParts(true)), binekG = merge(sipahiParts(false));
+// Serdar: ordunun önünde sancak taşıyan sipahi
+const serdarG = merge([...sipahiParts(true), P(BOX(.04, 2.3, .04), 0x5b3a1e, Mx(-.34, 2.3, .2)), P(BOX(.02, .6, .9), 0xb3202a, Mx(-.34, 3.05, .66)),
+  P(BOX(.022, .07, .91), 0xe3a92b, Mx(-.34, 2.72, .66)), P(SPH(.07, 6, 4), 0xe3a92b, Mx(-.34, 3.48, .2))]);
 const armyMat = new THREE.MeshLambertMaterial({ vertexColors: true });
 const goldMat = new THREE.MeshPhongMaterial({ color: 0xe8b33a, specular: 0xfff2b0, shininess: 90, emissive: 0x3d2800 });
 const dummy = new THREE.Object3D();
@@ -420,6 +467,9 @@ function inst(g, m, n) { const im = new THREE.InstancedMesh(g, m, n); im.castSha
 const MAXC = 220, MAXE = 500, MAXA = 280;
 const crowdMesh = inst(akinciG, armyMat, MAXC);
 const heroMesh = inst(akinciG, goldMat, M.MAX_HERO);
+const MAXS = 36, sipahiMesh = inst(sipahiG, armyMat, MAXS);   // ordunun dış halkasında atlı sipahiler
+const serdar = new THREE.Mesh(serdarG, armyMat), binek = new THREE.Mesh(binekG, armyMat);   // önde sancaklı serdar; Sipahi Gözü'nde oyuncunun atı
+serdar.castShadow = binek.castShadow = true; binek.visible = false; scene.add(serdar); scene.add(binek);
 const foeMesh = {}; for (const k in FOE_GEO) foeMesh[k] = inst(FOE_GEO[k], armyMat, MAXE);
 const arrowMat = new THREE.MeshBasicMaterial({ color: M.WEAPONS[0].c });
 const arrowMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(.07, .07, .8), arrowMat, MAXA); arrowMesh.frustumCulled = false; arrowMesh.count = 0; scene.add(arrowMesh);
@@ -521,6 +571,27 @@ const rainLines = new THREE.LineSegments(precipGeo, new THREE.LineBasicMaterial(
 const snowPts = new THREE.Points(precipGeo, new THREE.PointsMaterial({ color: 0xffffff, size: .32, transparent: true, opacity: .9, depthWrite: false }));
 [rainLines, snowPts].forEach(o => { o.frustumCulled = false; o.visible = false; scene.add(o); });
 let curMood = 'ogle';
+// görüş: 'kus' (kuşbakışı) ya da 'sipahi' (Sipahi Gözü); yalnız bölüm oynanırken at sırtına geçilir
+// Sipahi darbesi: at sırtındayken önündeki düşmana kılıç / mızrak vurur (VR'da kumandayı savurarak, ekranda Boşluk / A tuşu / dokunarak).
+// Okların yanında ek hasar: bir darbe aşağı yukarı beş ok yaylımı kadardır. Hedef: ordunun önünde, menzildeki en yakın düşman ya da engel.
+let darbeT = 0, darbeK = 0;
+function darbe(guc) {
+  if (!G || mode !== 'play' || paused || darbeT > 0) return null;
+  const front = G.z - G.Rz; let best = null, bd = 1e9;
+  for (const o of G.objs) {
+    if (!o.alive || o.t === 'gecit' || o.t === 'gulle' || o.t === 'tas' || o.t === 'pedestal') continue;
+    const dz = front - (o.z + (o.d || 1) / 2), dx = Math.abs(o.x - G.x) - (o.w || 1) / 2;
+    if (dz < -1.5 || dz > 9 || dx > 3.5) continue;
+    if (dz < bd) { bd = dz; best = o; }
+  }
+  darbeT = 0.3; darbeK = 1;
+  if (!best) { noise(0.06, 0.05, 1400); return false; }
+  M.hitObj(G, best, M.totalPow(G) * 0.5 * (guc || 1));
+  const hx = best.t === 'squad' ? best.x : G.x, hz = Math.min(front - 1, best.z + (best.d || 1) / 2);
+  puff(hx, 1.2, hz, 1.6); SFX.tick(); noise(0.09, 0.09, 420);
+  return true;
+}
+const sipahiGozu = () => window.VR && VR.on ? !!VR.ride : S.view === 'sipahi' && (mode === 'play' || mode === 'dying');
 function updatePrecip(dt, cx, cz) {
   const rain = rainLines.visible, snow = snowPts.visible; if (!rain && !snow) return;
   for (let k = 0; k < PN; k++) {
@@ -770,7 +841,7 @@ const starHtml = (n, total = 3) => { let s = ''; for (let k = 0; k < total; k++)
 let G = null, mode = 'menu', paused = false, hintT = 0, camX = 0, camZ = 0, lastRes = null, firstWin = false;
 function startGame(i) {
   G = M.newGame(i, S.up); buildLevelView(G); camX = 0; camZ = 0;
-  mode = 'play'; paused = false; hintT = i === 0 ? 3.2 : 0;
+  mode = 'play'; paused = false; hintT = i === 0 && !S.tips.move ? 99 : 0; dragSum = 0; coachHide();
   show(null); $('hLvl').textContent = t('Bölüm {n}', { n: i + 1 }); updateWeapon();
   drumOn = true; drumT = 0.3; unlockAudio();
   if (MAC) { $('hLvl').textContent = MAC.bk + ' – ' + MAC.rk; banner(MAC.bk + ' ordusu', MAC.rk + ' kalesine'); } else banner(G.L.ad, M.REGIONS[G.L.reg].ad);
@@ -779,9 +850,12 @@ function previewLevel(i) { G = M.newGame(i, S.up); buildLevelView(G); camX = 0; 
 function updateWeapon() { const w = M.WEAPONS[G.wTier]; $('weapon').innerHTML = w.ad + '<small>×' + D.dec(w.m) + '</small>'; arrowMat.color.set(w.c); }
 
 /* girdi: parmağını kaydır */
-let drag = false, lx = 0, keyDir = 0;
-window.addEventListener('pointerdown', e => { unlockAudio(); if (mode !== 'play' || paused) return; drag = true; lx = e.clientX; });
-window.addEventListener('pointermove', e => { if (!drag || !G) return; const dx = e.clientX - lx; lx = e.clientX; G.tx += dx / Math.min(window.innerWidth, 520) * 13; });
+let drag = false, lx = 0, keyDir = 0, dragSum = 0;
+let tapT = 0, tapX = 0;
+window.addEventListener('pointerdown', e => { unlockAudio(); if (mode !== 'play' || paused) return; drag = true; lx = e.clientX; tapT = performance.now(); tapX = e.clientX; });
+// Sipahi Gözü'nde kısa dokunuş (kaydırmadan) = darbe
+window.addEventListener('pointerup', e => { if (sipahiGozu() && performance.now() - tapT < 220 && Math.abs(e.clientX - tapX) < 10 && e.target.tagName !== 'BUTTON') darbe(); });
+window.addEventListener('pointermove', e => { if (!drag || !G) return; const dx = e.clientX - lx; lx = e.clientX; dragSum += Math.abs(dx); G.tx += dx / Math.min(window.innerWidth, 520) * 13; });
 ['pointerup', 'pointercancel'].forEach(t => window.addEventListener(t, () => drag = false));
 window.addEventListener('keydown', e => { if (e.key === 'ArrowLeft' || e.key === 'a') keyDir = -1; if (e.key === 'ArrowRight' || e.key === 'd') keyDir = 1; if (e.key === 'Escape') { if (mode === 'play' && !paused) pause(true); else if (curScr && curScr !== 'menu') padBack(); } if (e.key === 'F11' && HOST) { e.preventDefault(); S.fs = S.fs ? 0 : 1; persist(); applyFullscreen(); } });
 window.addEventListener('keyup', e => { if (['ArrowLeft', 'ArrowRight', 'a', 'd'].includes(e.key)) keyDir = 0; });
@@ -845,6 +919,7 @@ function finish(win) {
     $('wGain').textContent = gain;
     $('wNext').textContent = t(i === NL - 1 ? 'SEFER HARİTASI' : last ? 'YENİ SEFER' : 'DEVAM');
     show('win'); fanfare(); for (let k = 0; k < stars; k++) setTimeout(() => SFX.star(k), 300 + k * 250);
+    if (firstWin) maybeAskRate(i);
   } else {
     let tip;
     if (G.wTier === 0 && G.L.objs.some(o => o.t === 'pedestal')) tip = t('Kaideleri okla sıfırla: daha güçlü bir yay, ordunun gücünü katlar.');
@@ -857,7 +932,7 @@ function finish(win) {
 }
 
 /* ================= EKRANLAR ================= */
-const SCR = { menu: 'scrMenu', levels: 'scrLevels', camp: 'scrCamp', brief: 'scrBrief', pause: 'scrPause', win: 'scrWin', lose: 'scrLose', set: 'scrSet', full: 'scrFull' };
+const SCR = { help: 'scrHelp', menu: 'scrMenu', levels: 'scrLevels', camp: 'scrCamp', brief: 'scrBrief', pause: 'scrPause', win: 'scrWin', lose: 'scrLose', set: 'scrSet', full: 'scrFull' };
 let curScr = 'menu';
 function show(n) {
   for (const k in SCR) $(SCR[k]).hidden = k !== n;
@@ -944,7 +1019,7 @@ function openBrief(i) {
   $('brCamp').hidden = !canUpgrade();
   previewLevel(i); show('brief');
 }
-function pause(on) { if (mode !== 'play') return; paused = on; drag = false; show(on ? 'pause' : null); drumOn = !on; }
+function pause(on) { if (mode !== 'play') return; paused = on; drag = false; if (on) coachHide(); show(on ? 'pause' : null); drumOn = !on; }
 
 document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => { SFX.click(); const g = b.dataset.go; if (g === 'menu') { previewLevel(nextLevel()); } show(g); }));
 $('bPlay').addEventListener('click', () => { unlockAudio(); SFX.click(); openBrief(nextLevel()); });
@@ -956,6 +1031,14 @@ $('brCamp').addEventListener('click', () => { SFX.click(); openCamp('brief'); })
 $('cBack').addEventListener('click', () => { SFX.click(); if (campFrom === 'brief') openBrief(briefI); else { previewLevel(nextLevel()); show('menu'); } });
 $('bStart').addEventListener('click', () => { unlockAudio(); startGame(briefI); });
 $('pauseBtn').addEventListener('click', () => { SFX.click(); pause(true); });
+// görüş değiştir: Kuşbakışı ⇄ Sipahi Gözü (oyun sırasında da)
+function setView(v) { S.view = v; persist(); drawViewBtn(); if (curScr === 'set') renderSet(); }
+function drawViewBtn() { const fp = S.view === 'sipahi'; $('viewBtn').textContent = fp ? '🦅' : '🐎'; $('viewBtn').setAttribute('aria-label', t(fp ? 'Kuşbakışı görüş' : 'Sipahi Gözü')); }
+$('viewBtn').addEventListener('click', e => { e.stopPropagation(); SFX.click(); setView(S.view === 'sipahi' ? 'kus' : 'sipahi'); });
+$('viewBtn').addEventListener('pointerdown', e => e.stopPropagation());
+$('setView').addEventListener('click', e => { const v = e.target.dataset && e.target.dataset.v; if (!v) return; SFX.click(); setView(v); });
+window.addEventListener('keydown', e => { if ((e.key === 'v' || e.key === 'V') && mode === 'play') setView(S.view === 'sipahi' ? 'kus' : 'sipahi'); if (e.key === ' ' && sipahiGozu()) { e.preventDefault(); darbe(); } });
+drawViewBtn();
 $('pResume').addEventListener('click', () => { SFX.click(); pause(false); });
 $('pRestart').addEventListener('click', () => { SFX.click(); startGame(G.i); });
 $('pMenu').addEventListener('click', () => { SFX.click(); previewLevel(nextLevel()); show('menu'); });
@@ -971,10 +1054,10 @@ let setFrom = 'menu';
 $('setBtn').addEventListener('click', () => { SFX.click(); setFrom = curScr || 'menu'; show('set'); });
 function segOn(id, v) { $(id).querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === String(v))); }
 function renderSet() {
-  segOn('setLang', D.lang); segOn('setQ', S.q); segOn('setFs', S.fs ? 1 : 0);
+  segOn('setLang', D.lang); segOn('setView', S.view === 'sipahi' ? 'sipahi' : 'kus'); segOn('setQ', S.q); segOn('setFs', S.fs ? 1 : 0);
   $('setSfx').value = S.vol.sfx; $('setMus').value = S.vol.mus;
   $('setFsRow').hidden = !(HOST || document.fullscreenEnabled) || D.platform === 'android' || D.platform === 'ios';
-  $('setFullRow').hidden = !(D.platform === 'android' || D.platform === 'ios');
+  $('setFullRow').hidden = !PAID;
   $('setBuy').hidden = !!S.full;
   $('setQuit').hidden = !(HOST && HOST.quit);
 }
@@ -987,6 +1070,15 @@ $('setMus').addEventListener('input', e => { S.vol.mus = +e.target.value; applyV
 $('setOk').addEventListener('click', () => { SFX.click(); persist(); if (setFrom === 'pause') show('pause'); else { previewLevel(nextLevel()); show('menu'); } });
 $('setBack').addEventListener('click', () => $('setOk').click());
 $('setQuit').addEventListener('click', () => { persist(); HOST && HOST.quit && HOST.quit(); });
+// Verilerimi sil: cihazdaki bütün ilerleme ve ayarları siler (gizlilik politikası, Meta VRC.Quest.Privacy). Tam Sürüm mağazadan geri yüklenebilir.
+let eraseArm = 0;
+function eraseData() {
+  if (Date.now() - eraseArm > 4000) { eraseArm = Date.now(); return false; }   // ilk dokunuş: onay iste
+  try { localStorage.removeItem(SKEY); } catch (e) {}
+  if (HOST && HOST.save) try { HOST.save(''); } catch (e) {}
+  setTimeout(() => location.reload(), 150); return true;
+}
+$('setErase').addEventListener('click', () => { SFX.click(); const done = eraseData(); $('setErase').textContent = done ? t('Silindi') : t('Emin misin? Tekrar dokun'); if (!done) setTimeout(() => { $('setErase').textContent = t('Verilerimi sil'); }, 4000); });
 $('setRestore').addEventListener('click', () => restorePurchases(true));
 function applyFullscreen() {
   if (HOST && HOST.setFullscreen) { HOST.setFullscreen(!!S.fs); return; }
@@ -997,6 +1089,10 @@ if (HOST) applyFullscreen();
 /* ================= TAM SÜRÜM (mobil: tek seferlik 1,99 $ · Steam demo: mağaza sayfası) ================= */
 const PRODUCT = 'com.anduv.malazgirt.tamsurum';
 const IAP = () => window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.NativePurchases;
+// Meta Quest (Horizon Store PWA): Digital Goods API + PaymentRequest; ürün (SKU) Meta panelinde kalıcı (durable) eklenti
+const MQ_BILL = 'https://quest.meta.com/billing', MQ_SKU = 'tamsurum';
+const QIAP = () => D.platform === 'quest' && 'getDigitalGoodsService' in window;
+const mqSvc = () => window.getDigitalGoodsService(MQ_BILL);
 let fullFrom = 'menu';
 function openFull() {
   fullFrom = curScr || 'menu'; $('fMsg').textContent = '';
@@ -1009,19 +1105,34 @@ function openFull() {
   show('full'); loadPrice();
 }
 async function loadPrice() {
+  if (QIAP()) { try { const d = (await (await mqSvc()).getDetails([MQ_SKU])).find(x => x.itemId === MQ_SKU); if (d && d.price) $('fPrice').textContent = new Intl.NumberFormat(D.lang === 'en' ? 'en-US' : 'tr-TR', { style: 'currency', currency: d.price.currency }).format(+d.price.value); } catch (e) {} return; }
   const P = IAP(); if (!P) return;
   try { const r = await P.getProducts({ productIdentifiers: [PRODUCT], productType: 'inapp' }); const pr = r && r.products && r.products[0]; if (pr) $('fPrice').textContent = pr.priceString || ''; } catch (e) {}
 }
 function unlockFull(msg) { S.full = true; persist(); drawFullChip(); if (msg) $('fMsg').textContent = t('Tam sürüm açıldı. Hayırlı seferler!'); SFX.weapon(); setTimeout(() => { if (curScr === 'full') { previewLevel(nextLevel()); show(fullFrom === 'levels' ? 'levels' : 'menu'); } }, 1400); }
 $('fBuy').addEventListener('click', async () => {
   if (DEMO) { SFX.click(); if (HOST.openStore) HOST.openStore(); return; }
-  SFX.click(); const P = IAP(); if (!P) { $('fMsg').textContent = t('Satın alma tamamlanamadı. Bağlantını kontrol edip yeniden dene.'); return; }
-  $('fBuy').disabled = true;
-  try { const r = await P.purchaseProduct({ productIdentifier: PRODUCT, productType: 'inapp', quantity: 1 }); if (r && r.transactionId) unlockFull(true); else $('fMsg').textContent = t('Satın alma tamamlanamadı. Bağlantını kontrol edip yeniden dene.'); }
-  catch (e) { $('fMsg').textContent = t('Satın alma tamamlanamadı. Bağlantını kontrol edip yeniden dene.'); }
+  SFX.click(); $('fBuy').disabled = true;
+  const ok = await buyFull(); if (!ok && !$('fMsg').textContent) $('fMsg').textContent = t('Satın alma tamamlanamadı. Bağlantını kontrol edip yeniden dene.');
+  else if (ok) unlockFull(true);
   $('fBuy').disabled = false;
 });
+// satın alma: başarılıysa true (tam sürümü açmak çağırana kalır)
+async function buyFull() {
+  $('fMsg').textContent = '';
+  if (D.platform === 'quest') {
+    if (!QIAP()) { $('fMsg').textContent = t('Tam Sürüm\'ü Quest\'te Meta Horizon Store uygulamasından alabilirsin.'); return false; }
+    try {
+      const req = new PaymentRequest([{ supportedMethods: MQ_BILL, data: { sku: MQ_SKU } }], { total: { label: 'Total', amount: { currency: 'USD', value: '0' } } });
+      const res = await req.show(); const tok = res.details && res.details.purchaseToken; await res.complete(tok ? 'success' : 'fail'); return !!tok;
+    } catch (e) { return false; }
+  }
+  const P = IAP(); if (!P) return false;
+  try { const r = await P.purchaseProduct({ productIdentifier: PRODUCT, productType: 'inapp', quantity: 1 }); return !!(r && r.transactionId); }
+  catch (e) { return false; }
+}
 async function restorePurchases(loud) {
+  if (QIAP()) { try { const ok = (await (await mqSvc()).listPurchases()).some(p => p.itemId === MQ_SKU); if (ok) { if (!S.full) unlockFull(curScr === 'full'); } else if (loud) $('fMsg').textContent = t('Geri yüklenecek satın alım bulunamadı.'); } catch (e) {} return; }
   const P = IAP(); if (!P) return;
   try {
     try { await P.restorePurchases(); } catch (e) {}
@@ -1036,9 +1147,9 @@ $('fLater').addEventListener('click', () => { SFX.click(); if (fullFrom === 'set
 // tam sürüm her zaman bulunabilsin: ana menüde ★ Tam Sürüm, Ayarlar'da Satın al (mobil, henüz alınmadıysa)
 $('setBuy').addEventListener('click', () => { SFX.click(); openFull(); });
 $('bFull').addEventListener('click', () => { SFX.click(); openFull(); });
-function drawFullChip() { $('bFull').hidden = !(D.platform === 'android' || D.platform === 'ios') || !!S.full || freeLim() >= NL; }
+function drawFullChip() { $('bFull').hidden = !PAID || !!S.full || freeLim() >= NL; }
 drawFullChip();
-if (!S.full && IAP()) setTimeout(() => restorePurchases(false), 2500);
+if (!S.full && (IAP() || QIAP())) setTimeout(() => restorePurchases(false), 2500);
 
 /* ================= BAŞARIMLAR (Steam) ================= */
 function achieve(id) { if (MAC || !HOST || !HOST.achieve) return; try { HOST.achieve(id); } catch (e) {} }
@@ -1067,7 +1178,7 @@ function moveFocus(dir) {
 }
 function padBack() {
   if (mode === 'play' && !paused) { pause(true); return; }
-  const back = { levels: () => $('scrLevels').querySelector('.back').click(), camp: () => $('cBack').click(), brief: () => $('scrBrief').querySelector('.back').click(), pause: () => $('pResume').click(), set: () => $('setOk').click(), full: () => $('fLater').click(), win: () => $('wMenu').click(), lose: () => $('lMenu').click() }[curScr];
+  const back = { levels: () => $('scrLevels').querySelector('.back').click(), camp: () => $('cBack').click(), brief: () => $('scrBrief').querySelector('.back').click(), pause: () => $('pResume').click(), set: () => $('setOk').click(), help: () => $('helpBack').click(), full: () => $('fLater').click(), win: () => $('wMenu').click(), lose: () => $('lMenu').click() }[curScr];
   if (back) back();
 }
 function pollPad(dt) {
@@ -1078,8 +1189,10 @@ function pollPad(dt) {
   const stick = { l: ax < -0.6 || b(14), r: ax > 0.6 || b(15), u: ay < -0.6 || b(12), d: ay > 0.6 || b(13) };
   if (!padActive && (Math.abs(ax) > 0.5 || p.buttons.some(x => x.pressed))) { padActive = true; }
   if (mode === 'play' && !paused && G) {
-    const v = Math.abs(ax) > 0.15 ? ax : b(14) ? -1 : b(15) ? 1 : 0; G.tx += v * 14 * dt;
+    const v = Math.abs(ax) > 0.15 ? ax : b(14) ? -1 : b(15) ? 1 : 0; G.tx += v * 14 * dt; dragSum += Math.abs(v) * 400 * dt;
     if (edge(9) || edge(1)) pause(true);
+    if (edge(3)) setView(S.view === 'sipahi' ? 'kus' : 'sipahi');   // Y / △: görüş
+    if (edge(0) && sipahiGozu()) darbe();   // A / ✕: sipahi darbesi
     return;
   }
   for (const k of ['l', 'r', 'u', 'd']) { const v = stick[k], was = padPrev['s' + k]; padPrev['s' + k] = v; if (v && !was) {
@@ -1115,12 +1228,20 @@ function updateDead(dt) {
 /* ================= ÇİZİM ================= */
 function renderCrowd(t) {
   const m = Math.min(G.count, MAXC), moving = mode === 'play' && !paused || G.state === 'march';
+  // her 7 askerden biri atlı sipahidir; atlılar ordunun dış halkasında (kanatlarda) gider
+  const ns = m < 8 ? 0 : Math.min(MAXS, Math.floor(m / 7)), na = m - ns;
   for (let i = 0; i < m; i++) {
-    const o = OFF[i]; const bob = moving ? Math.abs(Math.sin(t * 11 + o.ph)) * 0.12 : Math.sin(t * 2 + o.ph) * 0.02;
-    dummy.position.set(G.x + o.x, bob, G.z + o.z); dummy.rotation.set(moving ? -0.1 : 0, 0, moving ? Math.sin(t * 11 + o.ph) * 0.06 : 0); dummy.scale.set(1, 1, 1); dummy.updateMatrix(); crowdMesh.setMatrixAt(i, dummy.matrix);
+    const o = OFF[i], atli = i >= na; const bob = moving ? Math.abs(Math.sin(t * (atli ? 9 : 11) + o.ph)) * (atli ? 0.16 : 0.12) : Math.sin(t * 2 + o.ph) * 0.02;
+    dummy.position.set(G.x + o.x * (atli ? 1.12 : 1), bob, G.z + o.z * (atli ? 1.08 : 1)); dummy.rotation.set(moving ? (atli ? Math.sin(t * 9 + o.ph) * 0.07 : -0.1) : 0, 0, moving && !atli ? Math.sin(t * 11 + o.ph) * 0.06 : 0);
+    const k = atli ? 0.82 : 1; dummy.scale.set(k, k, k); dummy.updateMatrix();
+    if (atli) sipahiMesh.setMatrixAt(i - na, dummy.matrix); else crowdMesh.setMatrixAt(i, dummy.matrix);
   }
-  crowdMesh.count = m; crowdMesh.instanceMatrix.needsUpdate = true;
-  const h = G.heroes; for (let i = 0; i < h; i++) { dummy.position.set(G.x + (i - (h - 1) / 2) * 1.4, moving ? Math.abs(Math.sin(t * 8 + i)) * 0.15 : 0, G.z - G.Rz - 1.0); dummy.rotation.set(0, 0, 0); dummy.scale.set(2, 2, 2); dummy.updateMatrix(); heroMesh.setMatrixAt(i, dummy.matrix); }
+  dummy.scale.set(1, 1, 1);
+  crowdMesh.count = na; crowdMesh.instanceMatrix.needsUpdate = true; sipahiMesh.count = ns; sipahiMesh.instanceMatrix.needsUpdate = true;
+  // serdar (ya da Sipahi Gözü'nde oyuncunun bineği) ordunun önünde
+  const fp = sipahiGozu(), lead = fp ? binek : serdar; serdar.visible = !fp && G.count > 0; binek.visible = fp && G.count > 0;
+  const gal = moving ? Math.sin(t * 9) : 0; lead.position.set(G.x, moving ? Math.abs(gal) * 0.12 : 0, G.z - G.Rz - (fp ? 0.7 : -0.1)); lead.rotation.set(gal * 0.05, 0, (G.tx - G.x) * -0.02);
+  const h = G.heroes; for (let i = 0; i < h; i++) { dummy.position.set(G.x + (fp ? (i % 2 ? 1 : -1) * (1.7 + Math.floor(i / 2) * 1.4) : (i - (h - 1) / 2) * 1.4), moving ? Math.abs(Math.sin(t * 8 + i)) * 0.15 : 0, G.z - G.Rz - 1.0); dummy.rotation.set(0, 0, 0); dummy.scale.set(2, 2, 2); dummy.updateMatrix(); heroMesh.setMatrixAt(i, dummy.matrix); }
   heroMesh.count = h; heroMesh.instanceMatrix.needsUpdate = true; dummy.scale.set(1, 1, 1);
 }
 function renderFoes(t) {
@@ -1143,7 +1264,7 @@ function renderFoes(t) {
   for (const k in foeMesh) { foeMesh[k].count = idx[k]; foeMesh[k].instanceMatrix.needsUpdate = true; }
 }
 function renderArrows() {
-  let i = 0; for (const a of G.arrows) { if (i >= MAXA) break; dummy.position.set(a.x, a.y, a.z); dummy.rotation.set(0, 0, 0); dummy.updateMatrix(); arrowMesh.setMatrixAt(i++, dummy.matrix); }
+  const fpz = sipahiGozu() ? binek.position.z - 5.5 : 1e9; let i = 0; for (const a of G.arrows) { if (i >= MAXA) break; if (a.z > fpz) continue; dummy.position.set(a.x, a.y, a.z); dummy.rotation.set(0, 0, 0); dummy.updateMatrix(); arrowMesh.setMatrixAt(i++, dummy.matrix); }
   arrowMesh.count = i; arrowMesh.instanceMatrix.needsUpdate = true;
   let j = 0; for (const s of G.foeShots) { if (j >= 60) break; const x = s.x + (s.tx - s.x) * s.t, z = s.z + (s.tz - s.z) * s.t, y = 1 + Math.sin(s.t * Math.PI) * 3;
     dummy.position.set(x, y, z); dummy.rotation.set(Math.cos(s.t * Math.PI) * -0.9, 0, 0); dummy.updateMatrix(); foeArrowMesh.setMatrixAt(j++, dummy.matrix); }
@@ -1172,28 +1293,42 @@ function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000); last = now; T += dt;
   pollPad(dt);
   if (G) {
+    if (darbeT > 0) darbeT -= dt; darbeK = Math.max(0, darbeK - dt * 5);
     if (mode === 'play' && !paused) {
       G.tx += keyDir * 12 * dt;
-      M.step(G, dt); handleEvents(); drumLoop(dt);
-      if (hintT > 0) { hintT -= dt; } $('hint').hidden = !(hintT > 0);
+      M.step(G, dt * coachSlow()); handleEvents(); coachTick(dt); drumLoop(dt);
+      if (hintT > 50 && (dragSum > 140 || keyDir)) { hintT = 0; S.tips.move = 1; persist(); popup(t('Harika!'), G.x, 3, G.z, 'gold'); }   // ilk bölüm: kaydırmayı öğrenene kadar ipucu kalır
+      if (hintT > 0 && hintT < 50) { hintT -= dt; } $('hint').hidden = !(hintT > 0);
       if (G.state === 'win' && mode === 'play') finish(true);
       else if (G.state === 'lose' && mode === 'play') { mode = 'dying'; setTimeout(() => finish(false), 700); }
     } else $('hint').hidden = true;
     renderCrowd(T); renderFoes(T); renderArrows(); renderObjs(dt, T); updateDead(dt);
     const tx = G.x * 0.55, tz = G.z;
     camX += (tx - camX) * Math.min(1, dt * 5); camZ += (tz - camZ) * Math.min(1, dt * 8);
-    const far = mode === 'menu' ? 1 : 0, ck = 1 + (G.road - 6) * 0.075;   // geniş yolda kamera geri çekilir
-    camera.position.set(camX + (far ? Math.sin(T * 0.25) * 1.5 : 0), (12.5 + far * 1.5) * ck, camZ + (12.5 + far * 2) * ck); camera.lookAt(camX * 0.7, 0, camZ - 12 * ck);
+    if (window.VR && VR.on) { VR.update(dt); if (VR.test) VR.testCam(); }   // VR: savaş alanı harp masasının üstünde (js/vr.js)
+    else if (sipahiGozu()) {   // Sipahi Gözü: ordunun önündeki atın sırtından
+      const b = binek.position, sw = (G.tx - G.x) * 0.012 + darbeK * 0.05;
+      camera.fov = window.innerWidth / window.innerHeight < 0.8 ? 84 : 70; camera.updateProjectionMatrix();
+      camera.position.set(b.x, 2.2 + b.y * 0.8 - darbeK * 0.12, b.z + 0.3 - darbeK * 0.6);   // darbede öne atılış camera.up.set(Math.sin(sw), 1, 0); camera.lookAt(b.x + sw * 6, 0.7, b.z - 14);
+    }
+    else {
+      if (camera.fov > 60 && window.innerWidth / window.innerHeight >= 0.8 || camera.fov > 80) { camera.up.set(0, 1, 0); resize(); }
+      const far = mode === 'menu' ? 1 : 0, ck = 1 + (G.road - 6) * 0.075;   // geniş yolda kamera geri çekilir
+      camera.position.set(camX + (far ? Math.sin(T * 0.25) * 1.5 : 0), (12.5 + far * 1.5) * ck, camZ + (12.5 + far * 2) * ck); camera.lookAt(camX * 0.7, 0, camZ - 12 * ck);
+    }
     updatePrecip(dt, camX, camZ - 20);
     sun.position.set(G.x + 8, 24, G.z + 8); sun.target.position.set(G.x, 0, G.z - 8);
-    const showBubble = (mode === 'play' || mode === 'menu' || mode === 'dying') && G.count + G.heroes > 0 && $('scrLevels').hidden && $('scrCamp').hidden;
+    const showBubble = !(window.VR && VR.on) && (mode === 'play' || mode === 'menu' || mode === 'dying') && G.count + G.heroes > 0 && $('scrLevels').hidden && $('scrCamp').hidden;
     const b = $('bubble');
-    if (showBubble) { const p = toScreen(G.x, 2.4 + (G.heroes ? 2.6 : 0), G.z); b.hidden = !p.vis; b.style.left = p.x + 'px'; b.style.top = p.y + 'px'; const label = fmt(G.count) + (G.heroes ? '<small>+' + G.heroes + ' Alp</small>' : ''); if (b.innerHTML !== label) b.innerHTML = label; } else b.hidden = true;
+    if (showBubble) { const p = sipahiGozu() ? { vis: true, x: window.innerWidth * 0.3, y: window.innerHeight * 0.88 } : toScreen(G.x, 2.4 + (G.heroes ? 2.6 : 0), G.z); b.hidden = !p.vis; b.style.left = p.x + 'px'; b.style.top = p.y + 'px'; const label = fmt(G.count) + (G.heroes ? '<small>+' + G.heroes + ' Alp</small>' : ''); if (b.innerHTML !== label) b.innerHTML = label; } else b.hidden = true;
     $('progFill').style.width = (M.progress(G) * 100).toFixed(1) + '%';
   }
   renderer.render(scene, camera);
-  requestAnimationFrame(frame);
+  if (!renderer.xr.isPresenting) requestAnimationFrame(frame);
 }
+// VR (Harp Masası) modülüne oyunun sahnesini ve durumunu ver
+if (window.VR_KUR) window.VR_KUR({ scene, renderer, camera, $, t, fmt, D, SFX, NL, canPlay, startGame, previewLevel, show, unlockAudio, nextLevel, resize, frame,
+  binek: () => binek, levelGroup, world, sun, paused: () => paused, eraseData, darbe, S: () => S, persist, upCapNow, totalStars: () => totalStars(), setView, achieve: id => achieve(id), pause, fmtN: fmt, buyFull: PAID ? () => buyFull().then(ok => { if (ok) { S.full = true; persist(); drawFullChip(); } return ok; }) : null, G: () => G, mode: () => mode, mood: () => curMood, MOODS, precip: [rainLines, snowPts], lastRes: () => lastRes, setMode: v => { mode = v; }, setPaused: v => { paused = v; }, setLast: v => { last = v; } });
 
 // Mağaza görselleri için sahne modu: ?kare=BÖLÜM&hiz=2 (araclar/magaza-gorselleri.js kullanır)
 const Q = new URLSearchParams(location.search);
@@ -1228,6 +1363,7 @@ function boot() {
   if (Q.has('temiz')) document.body.classList.add('temiz');
   if (D.platform === 'steam') $('hint').textContent = t('← → ya da A / D ile yönlendir');
   if (Q.has('kare')) {
+    if (Q.get('gorus')) S.view = Q.get('gorus');
     S.sound = false; S.unlocked = NL; const kq = +Q.get('kare') || 0, uq = Math.round(kq < 50 ? Math.max(8, kq * 0.2 + 2) : Math.min(M.upCap(M.seferOf(kq)), 12 + (kq - 50) * 0.1)); S.up = { start: uq, dmg: uq, rate: uq, zirh: uq }; S.coins = 1840;
     S.stars = [3, 3, 3, 2, 3, 3, 3, 3, 2, 3, 3, 3, 2, 3, 3, 1, 3, 3]; persist = () => {};
     const sc = +Q.get('hiz') || 1, ekran = Q.get('ekran');
@@ -1246,5 +1382,118 @@ function boot() {
 }
 // yazı tipi yüklenince başla (tuval etiketleri doğru yazı tipiyle çizilsin)
 const ready = document.fonts && document.fonts.load ? Promise.race([Promise.all([document.fonts.load('800 64px "Baloo 2"'), document.fonts.load('600 16px "Baloo 2"')]), new Promise(r => setTimeout(r, 1500))]) : Promise.resolve();
+
+
+/* ================= AKINCI REHBERİ, PUAN, PAYLAŞ, GÖRÜŞ (1.6) =================
+   Test kullanıcılarının önerileri: yeni oyuncuya adım adım rehber, her an açılabilen "Nasıl Oynanır",
+   uygulama içi puan verme, oyunu ve zaferi paylaşma, oyun içinden görüş bildirme. */
+const TIPS = [
+  ['move', '👆', 'Ordunu yönet', 'Parmağını sağa sola kaydır (klavyede ← → ya da A / D). Akıncıların kendiliğinden ilerler ve durmadan ok atar.'],
+  ['gate', '🚪', 'Kapıyı seç', 'Her kapının iki yüzü var: + ve × ordunu büyütür, − ve ÷ eritir. Büyüten tarafa geç.'],
+  ['block', '🧱', 'Mavi blok', 'Okla kır, üstündeki sayı kadar akıncı katılır. Çarpma: birkaç akıncı kaybedersin.'],
+  ['squad', '⚔️', 'Düşman birliği', 'Okların onu uzaktan eritir; çarpışınca iki taraf da asker kaybeder. Önce ordunu büyüt.'],
+  ['final', '🚩', 'Kale önündeki ordu', 'Bölümün sonu. Kalabalık bir orduyla var, kale düşsün.'],
+  ['ped_weapon', '🏹', 'Yay kaidesi', 'Üstündeki sayıyı okla sıfırla: daha güçlü bir yay kazanırsın, ordunun gücü katlanır.'],
+  ['ped_hero', '🌟', 'Altın Alp kaidesi', 'Sıfırla, Altın Alp ordunun önüne geçsin. Altın Alp güçlü bir kahramandır.'],
+  ['ped_troops', '🐎', 'Akıncı kaidesi', 'Sıfırla, yeni akıncılar ordunu büyütsün.'],
+  ['boss', '🛡️', 'Dev!', 'Can çubuğu bitene kadar ok yağdır. Ordun ve yayın ne kadar güçlüyse dev o kadar çabuk düşer.'],
+  ['barricade', '🪵', 'Barikat', 'Okla kır ya da yanından geç. Üstüne sürersen akıncı kaybedersin.'],
+  ['kervan', '💰', 'Ganimet kervanı', 'Okla vur, akçe kazan. Çarparsan ganimet dağılır. Akçeyle Ordugâh\'ta kalıcı geliştirme alırsın.'],
+  ['tas', '🪨', 'Mancınık taşı', 'Kırmızı halkaya taş düşecek: halkanın dışına çekil.'],
+  ['gecit', '⛰️', 'Dar geçit', 'Sığmayan akıncılar sıkışıp kaybolur. Ortadan geç; tabelada kaç kişi sığdığı yazar.'],
+  ['hendek', '🌉', 'Hendek', 'Yalnızca köprünün üstünden kayıpsız geçilir.'],
+  ['sur', '🏰', 'Sur duvarı', 'Yolu kapatıyor: oklarla yık, sonra geç.'],
+  ['gulle', '💣', 'Top güllesi!', 'Kırmızı şerit güllenin yolu: şeritten çekil.'],
+  ['sipahi', '🗡️', 'Sipahi Gözü', 'Atın sırtındasın: kısa dokunarak (Boşluk / A) önündeki düşmana kılıç vur. 🐎 / 🦅 düğmesiyle görüşü değiştir.'],
+  ['camp', '⛺', 'Ordugâh', 'Bölümlerden kazandığın akçeyle başlangıç ordusunu, ok gücünü, atış hızını ve zırhı kalıcı olarak geliştir.'],
+  ['stars', '⭐', 'Yıldızlar', 'Bölümü ne kadar büyük bir orduyla bitirirsen o kadar yıldız. Eski bölümleri yeniden oynayıp yıldız ve akçe topla.'],
+];
+const TIP = Object.fromEntries(TIPS.map(r => [r[0], r]));
+let coachT = 0, slowT = 0;
+const coachSlow = () => (slowT > 0 ? 0.35 : 1);
+function tipKey(o) {
+  if (o.t === 'squad') return o.final ? 'final' : 'squad';
+  if (o.t === 'pedestal') return 'ped_' + (o.kind || 'weapon');
+  return TIP[o.t] ? o.t : null;
+}
+function coach(k) {
+  const r = TIP[k]; if (!r) return;
+  S.tips[k] = 1; persist();
+  $('coachIc').textContent = r[1]; $('coachH').textContent = t(r[2]); $('coachT').textContent = t(r[3]);
+  $('coach').hidden = false; coachT = 4.6; slowT = k === 'final' || k === 'sipahi' ? 0 : 1.5;   // bir an ağır çekim: oyuncu okuyup karar verebilsin
+}
+function coachHide() { coachT = 0; slowT = 0; $('coach').hidden = true; }
+function coachTick(dt) {
+  if (slowT > 0) slowT -= dt;
+  if (coachT > 0) { coachT -= dt; if (coachT <= 0) coachHide(); return; }
+  if (!G || MAC || (window.VR && VR.on) || hintT > 50) return;
+  if (sipahiGozu() && !S.tips.sipahi) return coach('sipahi');
+  const ahead = z => G.z - z > -1 && G.z - z < 24;
+  if (!S.tips.gate) for (const g of G.gates) if (!g.passed && ahead(g.z)) return coach('gate');
+  for (const o of G.objs) { if (!o.alive) continue; const k = tipKey(o); if (k && !S.tips[k] && ahead(o.z + (o.d || 0) / 2)) return coach(k); }
+}
+$('coach').addEventListener('pointerdown', e => { e.stopPropagation(); coachHide(); });
+
+let helpFrom = 'menu';
+function openHelp(from) {
+  helpFrom = from;
+  $('helpList').innerHTML = TIPS.map(r => '<div class="tip' + (S.tips[r[0]] ? '' : ' new') + '"><b aria-hidden="true">' + r[1] + '</b><div><strong>' + t(r[2]) + '</strong><span>' + t(r[3]) + '</span></div></div>').join('');
+  show('help'); $('scrHelp').scrollTop = 0;
+}
+function closeHelp() { SFX.click(); show(helpFrom); }
+$('bHelp').addEventListener('click', () => { SFX.click(); openHelp('menu'); });
+$('pHelp').addEventListener('click', () => { SFX.click(); openHelp('pause'); });
+$('setHelp').addEventListener('click', () => { SFX.click(); openHelp('set'); });
+$('helpBack').addEventListener('click', closeHelp);
+$('helpOk').addEventListener('click', closeHelp);
+$('helpReset').addEventListener('click', () => { SFX.click(); S.tips = {}; persist(); openHelp(helpFrom); toast(t('Rehber, sıradaki bölümlerde baştan gösterilecek.')); });
+
+let toastTm = 0;
+function toast(msg) { $('toast').textContent = msg; $('toast').hidden = false; clearTimeout(toastTm); toastTm = setTimeout(() => { $('toast').hidden = true; }, 2600); }
+
+// mağaza bağlantısı: paylaşırken ve puan sayfası için
+const STORE_URL = D.platform === 'ios' ? 'https://apps.apple.com/app/id6822718671' : 'https://play.google.com/store/apps/details?id=com.anduv.malazgirt';
+const CANRATE = D.platform === 'android' || D.platform === 'ios';
+function openUrl(u) { if (u.startsWith('mailto:')) { location.href = u; return; } try { window.open(u, '_blank'); } catch (e) { location.href = u; } }
+async function shareGame(text) {
+  text = text || t('Malazgirt Akıncıları: akıncılarını büyüt, doğru kapıyı seç! Malazgirt\'ten Fetih Yolu\'na 1453 bölüm, ilk 100 bölüm ücretsiz.');
+  const P = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Share;
+  try {
+    if (P && P.share) { await P.share({ title: 'Malazgirt Akıncıları', text, url: STORE_URL, dialogTitle: t('Arkadaşına öner') }); return; }
+    if (navigator.share) { await navigator.share({ title: 'Malazgirt Akıncıları', text, url: STORE_URL }); return; }
+  } catch (e) { if (/cancel|abort/i.test((e && (e.message || e.name)) || '')) return; }
+  try { await navigator.clipboard.writeText(text + ' ' + STORE_URL); toast(t('Bağlantı kopyalandı, istediğin yere yapıştır.')); } catch (e) { toast(STORE_URL); }
+}
+$('bShare').addEventListener('click', () => { SFX.click(); shareGame(); });
+$('setShare').addEventListener('click', () => { SFX.click(); shareGame(); });
+$('wShare').addEventListener('click', () => { SFX.click(); if (!lastRes) return shareGame();
+  shareGame(t('Malazgirt Akıncıları\'nda {n}. bölümü {s} yıldızla geçtim! Sen de akına katıl:', { n: lastRes.i + 1, s: lastRes.stars })); });
+
+function feedback() {
+  const sub = 'Malazgirt Akıncıları – ' + t('Görüş ve öneri') + ' (' + SURUM + ', ' + D.platform + ')';
+  const body = t('Merhaba, oyunla ilgili görüşüm:') + '\n\n\n— ' + t('Bölüm') + ' ' + Math.min(NL, S.unlocked) + ' · ' + SURUM + ' · ' + D.platform;
+  openUrl('mailto:emreanduvart@gmail.com?subject=' + encodeURIComponent(sub) + '&body=' + encodeURIComponent(body));
+}
+$('setFeed').addEventListener('click', () => { SFX.click(); feedback(); });
+
+// puan: 7., 25. ve 60. bölümler ilk kez geçilince, en çok iki kez sorulur; yenilgide asla sorulmaz
+const RATE_AT = [6, 24, 59];
+function maybeAskRate(i) {
+  if (!CANRATE || S.rate.done || S.rate.n >= 2 || !RATE_AT.includes(i)) return;
+  setTimeout(() => { if (curScr === 'win') { $('rateBox').hidden = false; $('rateYes').focus(); } }, 1800);
+}
+async function rateNow() {
+  S.rate.done = 1; persist();
+  const R = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.InAppReview;
+  try { if (R && R.requestReview) { await R.requestReview(); return; } } catch (e) {}
+  openUrl(STORE_URL);
+}
+function rateClose() { $('rateBox').hidden = true; }
+$('rateYes').addEventListener('click', () => { SFX.click(); rateClose(); rateNow(); });
+$('rateNo').addEventListener('click', () => { SFX.click(); rateClose(); S.rate.n++; persist(); feedback(); });
+$('rateLater').addEventListener('click', () => { SFX.click(); rateClose(); S.rate.n++; persist(); });
+$('setRate').addEventListener('click', () => { SFX.click(); rateNow(); });
+$('setRateRow').hidden = !CANRATE;
+
 ready.then(boot, boot);
 })();
