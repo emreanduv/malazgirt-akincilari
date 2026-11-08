@@ -107,3 +107,9 @@
 - Kuyrukta tek gönderim: Kurt Yolu 1.1.0 (25 Ekim'den beri Waiting for Review). Sonuç gelene kadar yeni gönderim yok.
 - Sıra (her biri bir öncekinin sonucu gelince): 1) Kurt Yolu (bekliyor) 2) Champion Battle Manager 4.4.0 (var olan uygulama güncellemesi) 3) Saat Vitrini 4) Nutuk Akışı 5) Fırsat Akışı; reddedilen oyunlar en sona, her biri kendine özgü içerikle.
 - Durum: Actions → "App Store tüm uygulamalar durum" → `durum-tum` dalında asc.json.
+
+## 1.6.3 (9 Kasım 2026): iOS Türkçe yazı düzeltmesi
+- Sorun: iPhone/iPad'de "ı" boş görünüyordu (@font-face latin aralığında U+0131 yoktu), ◀ ▶ işaretleri emoji çiziliyordu. Ayrıntı: store/surum-1.6.3.md.
+- iOS 1.6.3 (18) TestFlight'a yüklendi; App Store 1.6.3 sürümü açıldı, TR/EN "Yenilikler" yazıldı, derleme 18 bağlandı. **İncelemeye gönderilmedi: TestFlight'ta "ı" gözle doğrulanınca Emre "Add for Review → Submit" diyecek.**
+- Android 1.6.3 AAB derlendi; imza Emre'de (bash imzala.sh), sonra Play kapalı teste.
+- Quest: düzeltme web'de (emreanduv.github.io/malazgirt/vr) yayında.
