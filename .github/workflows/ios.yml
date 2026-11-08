@@ -14,6 +14,9 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Yayın öncesi kontrol (main dalı, özellikler eksiksiz, sürüm geri gitmiyor)
+        env: { SURUM: "${{ inputs.version_name }}" }
+        run: bash araclar/yayin-kontrol.sh
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - name: Xcode 26 seç

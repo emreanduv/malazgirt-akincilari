@@ -23,6 +23,8 @@ jobs:
     defaults: { run: { shell: bash } }
     steps:
       - uses: actions/checkout@v4
+      - name: Yayın öncesi kontrol
+        run: bash araclar/yayin-kontrol.sh
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - name: Oyunu kabuğa kopyala
@@ -55,6 +57,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Yayın öncesi kontrol
+        run: bash araclar/yayin-kontrol.sh
       - uses: actions/download-artifact@v4
         with: { path: indir }
       - name: Günlükleri dala yaz

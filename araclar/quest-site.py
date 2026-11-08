@@ -10,6 +10,8 @@ import json, os, shutil, sys
 from PIL import Image
 
 KOK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+import subprocess
+if subprocess.call(['bash', os.path.join(KOK, 'araclar/yayin-kontrol.sh')], cwd=KOK) != 0: sys.exit('Yayın kontrolü geçmedi: Quest sitesi güncellenmedi.')
 out, sha = sys.argv[1], sys.argv[2]
 PAKET = 'com.anduv.malazgirt.vr'
 

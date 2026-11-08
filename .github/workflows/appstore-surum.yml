@@ -16,6 +16,9 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Yayın öncesi kontrol (main dalı, özellikler eksiksiz, sürüm geri gitmiyor)
+        env: { SURUM: "${{ inputs.version_name }}" }
+        run: bash araclar/yayin-kontrol.sh
       - name: Metin ve görselleri hazırla
         run: |
           mkdir -p fastlane/screenshots/tr fastlane/screenshots/en-US fastlane/metadata
