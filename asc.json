@@ -1,0 +1,354 @@
+{
+ "zaman": "2026-11-14T10:38:52Z",
+ "uygulamalar": [
+  {
+   "id": "6757344306",
+   "ad": "Champion Battle Manager",
+   "paket": "com.championchess.manager",
+   "surumler": [
+    [
+     "0e822457-52b8-4fa2-8c15-39b76601396e",
+     "4.7.0",
+     "READY_FOR_SALE",
+     "2026-11-13T04:07:56-08:00"
+    ],
+    [
+     "b7645218-ec73-4278-b3ed-aa06101f0708",
+     "4.6.0",
+     "READY_FOR_SALE",
+     "2026-11-09T03:44:43-08:00"
+    ],
+    [
+     "d34cd689-fe66-4450-bb8b-88bd242fcd5f",
+     "4.5.1",
+     "READY_FOR_SALE",
+     "2026-11-07T15:02:48-08:00"
+    ],
+    [
+     "63c227d0-bcbe-4dd6-b29c-2c1dc52aab51",
+     "4.5.0",
+     "READY_FOR_SALE",
+     "2026-11-06T08:46:57-08:00"
+    ]
+   ],
+   "incelemeler": [
+    [
+     "6b804e4b-9735-42e0-a00b-fd72ccae6287",
+     "COMPLETE",
+     "2026-11-13T12:09:12.083Z"
+    ],
+    [
+     "dfbacc92-be4d-4ba2-953b-dfba9b1154c7",
+     "COMPLETE",
+     "2026-11-09T11:46:05.093Z"
+    ],
+    [
+     "2de026ec-6f7d-4181-af83-7f0688d50720",
+     "COMPLETE",
+     "2026-11-08T05:42:51Z"
+    ],
+    [
+     "28b2c747-9e46-4e2a-a363-b227f5b2de74",
+     "COMPLETE",
+     "2026-11-07T23:07:13.662Z"
+    ],
+    [
+     "40f2050f-1b00-4383-94ac-8f63bb1cb176",
+     "COMPLETE",
+     "2026-11-06T16:50:28.404Z"
+    ],
+    [
+     "093e0941-b69f-43c5-bdc6-79452476ed0c",
+     "COMPLETE",
+     "2026-11-04T08:14:11.936Z"
+    ]
+   ]
+  },
+  {
+   "id": "6824003538",
+   "ad": "Legend Heads",
+   "paket": "com.anduv.legendheads",
+   "surumler": [
+    [
+     "99990896-a887-4921-8d55-93d5b753772d",
+     "1.0.0",
+     "REJECTED",
+     "2026-10-17T09:16:24-07:00"
+    ]
+   ],
+   "incelemeler": [
+    [
+     "bf41a815-ca97-48ec-85fe-286c8e917dc3",
+     "COMPLETE",
+     "2026-10-18T06:28:05.62Z"
+    ]
+   ]
+  },
+  {
+   "id": "6824180601",
+   "ad": "Kurt Yolu",
+   "paket": "com.anduv.kurtyolu",
+   "surumler": [
+    [
+     "3695c77d-c8a5-43a0-a67e-6a7fbfa42eab",
+     "1.1.0",
+     "WAITING_FOR_REVIEW",
+     "2026-10-18T02:05:58-07:00"
+    ]
+   ],
+   "incelemeler": [
+    [
+     "11b1723d-78fe-40a4-9ea6-c269827eb4d9",
+     "WAITING_FOR_REVIEW",
+     "2026-10-25T07:26:38.248Z"
+    ]
+   ]
+  },
+  {
+   "id": "6822507365",
+   "ad": "Hisar: Kara Gece",
+   "paket": "com.anduv.hisar",
+   "surumler": [
+    [
+     "2e358925-588b-459d-a896-dfbdbcef4b41",
+     "1.1.0",
+     "REJECTED",
+     "2026-10-13T16:11:00-07:00"
+    ]
+   ],
+   "incelemeler": [
+    [
+     "413bd9ec-adc2-4cf2-9048-6839244a0a53",
+     "COMPLETE",
+     "2026-10-16T21:56:02.7Z"
+    ],
+    [
+     "38e0ebf2-9665-4a6a-95d8-c4e1ea13cafe",
+     "COMPLETE",
+     "2026-10-14T08:44:41.945Z"
+    ]
+   ]
+  },
+  {
+   "id": "6824240380",
+   "ad": "Kaptan Mecit",
+   "paket": "com.anduv.kaptanmecit",
+   "surumler": [
+    [
+     "4dfaa1b5-c958-4673-9735-24cf6c5afb1d",
+     "1.0.0",
+     "REJECTED",
+     "2026-10-18T08:17:50-07:00"
+    ]
+   ],
+   "incelemeler": [
+    [
+     "5aee6a4d-fbbc-429e-b40f-8a5850552c30",
+     "COMPLETE",
+     "2026-10-18T15:58:29.179Z"
+    ]
+   ]
+  },
+  {
+   "id": "6828892980",
+   "ad": "Nutuk Salonu",
+   "paket": "com.anduv.nutukakisi",
+   "surumler": [
+    [
+     "ec898cdb-f2ad-432c-91e8-52fdfa16d909",
+     "1.0.2",
+     "PREPARE_FOR_SUBMISSION",
+     "2026-10-30T07:13:43-07:00"
+    ]
+   ],
+   "incelemeler": []
+  },
+  {
+   "id": "6829551444",
+   "ad": "Fırsat Vitrini",
+   "paket": "com.anduv.firsatakisi",
+   "surumler": [
+    [
+     "02e71983-d37e-4039-928f-f7b163890731",
+     "1.0",
+     "PREPARE_FOR_SUBMISSION",
+     "2026-11-01T14:25:49-08:00"
+    ]
+   ],
+   "incelemeler": []
+  },
+  {
+   "id": "6823958201",
+   "ad": "Topçular",
+   "paket": "com.anduv.topcular",
+   "surumler": [
+    [
+     "cc39dba9-cc72-4c7a-ba2b-aa68c4fa7b02",
+     "1.0.0",
+     "REJECTED",
+     "2026-10-17T05:28:24-07:00"
+    ]
+   ],
+   "incelemeler": [
+    [
+     "e2669715-8903-4222-bcfb-807391c4b4e2",
+     "COMPLETE",
+     "2026-10-18T06:30:43.587Z"
+    ]
+   ]
+  },
+  {
+   "id": "6824639205",
+   "ad": "Kırmızı Yalı",
+   "paket": "com.anduv.kirmiziyali",
+   "surumler": [
+    [
+     "b5830c41-4405-4eff-abb3-6f0e0fda9183",
+     "1.0.0",
+     "REJECTED",
+     "2026-10-19T12:25:15-07:00"
+    ]
+   ],
+   "incelemeler": [
+    [
+     "2b84eede-e594-4523-a316-0eb8165e0e5f",
+     "COMPLETE",
+     "2026-10-19T20:28:05.021Z"
+    ]
+   ]
+  },
+  {
+   "id": "6826874224",
+   "ad": "Yaşam Rehberi",
+   "paket": "com.anduv.yasamrehberi",
+   "surumler": [
+    [
+     "7c227c42-e05c-4e56-82db-bf61dbea3962",
+     "1.2.0",
+     "READY_FOR_SALE",
+     "2026-11-08T06:28:53-08:00"
+    ],
+    [
+     "be218b84-cbe8-4e4c-940a-2151bfccc582",
+     "1.1.0",
+     "READY_FOR_SALE",
+     "2026-11-06T22:18:42-08:00"
+    ],
+    [
+     "a0394bec-8b38-40ec-804a-b30889dd0ad5",
+     "1.0.0",
+     "READY_FOR_SALE",
+     "2026-10-25T09:00:34-07:00"
+    ]
+   ],
+   "incelemeler": [
+    [
+     "f676d7b5-8621-44fd-a293-98c9ae800551",
+     "COMPLETE",
+     "2026-11-08T14:31:35.45Z"
+    ],
+    [
+     "8941cbf0-be29-4d98-9994-e503b3704379",
+     "COMPLETE",
+     "2026-11-07T06:25:36.248Z"
+    ],
+    [
+     "3cd08ae4-38d8-4385-863a-fd04fcb60202",
+     "COMPLETE",
+     "2026-11-02T18:03:41.889Z"
+    ]
+   ]
+  },
+  {
+   "id": "6829435134",
+   "ad": "Saat Vitrini",
+   "paket": "com.anduv.saatvitrini",
+   "surumler": [
+    [
+     "b4f8e780-8ddd-427d-8908-25cf1071f47d",
+     "1.0.0",
+     "PREPARE_FOR_SUBMISSION",
+     "2026-11-01T04:26:00-08:00"
+    ]
+   ],
+   "incelemeler": []
+  },
+  {
+   "id": "6822718671",
+   "ad": "Malazgirt Akıncıları",
+   "paket": "com.anduv.malazgirt",
+   "surumler": [
+    [
+     "dfa772d8-582c-4ac3-a614-b85b97931534",
+     "1.6.3",
+     "PREPARE_FOR_SUBMISSION",
+     "2026-11-08T10:25:48-08:00"
+    ],
+    [
+     "a0d3034e-3cc2-407a-8d2d-1c37db94b94c",
+     "1.6.0",
+     "READY_FOR_SALE",
+     "2026-11-03T00:46:01-08:00"
+    ],
+    [
+     "63e9fa84-6559-4224-a589-d450b242040f",
+     "1.5.0",
+     "READY_FOR_SALE",
+     "2026-10-25T04:13:37-07:00"
+    ],
+    [
+     "fdb44fd0-bef2-4d48-a6d7-eff1146d3adb",
+     "1.4.0",
+     "READY_FOR_SALE",
+     "2026-10-23T13:36:12-07:00"
+    ]
+   ],
+   "incelemeler": [
+    [
+     "1c1a6145-9541-4743-b66a-ea7ee8e0ff1c",
+     "COMPLETE",
+     "2026-11-03T15:52:14.348Z"
+    ],
+    [
+     "01a61254-01f5-4e73-97e2-d2eb9bd2e440",
+     "COMPLETE",
+     "2026-10-28T14:04:24.528Z"
+    ],
+    [
+     "7d1e8769-fd32-4ae0-89a5-434c78377842",
+     "COMPLETE",
+     "2026-10-23T20:49:15.429Z"
+    ],
+    [
+     "d06275ab-f6e3-4393-8503-5d541b510ebb",
+     "COMPLETE",
+     "2026-10-23T07:31:02.251Z"
+    ],
+    [
+     "c80b3913-26c1-40e0-8a46-4965b6b4e5c9",
+     "COMPLETE",
+     "2026-10-22T16:38:25.196Z"
+    ],
+    [
+     "b186b9e7-bd3b-4ef5-bc17-35a9b1f31b55",
+     "COMPLETE",
+     "2026-10-19T17:57:09.907Z"
+    ]
+   ]
+  },
+  {
+   "id": "6830736627",
+   "ad": "Gezi Pasaportu",
+   "paket": "com.anduv.gezipasaportu",
+   "surumler": [
+    [
+     "fb435fe0-cd00-4515-ba5d-80769c9c3bfd",
+     "1.0",
+     "PREPARE_FOR_SUBMISSION",
+     "2026-11-04T07:37:08-08:00"
+    ]
+   ],
+   "incelemeler": []
+  }
+ ]
+}
