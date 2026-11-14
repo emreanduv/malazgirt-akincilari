@@ -34,6 +34,9 @@ Yayın sırası: incelemedeki/testteki mağazada gönderilen sürüme onay gelen
 - ◀ ▶ ⏵ ⏸ ⏭ ⏮ gibi işaretlerin hemen arkasına metin biçimi seçicisi **U+FE0E** konur; yoksa iOS bunları mavi emoji kutusu olarak çizer.
 - `araclar/turkce-yazi-kontrol.py` yayın öncesi kontrolden çağrılır; tutmazsa derleme durur. Aynı denetim bütün repolara eklenir. (Kaynak: Nutuk Salonu TestFlight, Kasım 2026.)
 
+### Gelişim Defteri (Emre'nin kuralı, 14 Kasım 2026)
+Bütün oyun ve uygulamalar tek evren: bir üründe yapılan iyileştirme, gerekliyse hepsine derç edilir. Takip tek yerde: emreanduv/emreanduv-tamga-yolu `evren/GELISIM.md` (evren kitabının kardeşi). Bu üründe işe başlarken defterde bu ürünün sütunundaki `⏳` satırlara bak; yeni bir iyileştirme/ders/ortak özellik yapınca deftere satır ekle ve her ürün için durumunu yaz (`⏳` uyar, `—` uymaz); bir ürüne uygulayınca hücreyi `✓` yap. Bilmediğini `?` bırak, tahminle `✓` yazma.
+
 ### Reklam panoları (Mr. Anduv! marka tutarlılığı)
 Herhangi bir oyunda/uygulamada reklam ya da reklam panosu (stadyum panosu, tabela, kayan şerit) varsa **yalnız Mr. Anduv! ortak pano seti** kullanılır. Kaynak: emreanduv/kaptan-mecit `km3/veri/takimlar.json` → `"panolar"` (Champion Battle Manager ile aynı). Aynı metinler, aynı zemin/yazı renkleri; dönen panolarda 7 saniyede bir değişim (`(i*5 + tur*3) % n`). Başka marka, kurum ya da uydurma marka yok. Listeye yeni oyun/hesap eklenince önce kaynak listeye eklenir, sonra bütün repolarda güncellenir.
 
