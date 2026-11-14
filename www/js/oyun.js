@@ -19,7 +19,7 @@ const NL = M.NL, NSF = M.SEFERLER.length;
 
 /* ================= KAYIT ================= */
 const SKEY = 'malazgirt-akincilari-v1';
-const SURUM = '2.0.0';
+const SURUM = '2.0.1';
 const D = window.DIL, t = D.t, HOST = D.HOST;
 const FREE_LIMIT = 100;   // mobilde yeni oyuncu için ücretsiz bölüm sayısı (ilk iki sefer); gerisi Tam Sürüm
 // 1.5'ten önce oynayanlar bulundukları yerden bir sonraki eşiğe kadar ücretsiz devam eder (ör. 244. bölümdeki oyuncu 250'ye kadar)
@@ -898,8 +898,8 @@ window.addEventListener('pointerdown', e => { unlockAudio(); if (mode !== 'play'
 window.addEventListener('pointerup', e => { if (sipahiGozu() && performance.now() - tapT < 220 && Math.abs(e.clientX - tapX) < 10 && e.target.tagName !== 'BUTTON') darbe(); });
 window.addEventListener('pointermove', e => { if (!drag || !G) return; const dx = e.clientX - lx; lx = e.clientX; dragSum += Math.abs(dx); G.tx += dx / Math.min(window.innerWidth, 520) * 13; });
 ['pointerup', 'pointercancel'].forEach(t => window.addEventListener(t, () => drag = false));
-window.addEventListener('keydown', e => { if (e.key === 'ArrowLeft' || e.key === 'a') keyDir = -1; if (e.key === 'ArrowRight' || e.key === 'd') keyDir = 1; if (e.key === 'Escape') { if (mode === 'play' && !paused) pause(true); else if (curScr && curScr !== 'menu') padBack(); } if (e.key === 'F11' && HOST) { e.preventDefault(); S.fs = S.fs ? 0 : 1; persist(); applyFullscreen(); } });
-window.addEventListener('keyup', e => { if (['ArrowLeft', 'ArrowRight', 'a', 'd'].includes(e.key)) keyDir = 0; });
+window.addEventListener('keydown', e => { if (e.key === 'ArrowLeft' || e.code === 'KeyA') keyDir = -1; if (e.key === 'ArrowRight' || e.code === 'KeyD') keyDir = 1; if (e.key === 'Escape') { if (mode === 'play' && !paused) pause(true); else if (curScr && curScr !== 'menu') padBack(); } if (e.key === 'F11' && HOST) { e.preventDefault(); S.fs = S.fs ? 0 : 1; persist(); applyFullscreen(); } });
+window.addEventListener('keyup', e => { if (['ArrowLeft', 'ArrowRight'].includes(e.key) || e.code === 'KeyA' || e.code === 'KeyD') keyDir = 0; });
 document.addEventListener('visibilitychange', () => { if (document.hidden && mode === 'play' && !paused) pause(true); });
 
 function handleEvents() {
@@ -1073,7 +1073,7 @@ function drawViewBtn() { const fp = S.view === 'sipahi'; $('viewBtn').textConten
 $('viewBtn').addEventListener('click', e => { e.stopPropagation(); SFX.click(); setView(S.view === 'sipahi' ? 'kus' : 'sipahi'); });
 $('viewBtn').addEventListener('pointerdown', e => e.stopPropagation());
 $('setView').addEventListener('click', e => { const v = e.target.dataset && e.target.dataset.v; if (!v) return; SFX.click(); setView(v); });
-window.addEventListener('keydown', e => { if ((e.key === 'v' || e.key === 'V') && mode === 'play') setView(S.view === 'sipahi' ? 'kus' : 'sipahi'); if (e.key === ' ' && sipahiGozu()) { e.preventDefault(); darbe(); } });
+window.addEventListener('keydown', e => { if (e.code === 'KeyV' && mode === 'play') setView(S.view === 'sipahi' ? 'kus' : 'sipahi'); if (e.key === ' ' && sipahiGozu()) { e.preventDefault(); darbe(); } });
 drawViewBtn();
 $('pResume').addEventListener('click', () => { SFX.click(); pause(false); });
 $('pRestart').addEventListener('click', () => { SFX.click(); startGame(G.i); });
