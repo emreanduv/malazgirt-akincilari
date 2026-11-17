@@ -378,5 +378,6 @@ body.vr-on #hud,body.vr-on #weapon,body.vr-on #bubble,body.vr-on #pops,body.vr-o
 <script src="js/dil.js"></script>
 <script src="js/vr.js"></script>
 <script src="js/oyun.js"></script>
+<script>/* Ekran uyanık kalsın (web, PWA, VR tarayıcı): dokunulmasa da kararmasın */(function(){var k=null;function al(){try{if(!k&&navigator.wakeLock&&document.visibilityState==='visible')navigator.wakeLock.request('screen').then(function(x){k=x;x.addEventListener('release',function(){k=null;});}).catch(function(){});}catch(e){}}['pointerdown','keydown','touchend'].forEach(function(e){addEventListener(e,al,{passive:true});});document.addEventListener('visibilitychange',al);al();})();</script>
 </body>
 </html>

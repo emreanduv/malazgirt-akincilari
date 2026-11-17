@@ -1,5 +1,5 @@
 // Malazgirt Akıncıları — masaüstü (Steam) kabuğu. Oyunun kendisi www/ içindeki web oyunudur.
-const { app, BrowserWindow, ipcMain, Menu, screen } = require('electron');
+const { app, powerSaveBlocker, BrowserWindow, ipcMain, Menu, screen } = require('electron');
 const path = require('path'), fs = require('fs');
 
 app.setName('MalazgirtAkincilari');                 // kayıt klasörü ASCII olsun (Steam Cloud yolları için)
@@ -63,5 +63,5 @@ ipcMain.on('magaza', () => {
 });
 ipcMain.on('dil', e => { let l = ''; if (steam) try { l = steam.apps.currentGameLanguage(); } catch (x) {} e.returnValue = l; });
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => { createWindow(); try { powerSaveBlocker.start('prevent-display-sleep'); } catch (e) { /* */ } });
 app.on('window-all-closed', () => app.quit());
