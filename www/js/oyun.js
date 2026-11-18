@@ -19,7 +19,7 @@ const NL = M.NL, NSF = M.SEFERLER.length;
 
 /* ================= KAYIT ================= */
 const SKEY = 'malazgirt-akincilari-v1';
-const SURUM = '2.0.2';
+const SURUM = '2.0.3';
 const D = window.DIL, t = D.t, HOST = D.HOST;
 const FREE_LIMIT = 100;   // mobilde yeni oyuncu için ücretsiz bölüm sayısı (ilk iki sefer); gerisi Tam Sürüm
 // 1.5'ten önce oynayanlar bulundukları yerden bir sonraki eşiğe kadar ücretsiz devam eder (ör. 244. bölümdeki oyuncu 250'ye kadar)
@@ -547,8 +547,20 @@ function tileTexture() {
 function glowTexture() { const L = makeLabel(128, 128), { ctx } = L; const g = ctx.createRadialGradient(64, 64, 4, 64, 64, 64); g.addColorStop(0, 'rgba(255,240,170,1)'); g.addColorStop(.35, 'rgba(255,200,80,.6)'); g.addColorStop(1, 'rgba(255,180,40,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, 128, 128); L.tex.needsUpdate = true; return L.tex; }
 function puffTexture() { const L = makeLabel(64, 64), { ctx } = L; const g = ctx.createRadialGradient(32, 32, 2, 32, 32, 32); g.addColorStop(0, 'rgba(255,250,235,.95)'); g.addColorStop(1, 'rgba(230,210,170,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, 64, 64); L.tex.needsUpdate = true; return L.tex; }
 const roadTex = tileTexture(), glowTex = glowTexture(), puffTex = puffTexture();
-// sancak dokusu: firuze zemin, altın hilal
-function flagTexture(bg, fg) { const L = makeLabel(128, 192), { ctx } = L; ctx.fillStyle = bg; ctx.fillRect(0, 0, 128, 192); ctx.fillStyle = fg; ctx.beginPath(); ctx.arc(60, 80, 36, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = bg; ctx.beginPath(); ctx.arc(74, 74, 31, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = fg; for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.moveTo(0, 150 + i * 14); ctx.lineTo(128, 150 + i * 14); ctx.lineTo(128, 156 + i * 14); ctx.lineTo(0, 156 + i * 14); ctx.fill(); } L.tex.needsUpdate = true; return L.tex; }
+// sancak dokusu: firuze zemin, altın hilal; altında Kınık boyunun damgası (Selçuklular Kınık boyundandır;
+// Oğuz damgaları Kaşgarlı Mahmud'un Dîvânu Lugâti't-Türk'ünde, 1072–74, Malazgirt'le aynı yıllar). Maç kipinde (MAC) damga yok.
+function flagTexture(bg, fg, damga = true) {
+  const L = makeLabel(128, 192), { ctx } = L; ctx.fillStyle = bg; ctx.fillRect(0, 0, 128, 192);
+  const hy = damga ? 58 : 80, hr = damga ? 28 : 36;
+  ctx.fillStyle = fg; ctx.beginPath(); ctx.arc(60, hy, hr, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = bg; ctx.beginPath(); ctx.arc(60 + hr * .39, hy - hr * .17, hr * .86, 0, Math.PI * 2); ctx.fill();
+  if (damga) {   // dik gövde, üstünden sağa uzanan kol, ucunda geriye kıvrılan kanca
+    ctx.strokeStyle = fg; ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath();
+    ctx.moveTo(52, 98); ctx.lineTo(52, 140); ctx.moveTo(52, 106); ctx.lineTo(80, 98); ctx.quadraticCurveTo(90, 94, 86, 88); ctx.quadraticCurveTo(82, 84, 78, 90); ctx.stroke();
+  }
+  ctx.fillStyle = fg; for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.moveTo(0, 150 + i * 14); ctx.lineTo(128, 150 + i * 14); ctx.lineTo(128, 156 + i * 14); ctx.lineTo(0, 156 + i * 14); ctx.fill(); }
+  L.tex.needsUpdate = true; return L.tex;
+}
 // düşman sancağı: hilalsiz; Bizans kızıl-altın baklava, Haçlı mavi-beyaz bölümlü
 function enemyFlag(bg, fg, kind) {
   const L = makeLabel(128, 192), { ctx } = L; ctx.fillStyle = bg; ctx.fillRect(0, 0, 128, 192);
@@ -558,7 +570,7 @@ function enemyFlag(bg, fg, kind) {
   else { ctx.beginPath(); ctx.moveTo(64, 34); ctx.lineTo(100, 84); ctx.lineTo(64, 134); ctx.lineTo(28, 84); ctx.closePath(); ctx.fill(); ctx.fillStyle = bg; ctx.beginPath(); ctx.moveTo(64, 58); ctx.lineTo(82, 84); ctx.lineTo(64, 110); ctx.lineTo(46, 84); ctx.closePath(); ctx.fill(); }
   ctx.strokeStyle = fg; ctx.lineWidth = 8; ctx.strokeRect(4, 4, 120, 184); L.tex.needsUpdate = true; return L.tex;
 }
-const flagTex = MAC ? flagTexture(MAC.b1, MAC.b2) : flagTexture('#1fa3a8', '#f0b232');
+const flagTex = MAC ? flagTexture(MAC.b1, MAC.b2, false) : flagTexture('#1fa3a8', '#f0b232');
 const ENEMY_FLAG_ASIL = () => [enemyFlag('#8e1f2a', '#e7c56a'), enemyFlag('#6a1b5a', '#e7c56a'), enemyFlag('#2c4f8f', '#ece6d6', 'parti'), enemyFlag('#7a1b2a', '#e7c56a'),
   enemyFlag('#8a2a2a', '#d8b040', 'parti'), enemyFlag('#8e1f2a', '#e7c56a'), enemyFlag('#5a1b4a', '#e7c56a'), enemyFlag('#a02a2a', '#ece6d6', 'serit'),
   enemyFlag('#2c4f8f', '#ece6d6', 'parti'), enemyFlag('#b02030', '#ece6d6', 'serit'),
