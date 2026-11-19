@@ -1,7 +1,7 @@
 The raiders, redrawn!
 • New akinji raiders: fur-trimmed felt bork, faces and moustaches, kaftans, capes, quivers, Turkish bows
-• New sipahi cavalry: maned bay horses with jointed legs, red and gold caparisons, turbaned helmets and shields
+• New sipahi cavalry: maned bay horses, red and gold caparisons, turbaned helmets, shields
 • The commander now carries a red banner with crescent and star
-• A real sky: slow clouds on the horizon, stars at night; in Sipahi View the sky fills the screen
+• A real sky: slow clouds, stars at night; in Sipahi View it fills the screen
 • In portrait the camera tilts up to show the horizon
 • Older phones: Settings > Graphics: Low keeps the simple look
