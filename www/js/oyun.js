@@ -19,7 +19,7 @@ const NL = M.NL, NSF = M.SEFERLER.length;
 
 /* ================= KAYIT ================= */
 const SKEY = 'malazgirt-akincilari-v1';
-const SURUM = '2.0.3';
+const SURUM = '2.1.0';
 const D = window.DIL, t = D.t, HOST = D.HOST;
 const FREE_LIMIT = 100;   // mobilde yeni oyuncu için ücretsiz bölüm sayısı (ilk iki sefer); gerisi Tam Sürüm
 // 1.5'ten önce oynayanlar bulundukları yerden bir sonraki eşiğe kadar ücretsiz devam eder (ör. 244. bölümdeki oyuncu 250'ye kadar)
@@ -119,10 +119,10 @@ scene.background = new THREE.Color(0xead09a); scene.fog = new THREE.Fog(0xead09a
 const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 500);
 const hemi = new THREE.HemisphereLight(0xfff4dc, 0x9c7a4a, 0.78); scene.add(hemi);
 const sun = new THREE.DirectionalLight(0xfff0d2, 0.82);
-sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024);
+sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024); sun.shadow.bias = -0.0006; sun.shadow.normalBias = 0.02;
 Object.assign(sun.shadow.camera, { left: -14, right: 14, top: 26, bottom: -26, near: 1, far: 90 });
 scene.add(sun); scene.add(sun.target);
-function resize() { const w = window.innerWidth, h = window.innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = w / h < 0.8 ? 58 : 44; camera.updateProjectionMatrix(); }
+function resize() { const w = window.innerWidth, h = window.innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = w / h < 0.8 ? 60 : 44; camera.updateProjectionMatrix(); }
 window.addEventListener('resize', resize); resize();
 
 /* Bölge renkleri: kum, yayla, göl, vadi, ova (gün batımı) */
@@ -274,8 +274,85 @@ function merge(parts) {
 }
 const BOX = (w, h, d) => new THREE.BoxGeometry(w, h, d), CYL = (a, b, h, s) => new THREE.CylinderGeometry(a, b, h, s), SPH = (r, a, b) => new THREE.SphereGeometry(r, a, b), CONE = (r, h, s) => new THREE.ConeGeometry(r, h, s);
 
-// Akıncı: firuze kaftan, sarık-miğfer, kırmızı tepelik, sırtında sadak, elinde yay
+// Akıncı (gorsel-1.7, Tamga HD insan kiti düzeyi): kürk kenarlı ak keçe börk, yüz (göz akı, bebek, kaş, burun, pala bıyık, keçi sakal, kulak),
+// dize inen firuze kaftan (etek kenarı, çapraz yaka, kuşak ve toka), sırtta kepenek ve sadak, eklemli kol/bacak (omuz, dirsek, diz), çizme, sol elde Türk yayı, belde kılıç.
+// Hepsi tek geometri (köşe rengi) → kalabalıkta tek çizim; ölçüler eskisiyle aynı (ayak y=0, börk ucu ≈1.53, yüz -Z'ye bakar).
+const _yA = new THREE.Vector3(0, 1, 0), _v1 = new THREE.Vector3(), _v2 = new THREE.Vector3();
+function uzuv(a, b, ra, rb, color, seg = 6) {   // a'dan b'ye uzanan (kalınlığı ra → rb) uzuv
+  _v1.set(a[0], a[1], a[2]); _v2.set(b[0], b[1], b[2]); const d = _v2.clone().sub(_v1), L = d.length();
+  const m = new THREE.Matrix4().compose(_v1.clone().add(_v2).multiplyScalar(.5), new THREE.Quaternion().setFromUnitVectors(_yA, d.normalize()), new THREE.Vector3(1, 1, 1));
+  return P(new THREE.CylinderGeometry(rb, ra, L, seg, 1, true), color, m);   // uçlar eklem küresinin içinde: kapaksız
+}
+const LATHE = (pts, s) => new THREE.LatheGeometry(pts.map(([r, y]) => new THREE.Vector2(r, y)), s);
+const TEN = 0xe2b68c, KARA = 0x1a120c, SAC = 0x2a1a10, KURK = 0x5e3c22, KECE = 0xf3ead6, SALVAR = 0x3a2a1f, CIZME = 0x6e2a1c, DERI = 0x7a4a24, ALTIN = 0xe3a92b, AL = 0xc8303a;
+// yüz: baş merkezi (0,y,z), yarıçap r; -Z'ye bakar
+function yuzParts(y, z, r, o = {}) {
+  const k = r / .13, X = (v) => v * k;
+  return [
+    P(SPH(r, 8, 6), TEN, Mx(0, y, z, .95, 1.05, .97)),
+    ...[-1, 1].map(s => P(SPH(X(.03), 5, 4), dk(TEN, .9), Mx(s * X(.124), y, z, .5, 1, .8))),                       // kulak
+    P(SPH(X(.026), 5, 4), dk(TEN, .95), Mx(0, y - X(.015), z - X(.127), .85, 1, 1.25)),                              // burun
+    ...[-1, 1].map(s => P(SPH(X(.024), 6, 4), 0xf6f2ea, Mx(s * X(.047), y + X(.02), z - X(.113), 1.15, .8, .5))),     // göz akı
+    ...[-1, 1].map(s => P(SPH(X(.014), 5, 4), KARA, Mx(s * X(.047), y + X(.018), z - X(.124)))),                    // göz bebeği
+    ...[-1, 1].map(s => P(BOX(X(.055), X(.013), X(.016)), SAC, Mx(s * X(.05), y + X(.052), z - X(.118), 1, 1, 1, 0, 0, s * -.18))),   // kaş
+    ...[-1, 1].map(s => P(BOX(X(.075), X(.017), X(.02)), SAC, Mx(s * X(.042), y - X(.045), z - X(.122), 1, 1, 1, 0, s * -.25, s * -.38))),   // pala bıyık
+    P(BOX(X(.034), X(.008), X(.01)), 0x7a2a20, Mx(0, y - X(.068), z - X(.121))),                                       // ağız
+    ...(o.sakal === false ? [] : [P(CONE(X(.04), X(.07), 5), SAC, Mx(0, y - X(.11), z - X(.095), 1, 1, .8, Math.PI - .35, 0, 0))])   // keçi sakal
+  ];
+}
+// börk: kürk kenar, ak keçe, takım renginde bağ, al püskül
+function borkParts(y, z, r) {
+  const k = r / .13;
+  return [
+    P(SPH(r * 1.03, 6, 4, Math.PI * .1, Math.PI * .8, 0, Math.PI * .66), SAC, Mx(0, y, z + .01 * k)),                    // ense saçı (yalnız arkada; yüz açık)
+    P(new THREE.TorusGeometry(.128 * k, .04 * k, 4, 9), KURK, Mx(0, y + .085 * k, z, 1, 1, 1, Math.PI / 2, 0, 0)),
+    P(CYL(.118 * k, .13 * k, .05 * k, 8), ARMY2, Mx(0, y + .13 * k, z)),
+    P(CONE(.122 * k, .3 * k, 8), KECE, Mx(0, y + .3 * k, z + .025 * k, 1, 1, 1, .14, 0, 0)),
+    P(SPH(.034 * k, 4, 3), AL, Mx(0, y + .45 * k, z + .05 * k))
+  ];
+}
 const akinciG = merge([
+  // bacaklar: bol şalvar, dizde eklem, al-kahve çizme
+  ...[-1, 1].flatMap(s => [
+    uzuv([s * .08, .52, 0], [s * .088, .27, -.015], .085, .072, SALVAR),
+    P(SPH(.066, 4, 3), SALVAR, Mx(s * .088, .27, -.015)),
+    uzuv([s * .088, .28, -.01], [s * .088, .045, .005], .066, .058, CIZME),
+    P(CYL(.072, .072, .035, 7), dk(CIZME, .75), Mx(s * .088, .27, -.01)),
+    P(BOX(.09, .055, .17), CIZME, Mx(s * .088, .028, -.035)),
+    P(SPH(.045, 4, 3), CIZME, Mx(s * .088, .03, -.115, 1, .7, 1))
+  ]),
+  // kaftan: dize inen etek, belde daralır, göğüs ve omuz
+  P(LATHE([[0, .3], [.255, .3], [.21, .5], [.168, .645], [.2, .84], [.19, .935], [.1, .99], [0, 1.0]], 8), ARMY1, Mx(0, 0, 0)),
+  P(new THREE.TorusGeometry(.252, .016, 3, 10), ARMY2, Mx(0, .305, 0, 1, 1, 1, Math.PI / 2, 0, 0)),          // etek kenarı
+  P(BOX(.03, .34, .02), ARMY2, Mx(0, .47, -.215, 1, 1, 1, .2, 0, 0)),                                          // önde etek yarığı şeridi
+  ...[-1, 1].map(s => P(BOX(.035, .3, .02), ARMY2, Mx(s * .045, .82, -.192, 1, 1, 1, -.08, 0, s * .32))),     // çapraz yaka
+  P(CYL(.178, .178, .07, 8), ARMY2, Mx(0, .645, 0)),                                                         // kuşak
+  P(BOX(.06, .05, .02), 0xf6d77a, Mx(0, .645, -.18)),                                                         // toka
+  P(BOX(.03, .3, .045), DERI, Mx(-.19, .5, -.02, 1, 1, 1, .45, 0, .12)),                                       // kılıç kını
+  P(BOX(.075, .02, .02), ALTIN, Mx(-.185, .645, -.1)),                                                         // kılıç balçağı
+  // sırtta kepenek
+  P(new THREE.CylinderGeometry(.2, .27, .56, 8, 1, true, -Math.PI * .42, Math.PI * .84), ARMY1D, Mx(0, .7, .015)),
+  // omuz ve kollar
+  ...[-1, 1].map(s => P(SPH(.072, 6, 5), ARMY1D, Mx(s * .19, .925, 0))),
+  uzuv([-.19, .92, 0], [-.27, .74, -.08], .064, .056, ARMY1), P(SPH(.05, 4, 3), ARMY1, Mx(-.27, .74, -.08)),
+  uzuv([-.27, .74, -.08], [-.285, .75, -.27], .055, .046, ARMY1), P(CYL(.047, .047, .03, 6), ARMY2, Mx(-.284, .75, -.255, 1, 1, 1, Math.PI / 2, 0, 0)),
+  P(SPH(.043, 4, 3), TEN, Mx(-.287, .75, -.3)),
+  uzuv([.19, .92, 0], [.25, .72, .02], .064, .056, ARMY1), P(SPH(.05, 4, 3), ARMY1, Mx(.25, .72, .02)),
+  uzuv([.25, .72, .02], [.21, .6, -.12], .055, .046, ARMY1), P(SPH(.043, 4, 3), TEN, Mx(.205, .585, -.14)),
+  // Türk yayı (sol elde) ve kemik uçlar
+  P(new THREE.TorusGeometry(.3, .022, 3, 10, Math.PI), 0x6b3e1f, Mx(-.287, .75, -.3, 1, 1, 1, 0, -Math.PI / 2, Math.PI / 2)),
+  P(BOX(.01, .6, .01), 0xf2efe6, Mx(-.287, .75, -.3)),
+  // sadak, oklar
+  P(CYL(.052, .04, .4, 6), DERI, Mx(.1, .8, .2, 1, 1, 1, .32, 0, -.2)),
+  P(CYL(.056, .056, .04, 6), ARMY2, Mx(.122, .92, .24, 1, 1, 1, .32, 0, -.2)),
+  ...[[.11, AL], [.15, 0xf3ead6], [.13, AL]].map(([x, c], i) => P(BOX(.014, .09, .04), c, Mx(x, 1.04 + i * .01, .27 + (i - 1) * .02, 1, 1, 1, .32, 0, -.2))),
+  // baş
+  P(CYL(.05, .058, .07, 6), TEN, Mx(0, 1.0, 0)),
+  ...yuzParts(1.1, 0, .13),
+  ...borkParts(1.1, 0, .13)
+]);
+// Sade akıncı (Ayarlar → Grafik: Düşük; eski gövde, az üçgen): firuze kaftan, sarık-miğfer, kırmızı tepelik, sırtında sadak, elinde yay
+const akinciSadeG = merge([
   P(BOX(.3, .42, .2), 0x3a2a1f, Mx(0, .21, 0)),
   P(CYL(.17, .27, .52, 7), ARMY1, Mx(0, .66, 0)),
   P(CYL(.215, .215, .07, 7), ARMY2, Mx(0, .5, 0)),
@@ -460,9 +537,110 @@ const ATLI_GEO = { katafrakt: katafraktG, akrit: akritG, sovalye: sovalyeG, alan
   kirasiyer: kirasiyerG, stradiot: stradiotG, kanatlihusar: kanatliG, kazak: kazakG, fransizsuvari: fransizSuvariG,
   italyansuvari: italyanSuvariG, hintsuvari: hintSuvariG, yunansuvari: yunanSuvariG };
 
-// Sipahi: kızıl-altın çullu doru at, firuze kaftan, sorguçlu miğfer, yuvarlak kalkan, flamalı mızrak.
+// Sipahi (gorsel-1.7): doru at — yuvarlak gövde, kavisli boyun, uzun baş (alın akıtması, kulak, göz, burun), kara yele ve kuyruk,
+// eklemli bacaklar (diz, bilek, toynak), al-altın çul ve eyer, üzengi, dizgin; binici: firuze kaftan, sarıklı tolga (sorguçlu), yüz, kalkan, flamalı mızrak.
 // rider=false: binicisiz (Sipahi Gözü görünümünde oyuncu bu atın üstündedir; yalnızca eller ve dizginler görünür)
+const AT = 0x6a3a1e, AT_K = 0x4e2a16, YELE = 0x1a1210, TOYNAK = 0x2a1c14;
+function atParts(o = {}) {
+  const at = o.at || AT, atK = dk(at, .74), cul = o.cul || 0xb3202a, kenar = o.kenar || ALTIN;
+  return [
+    // gövde: göğüs, karın, sağrı
+    P(SPH(.3, 10, 6), at, Mx(0, .97, 0, .74, .82, 1.95)),
+    P(SPH(.25, 7, 5), at, Mx(0, 1.0, -.42, .9, .95, .9)),
+    P(SPH(.26, 7, 5), at, Mx(0, 1.0, .44, .9, .92, .95)),
+    // boyun ve baş
+    uzuv([0, 1.08, -.48], [0, 1.5, -.76], .145, .095, at, 8),
+    P(SPH(.105, 7, 5), at, Mx(0, 1.53, -.79)),
+    uzuv([0, 1.54, -.8], [0, 1.38, -1.06], .095, .065, at, 7),
+    P(SPH(.07, 5, 3), dk(at, .85), Mx(0, 1.37, -1.07, 1, .9, 1.1)),                     // burun
+    P(BOX(.03, .16, .02), 0xf3ead6, Mx(0, 1.5, -.92, 1, 1, 1, -.95, 0, 0)),            // alın akıtması
+    ...[-1, 1].flatMap(s => [
+      P(CONE(.03, .11, 4), at, Mx(s * .05, 1.66, -.77, 1, 1, 1, -.2, 0, s * -.2)),       // kulak
+      P(SPH(.02, 5, 3), KARA, Mx(s * .072, 1.52, -.87)),                                  // göz
+      P(SPH(.012, 4, 3), KARA, Mx(s * .04, 1.36, -1.12))                                  // burun deliği
+    ]),
+    // yele, perçem, kuyruk
+    ...[0, 1, 2, 3, 4, 5, 6].flatMap(i => { const t = i / 6, y = 1.12 + t * .42 + .07, z = -.44 - t * .3 + .1, sd = i % 2 ? 1 : .55;   // yele: boyun sırtında, sağa dökülen perçemler
+      return [uzuv([0, y, z], [.07 * sd, y - .1, z + .03], .04, .014, YELE, 4), uzuv([0, y + .01, z], [-.03, y - .05, z + .02], .03, .012, YELE, 4)]; }),
+    uzuv([0, 1.62, -.8], [.02, 1.55, -.93], .03, .01, YELE, 4),                     // perçem
+    uzuv([0, 1.08, .74], [0, .78, .86], .05, .075, YELE), uzuv([0, .78, .86], [0, .52, .84], .075, .03, YELE),
+    // bacaklar: kol/kalça → diz → bilek → toynak
+    ...[[-.15, -.42, 1], [.15, -.42, 1], [-.15, .44, 0], [.15, .44, 0]].flatMap(([x, z, on]) => [
+      uzuv([x, .88, z], [x, .5, z + (on ? .02 : .06)], on ? .085 : .1, .055, at, 6),
+      P(SPH(.055, 5, 3), at, Mx(x, .5, z + (on ? .02 : .06))),
+      uzuv([x, .5, z + (on ? .02 : .06)], [x, .1, z], .045, .04, atK, 6),
+      P(CYL(.05, .058, .08, 6), TOYNAK, Mx(x, .04, z))
+    ]),
+    // çul (al, altın kenar), eyer, üzengi
+    P(new THREE.CylinderGeometry(.285, .285, .8, 10, 1, true, Math.PI * .5 + .25, Math.PI - .5), cul, Mx(0, 1.0, .08, 1, 1, 1, Math.PI / 2, 0, 0)),
+    ...[-1, 1].flatMap(s => [P(BOX(.02, .035, .8), kenar, Mx(s * .262, .87, .08)), P(BOX(.012, .07, .07), kenar, Mx(s * .286, .93, .08))]),
+    P(BOX(.32, .1, .42), 0x3a2416, Mx(0, 1.25, .05)),
+    P(BOX(.24, .12, .06), 0x3a2416, Mx(0, 1.32, -.16)), P(BOX(.24, .1, .06), 0x3a2416, Mx(0, 1.31, .26)),
+    ...[-1, 1].map(s => P(BOX(.012, .012, .3), TOYNAK, Mx(s * .21, 1.0, .05, 1, 1, 1, 0, 0, s * .1))),
+    // gem ve dizgin
+    P(BOX(.17, .02, .02), 0xd5dbe0, Mx(0, 1.36, -1.03)),
+    ...[-1, 1].map(s => uzuv([s * .08, 1.37, -1.0], [s * .12, 1.45, -.36], .009, .009, 0x3a2416, 4))
+  ];
+}
 function sipahiParts(rider) {
+  return [
+    ...atParts(),
+    // flamalı mızrak
+    P(BOX(.035, .035, 2.0), 0x6b4a2b, Mx(.24, 1.5, -.5)),
+    P(CONE(.04, .2, 4), 0xd5dbe0, Mx(.24, 1.5, -1.6, 1, 1, 1, -Math.PI / 2, 0, 0)),
+    P(BOX(.012, .15, .34), AL, Mx(.24, 1.58, -1.3)), P(BOX(.013, .05, .34), ALTIN, Mx(.24, 1.52, -1.3)),
+    ...(rider ? [
+      // binici: kalçalar eyerde, bacaklar atın böğründe, çizme üzengide
+      ...[-1, 1].flatMap(s => [
+        uzuv([s * .12, 1.3, .06], [s * .25, 1.2, -.14], .075, .065, SALVAR),
+        uzuv([s * .25, 1.2, -.14], [s * .23, .95, -.02], .06, .055, CIZME),
+        P(BOX(.08, .06, .16), CIZME, Mx(s * .23, .93, -.07))
+      ]),
+      P(LATHE([[0, 1.22], [.22, 1.22], [.2, 1.3], [.16, 1.4], [.18, 1.55], [.19, 1.66], [.12, 1.72], [0, 1.73]], 8), ARMY1, Mx(0, 0, .03)),
+      P(CYL(.165, .165, .06, 10), ARMY2, Mx(0, 1.4, .03)),
+      ...[-1, 1].map(s => P(BOX(.032, .24, .02), ARMY2, Mx(s * .04, 1.57, -.155, 1, 1, 1, -.08, 0, s * .32))),
+      P(new THREE.CylinderGeometry(.19, .25, .5, 8, 1, true, -Math.PI * .42, Math.PI * .84), ARMY1D, Mx(0, 1.48, .05)),   // kepenek
+      ...[-1, 1].map(s => P(SPH(.07, 6, 5), ARMY1D, Mx(s * .18, 1.66, .03))),
+      // sağ kol mızrağı tutar, sol kol kalkanı
+      uzuv([.18, 1.65, .03], [.25, 1.47, -.05], .052, .046, ARMY1), uzuv([.25, 1.47, -.05], [.24, 1.5, -.25], .045, .04, ARMY1), P(SPH(.042, 5, 3), TEN, Mx(.24, 1.5, -.28)),
+      uzuv([-.18, 1.65, .03], [-.25, 1.48, -.02], .052, .046, ARMY1), uzuv([-.25, 1.48, -.02], [-.2, 1.42, -.2], .045, .04, ARMY1), P(SPH(.042, 5, 3), TEN, Mx(-.19, 1.42, -.23)),
+      P(CYL(.05, .056, .07, 6), TEN, Mx(0, 1.74, .03)),
+      ...yuzParts(1.84, .03, .125),
+      // sarıklı tolga: ak sarık sargısı, çelik külah, al sorguç; ense zırhı
+      P(new THREE.TorusGeometry(.125, .045, 5, 12), 0xf3ead6, Mx(0, 1.92, .03, 1, 1, 1, Math.PI / 2, 0, 0)),
+      P(new THREE.TorusGeometry(.115, .03, 4, 12), 0xe6dcc6, Mx(0, 1.96, .03, 1, 1, 1, Math.PI / 2 - .25, 0, 0)),
+      P(CONE(.12, .3, 10), 0xd5dbe0, Mx(0, 2.1, .03)), P(SPH(.025, 5, 3), ALTIN, Mx(0, 2.26, .03)),
+      P(BOX(.035, .26, .035), AL, Mx(0, 2.33, .1, 1, 1, 1, .4, 0, 0)),
+      P(new THREE.CylinderGeometry(.14, .16, .12, 8, 1, true, -Math.PI * .45, Math.PI * .9), 0x9aa4ad, Mx(0, 1.85, .05)),
+      // kalkan: takım renginde, altın kenar ve göbek
+      P(CYL(.24, .24, .045, 14), ARMY2, Mx(-.28, 1.5, -.08, 1, 1, 1, 0, 0, Math.PI / 2)),
+      P(new THREE.TorusGeometry(.235, .018, 4, 16), dk(ARMY2, .7), Mx(-.305, 1.5, -.08, 1, 1, 1, 0, Math.PI / 2, 0)),
+      P(new THREE.TorusGeometry(.13, .012, 4, 14), dk(ARMY2, .7), Mx(-.305, 1.5, -.08, 1, 1, 1, 0, Math.PI / 2, 0)),
+      P(SPH(.055, 5, 3), AL, Mx(-.31, 1.5, -.08))
+    ] : [
+      // Sipahi Gözü: oyuncunun elleri ve kolları
+      ...[-1, 1].map(s => P(SPH(.055, 5, 3), TEN, Mx(s * .13, 1.44, -.24))),
+      ...[-1, 1].flatMap(s => [uzuv([s * .2, 1.56, .08], [s * .14, 1.45, -.2], .055, .048, ARMY1), P(CYL(.052, .052, .03, 6), ARMY2, Mx(s * .145, 1.455, -.18, 1, 1, 1, Math.PI / 2 - .4, 0, 0))])
+    ])
+  ];
+}
+const sipahiG = merge(sipahiParts(true)), binekG = merge(sipahiParts(false));
+// Serdar: ordunun önünde Türk sancağı taşıyan sipahi — dalgalı al sancak (altın saçak), alemde hilal
+const SANCAK_DALGA = [[0, 0], [.24, 0], [.48, .0], [.68, .06], [.88, -.02]];   // gönderde düz, uçta dalgalanır
+const serdarG = merge([...sipahiParts(true),
+  P(CYL(.025, .03, 2.5, 6), 0x5b3a1e, Mx(-.34, 2.3, .2)), P(CYL(.04, .04, .05, 6), ALTIN, Mx(-.34, 3.0, .2)),
+  ...SANCAK_DALGA.slice(1).map(([z, x], i) => { const [z0, x0] = SANCAK_DALGA[i], dz = z - z0, dx = x - x0, L = Math.hypot(dz, dx);
+    return P(BOX(.02, .62, L + .01), i % 2 ? 0xa81c26 : 0xb8222c, Mx(-.34 + (x + x0) / 2, 3.18, .2 + (z + z0) / 2 + .02, 1, 1, 1, 0, Math.atan2(dx, dz), 0)); }),
+  ...[-1, 1].flatMap(sd => [P(new THREE.TorusGeometry(.12, .032, 4, 14, Math.PI * 1.4), 0xf3ead6, Mx(-.34 + sd * .02, 3.18, .5, 1, 1, 1, 0, Math.PI / 2, Math.PI * 1.3)),
+    P(CONE(.04, .03, 5), 0xf3ead6, Mx(-.34 + sd * .02, 3.18, .645, 1, 1, 1, 0, 0, sd * Math.PI / 2))]),   // sancakta ak hilal ve yıldız (iki yüzde)
+  P(BOX(.03, .06, .07), ALTIN, Mx(-.37, 3.18, 1.08)),
+  ...[0, 1, 2, 3, 4, 5].map(i => P(BOX(.015, .07, .02), ALTIN, Mx(-.34 + SANCAK_DALGA[Math.min(4, (i * 4 / 5) | 0)][1], 2.84, .3 + i * .14))),
+  P(new THREE.TorusGeometry(.1, .022, 4, 12, Math.PI * 1.45), ALTIN, Mx(-.34, 3.62, .2, 1, 1, 1, 0, Math.PI / 2, Math.PI * .27)),
+  P(SPH(.04, 5, 3), ALTIN, Mx(-.34, 3.52, .2))
+]);
+// Sade sipahi (Grafik: Düşük): kızıl-altın çullu doru at, firuze kaftan, sorguçlu miğfer, yuvarlak kalkan, flamalı mızrak.
+// rider=false: binicisiz (Sipahi Gözü görünümünde oyuncu bu atın üstündedir; yalnızca eller ve dizginler görünür)
+function sipahiSadeParts(rider) {
   return [
     P(BOX(.44, .48, 1.2), 0x6a3a1e, Mx(0, .94, 0)),
     P(BOX(.5, .24, .78), 0xb3202a, Mx(0, 1.08, .1)), P(BOX(.51, .04, .79), 0xe3a92b, Mx(0, .96, .1)),
@@ -493,11 +671,12 @@ function sipahiParts(rider) {
     ])
   ];
 }
-const sipahiG = merge(sipahiParts(true)), binekG = merge(sipahiParts(false));
+const sipahiSadeG = merge(sipahiSadeParts(true)), binekSadeG = merge(sipahiSadeParts(false));
 // Serdar: ordunun önünde sancak taşıyan sipahi
-const serdarG = merge([...sipahiParts(true), P(BOX(.04, 2.3, .04), 0x5b3a1e, Mx(-.34, 2.3, .2)), P(BOX(.02, .6, .9), 0xb3202a, Mx(-.34, 3.05, .66)),
+const serdarSadeG = merge([...sipahiSadeParts(true), P(BOX(.04, 2.3, .04), 0x5b3a1e, Mx(-.34, 2.3, .2)), P(BOX(.02, .6, .9), 0xb3202a, Mx(-.34, 3.05, .66)),
   P(BOX(.022, .07, .91), 0xe3a92b, Mx(-.34, 2.72, .66)), P(SPH(.07, 6, 4), 0xe3a92b, Mx(-.34, 3.48, .2))]);
 const armyMat = new THREE.MeshLambertMaterial({ vertexColors: true });
+window.MZ_MODEL = { akinciG, sipahiG, serdarG, binekG, armyMat };   // araclar/model-onizleme.html
 const goldMat = new THREE.MeshPhongMaterial({ color: 0xe8b33a, specular: 0xfff2b0, shininess: 90, emissive: 0x3d2800 });
 const dummy = new THREE.Object3D();
 function inst(g, m, n) { const im = new THREE.InstancedMesh(g, m, n); im.castShadow = true; im.instanceMatrix.setUsage(THREE.DynamicDrawUsage); im.frustumCulled = false; im.count = 0; scene.add(im); return im; }
@@ -547,6 +726,36 @@ function tileTexture() {
 function glowTexture() { const L = makeLabel(128, 128), { ctx } = L; const g = ctx.createRadialGradient(64, 64, 4, 64, 64, 64); g.addColorStop(0, 'rgba(255,240,170,1)'); g.addColorStop(.35, 'rgba(255,200,80,.6)'); g.addColorStop(1, 'rgba(255,180,40,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, 128, 128); L.tex.needsUpdate = true; return L.tex; }
 function puffTexture() { const L = makeLabel(64, 64), { ctx } = L; const g = ctx.createRadialGradient(32, 32, 2, 32, 32, 32); g.addColorStop(0, 'rgba(255,250,235,.95)'); g.addColorStop(1, 'rgba(230,210,170,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, 64, 64); L.tex.needsUpdate = true; return L.tex; }
 const roadTex = tileTexture(), glowTex = glowTexture(), puffTex = puffTexture();
+// gök kubbesi (gorsel-1.7): ufukta sis rengi (yer kesintisiz siste erir), tepeye doğru bölgenin göğü; uzakta yavaş bulutlar.
+// Kuşbakışında dik ekranda ufuk kadrajın üst şeridine girer, Sipahi Gözü'nde bütün göğü kaplar. VR'da gizli (VR'ın kendi odası var).
+const skyGeo = new THREE.SphereGeometry(420, 24, 14); skyGeo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(skyGeo.attributes.position.count * 3), 3));
+const skyDome = new THREE.Mesh(skyGeo, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false, depthWrite: false }));
+skyDome.renderOrder = -10; skyDome.frustumCulled = false; scene.add(skyDome);
+const skyClouds = new THREE.Group(); skyDome.add(skyClouds);
+for (let i = 0; i < 9; i++) {
+  const c = new THREE.Group(), n = 4 + (i % 3);
+  for (let k = 0; k < n; k++) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: puffTex, transparent: true, depthWrite: false, fog: false, opacity: .85 }));
+    const w = 34 + ((i * 7 + k * 13) % 5) * 9; sp.scale.set(w * 1.7, w * .62, 1); sp.position.set((k - n / 2) * 20 + ((k * 11) % 7) * 2, ((k * 5) % 3) * 4, 0); c.add(sp); }
+  const a = -Math.PI / 2 + (i - 4) * .3 + Math.sin(i * 3.1) * .08, el = .09 + (i % 4) * .05;
+  c.position.set(Math.cos(a) * 360 * Math.cos(el), Math.sin(el) * 360, Math.sin(a) * 360 * Math.cos(el)); c.lookAt(0, c.position.y, 0); c.userData.a = a; c.userData.el = el;
+  skyClouds.add(c);
+}
+const starPos = new Float32Array(260 * 3); for (let i = 0; i < 260; i++) { const a = mulberry(i * 31 + 7)() * Math.PI * 2, e = .06 + Math.pow(mulberry(i * 17 + 3)(), .7) * 1.4, r = 400;
+  starPos[i * 3] = Math.cos(a) * Math.cos(e) * r; starPos[i * 3 + 1] = Math.sin(e) * r; starPos[i * 3 + 2] = Math.sin(a) * Math.cos(e) * r; }
+const skyStars = new THREE.Points(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(starPos, 3)), new THREE.PointsMaterial({ color: 0xfff6e0, size: 1.6, sizeAttenuation: false, fog: false, transparent: true, opacity: .85, depthWrite: false }));
+skyStars.visible = false; skyDome.add(skyStars);
+const _sh = new THREE.Color(), _sz = new THREE.Color(), _sc = new THREE.Color();
+function paintSky(sky, mood, Mo) {
+  const night = !!Mo.torch || mood === 'gece', wet = !!Mo.rain, grey = wet || mood === 'sis' || mood === 'bulut';
+  _sh.set(sky);   // ufuk = sis rengi
+  _sz.set(sky).multiplyScalar(night ? .42 : .82).lerp(_sc.set(night ? 0x0a1230 : mood === 'aksam' ? 0x5a5c9a : 0x3f86cf), grey ? .12 : night ? .65 : .5);
+  const p = skyGeo.attributes.position, col = skyGeo.attributes.color;
+  for (let i = 0; i < p.count; i++) { const k = Math.max(0, p.getY(i) / 420), m = Math.pow(Math.min(1, k * 1.25), .6); _sc.copy(_sh).lerp(_sz, m); col.setXYZ(i, _sc.r, _sc.g, _sc.b); }
+  col.needsUpdate = true; skyStars.visible = night;
+  const cc = night ? 0x56608a : wet ? 0xa4acb6 : mood === 'aksam' ? 0xffc29a : mood === 'sabah' ? 0xffe2c8 : 0xffffff;
+  skyClouds.children.forEach((g, i) => { g.visible = grey || night || i % 3 !== 1; g.children.forEach(sp => { sp.material.color.set(cc); sp.material.opacity = night ? .35 : grey ? .95 : .78; }); });
+}
+
 // sancak dokusu: firuze zemin, altın hilal; altında Kınık boyunun damgası (Selçuklular Kınık boyundandır;
 // Oğuz damgaları Kaşgarlı Mahmud'un Dîvânu Lugâti't-Türk'ünde, 1072–74, Malazgirt'le aynı yıllar). Maç kipinde (MAC) damga yok.
 function flagTexture(bg, fg, damga = true) {
@@ -667,7 +876,7 @@ function buildWorld(ti, mood, road) {
   const B = THEMES[ti], Mo = MOODS[mood] || {}, tt = Mo.t || 0, ro = road - 6;
   const T = Object.assign({}, B, { sky: Mo.sky ? mix(B.sky, Mo.sky, .8) : B.sky, ground: mix(B.ground, Mo.tint, tt), hill: B.hill.map(c => mix(c, Mo.tint, tt)),
     mt: mix(B.mt, Mo.tint, tt * .8), bush: Mo.bush !== undefined ? Mo.bush : mix(B.bush, Mo.tint, tt * .6), sun: Mo.sun || B.sun, hemiG: mix(B.hemiG, Mo.tint, tt) });
-  scene.background.set(T.sky); scene.fog.color.set(T.sky); sun.color.set(T.sun); hemi.groundColor.set(T.hemiG);
+  scene.background.set(T.sky); scene.fog.color.set(T.sky); sun.color.set(T.sun); hemi.groundColor.set(T.hemiG); paintSky(T.sky, mood, Mo);
   const fg = Mo.fog || [70, 200]; scene.fog.near = fg[0]; scene.fog.far = fg[1];
   sun.intensity = 0.82 * (Mo.light || 1); hemi.intensity = 0.78 * (Mo.hemi || Mo.light || 1);
   rainLines.visible = !!Mo.rain; snowPts.visible = !!Mo.snow;
@@ -1110,7 +1319,7 @@ function renderSet() {
   $('setQuit').hidden = !(HOST && HOST.quit);
 }
 $('setLang').addEventListener('click', e => { const v = e.target.dataset && e.target.dataset.v; if (!v) return; SFX.click(); S.lang = v; D.setLang(v); persist(); drawSnd(); renderSet(); if (G && mode === 'menu') previewLevel(nextLevel()); });
-$('setQ').addEventListener('click', e => { const v = e.target.dataset && e.target.dataset.v; if (!v) return; SFX.click(); S.q = v; persist(); applyQuality(); renderSet(); curTheme = -1; if (G && mode === 'menu') previewLevel(nextLevel()); });
+$('setQ').addEventListener('click', e => { const v = e.target.dataset && e.target.dataset.v; if (!v) return; SFX.click(); S.q = v; persist(); applyQuality(); lodUygula(); renderSet(); curTheme = -1; if (G && mode === 'menu') previewLevel(nextLevel()); });
 $('setFs').addEventListener('click', e => { const v = e.target.dataset && e.target.dataset.v; if (v === undefined) return; SFX.click(); S.fs = +v; persist(); applyFullscreen(); renderSet(); });
 $('setSfx').addEventListener('input', e => { S.vol.sfx = +e.target.value; applyVolume(); });
 $('setMus').addEventListener('input', e => { S.vol.mus = +e.target.value; applyVolume(); });
@@ -1254,6 +1463,14 @@ window.addEventListener('gamepadconnected', () => { padActive = true; setTimeout
 
 /* ================= DÜŞEN AKINCILAR ================= */
 const MAXD = 70, deadMesh = inst(akinciG, armyMat, MAXD), DEAD = [];
+// Grafik: Düşük → eski sade gövdeler (az üçgen); Orta/Yüksek → ayrıntılı akıncı ve sipahi (gorsel-1.7)
+let lodSade = false, lodT = 0, lodN = 0;
+function lodUygula() { const d = S.q === 'dusuk' || lodSade; crowdMesh.geometry = deadMesh.geometry = heroMesh.geometry = d ? akinciSadeG : akinciG; sipahiMesh.geometry = d ? sipahiSadeG : sipahiG; serdar.geometry = d ? serdarSadeG : serdarG; binek.geometry = d ? binekSadeG : binekG; }
+lodUygula();
+// telefon zorlanırsa (oyun sırasında 4 sn ortalama 36 kare/sn altı) ayrıntılı gövdeler bu açılışta sadeye iner; ayar değişmez (Gelişim Defteri G71)
+function lodOlc(dt) { if (lodSade || S.q === 'dusuk' || (window.VR && VR.on && VR.test)) return; lodT += dt; lodN++; if (lodT < 4) return;
+  if (lodT / lodN > 1 / 36) { lodSade = true; crowdMesh.geometry = deadMesh.geometry = heroMesh.geometry = akinciSadeG; sipahiMesh.geometry = sipahiSadeG; serdar.geometry = serdarSadeG; binek.geometry = binekSadeG; }
+  lodT = 0; lodN = 0; }
 let lostSeen = 0, lossPop = 0, lossShown = 0, lossT = 0;
 function updateDead(dt) {
   if (!G) return;
@@ -1344,7 +1561,7 @@ function frame(now) {
     if (darbeT > 0) darbeT -= dt; darbeK = Math.max(0, darbeK - dt * 5);
     if (mode === 'play' && !paused) {
       G.tx += keyDir * 12 * dt;
-      M.step(G, dt * coachSlow()); handleEvents(); coachTick(dt); drumLoop(dt);
+      M.step(G, dt * coachSlow()); handleEvents(); coachTick(dt); drumLoop(dt); if (!Q.has('kare')) lodOlc(dt);
       if (hintT > 50 && (dragSum > 140 || keyDir)) { hintT = 0; S.tips.move = 1; persist(); popup(t('Harika!'), G.x, 3, G.z, 'gold'); }   // ilk bölüm: kaydırmayı öğrenene kadar ipucu kalır
       if (hintT > 0 && hintT < 50) { hintT -= dt; } $('hint').hidden = !(hintT > 0);
       if (G.state === 'win' && mode === 'play') finish(true);
@@ -1362,8 +1579,10 @@ function frame(now) {
     else {
       if (camera.fov > 60 && window.innerWidth / window.innerHeight >= 0.8 || camera.fov > 80) { camera.up.set(0, 1, 0); resize(); }
       const far = mode === 'menu' ? 1 : 0, ck = 1 + (G.road - 6) * 0.075;   // geniş yolda kamera geri çekilir
-      camera.position.set(camX + (far ? Math.sin(T * 0.25) * 1.5 : 0), (12.5 + far * 1.5) * ck, camZ + (12.5 + far * 2) * ck); camera.lookAt(camX * 0.7, 0, camZ - 12 * ck);
+      const egim = camera.aspect < 0.8 ? 1.8 : 0;   // dik ekranda bakış hafif kalkar: ufuk ve gök kadrajın üst şeridine girer, ordu yine ekranda
+      camera.position.set(camX + (far ? Math.sin(T * 0.25) * 1.5 : 0), (12.5 + far * 1.5) * ck, camZ + (12.5 + far * 2) * ck); camera.lookAt(camX * 0.7, egim, camZ - (12 + egim) * ck);
     }
+    skyDome.visible = !(window.VR && VR.on); skyDome.position.copy(camera.position); skyClouds.rotation.y = T * .004;
     updatePrecip(dt, camX, camZ - 20);
     sun.position.set(G.x + 8, 24, G.z + 8); sun.target.position.set(G.x, 0, G.z - 8);
     const showBubble = !(window.VR && VR.on) && (mode === 'play' || mode === 'menu' || mode === 'dying') && G.count + G.heroes > 0 && $('scrLevels').hidden && $('scrCamp').hidden;

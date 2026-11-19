@@ -1,7 +1,7 @@
-1923 bölüm: oyun tamamlandı!
-• 10 yeni sefer, 470 yeni bölüm: Trablusgarp, Edirne, Çanakkale, Kut'ül Amare, Doğu Cephesi, İnönü, Sakarya, Büyük Taarruz, İzmir Yolu
-• 1923. bölümde büyük final
-• 47 bölge, 23 yeni dev, 11 yeni düşman birliği: makineli tüfek mevzileri, Anzak piyadesi, evzonlar, süvariler
-• 3 yeni yay: Çanakkale, Sakarya ve Kocatepe yayları
-• Çöl, karlı dağlar, Gelibolu kıyıları ve Ege ovaları
-Bütün oyuncularımıza teşekkürler!
+Akıncılar yenilendi!
+• Yeni akıncılar: kürk kenarlı ak keçe börk, yüz ve pala bıyık, dize inen kaftan, kepenek, sadak ve Türk yayı
+• Yeni sipahiler: yeleli, eklemli bacaklı doru atlar; al-altın çul, sarıklı tolga, kalkan
+• Serdarın elinde ay yıldızlı al sancak
+• Gök kubbesi: ufukta yavaş bulutlar, gece yıldızlar; Sipahi Gözü'nde gök bütün ekranı kaplar
+• Dik ekranda bakış hafif kalktı, ufuk görünüyor
+• Eski telefonlar için Ayarlar'da Grafik: Düşük sade görünümü korur

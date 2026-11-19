@@ -1,7 +1,7 @@
-1923 levels: the game is complete!
-• 10 new campaigns, 470 new levels: Tripolitania, Edirne, Gallipoli, Kut al-Amara, Eastern Front, İnönü, Sakarya, The Great Offensive, Road to İzmir
-• The grand finale at level 1923
-• 47 regions, 23 new giants, 11 new enemy units: machine-gun nests, ANZAC infantry, evzones, cavalry
-• 3 new bows: the Çanakkale, Sakarya and Kocatepe bows
-• Desert, snowy mountains, the shores of Gallipoli and the plains of the Aegean
-Thanks to all our players!
+The raiders, redrawn!
+• New akinji raiders: fur-trimmed felt bork, faces and moustaches, kaftans, capes, quivers, Turkish bows
+• New sipahi cavalry: maned bay horses with jointed legs, red and gold caparisons, turbaned helmets and shields
+• The commander now carries a red banner with crescent and star
+• A real sky: slow clouds on the horizon, stars at night; in Sipahi View the sky fills the screen
+• In portrait the camera tilts up to show the horizon
+• Older phones: Settings > Graphics: Low keeps the simple look

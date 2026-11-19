@@ -1,0 +1,21 @@
+<!doctype html><meta charset="utf-8"><title>Malazgirt modelleri</title>
+<style>body{margin:0;background:#2b2f36}iframe{display:none}canvas{display:block}</style>
+<!-- Oyunu gizli çerçevede açar, birleşik model geometrilerini (window.MZ_MODEL) yakından çizer. ?yon=on|arka|yan -->
+<canvas id="c"></canvas>
+<iframe id="f" src="../www/index.html?kare=0&ekran=menu"></iframe>
+<script>
+const yon = new URLSearchParams(location.search).get('yon') || 'on';
+const f = document.getElementById('f');
+f.onload = () => setTimeout(() => {
+  const W = f.contentWindow, T = W.THREE, M = W.MZ_MODEL;
+  const r = new T.WebGLRenderer({ canvas: document.getElementById('c'), antialias: true }); r.setPixelRatio(2); r.setSize(innerWidth, innerHeight);
+  r.shadowMap.enabled = true; r.shadowMap.type = T.PCFSoftShadowMap;
+  const sc = new T.Scene(); sc.background = new T.Color(0xead09a);
+  sc.add(new T.HemisphereLight(0xfff4dc, 0x9c7a4a, 0.85)); const s = new T.DirectionalLight(0xfff0d2, 0.8); s.position.set(4, 8, -6); s.castShadow = true; sc.add(s);
+  const g = new T.Mesh(new T.PlaneGeometry(20, 20), new T.MeshLambertMaterial({ color: 0xd9b673 })); g.rotation.x = -Math.PI / 2; g.receiveShadow = true; sc.add(g);
+  [[M.akinciG, -2.2, 1.6], [M.serdarG, 0, 1], [M.sipahiG, 2.2, 1]].forEach(([geo, x, k]) => { const m = new T.Mesh(geo, M.armyMat); m.position.x = x; m.scale.setScalar(k); m.castShadow = true; sc.add(m); });
+  const cam = new T.PerspectiveCamera(35, innerWidth / innerHeight, .1, 100);
+  const P = { on: [0, 2.2, -8.5], arka: [0, 3, 8.5], yan: [-8, 2.2, -2] }[yon]; cam.position.set(...P); cam.lookAt(0, 1.4, 0);
+  r.render(sc, cam); document.title = 'hazir';
+}, 2500);
+</script>
