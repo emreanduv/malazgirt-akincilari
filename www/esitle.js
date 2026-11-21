@@ -1,4 +1,4 @@
-/* Mr. Anduv! eşitleme (G76): oyun/uygulama kaydı cihazlar arasında kaldığı yerden devam eder.
+/* Mr. Anduv! eşitleme (G84): oyun/uygulama kaydı cihazlar arasında kaldığı yerden devam eder.
    iPhone, iPad, Mac: Apple'ın iCloud anahtar-değer deposu (NSUbiquitousKeyValueStore; yerel eklenti "Esitle",
    ios/App/App/SceneDelegate.swift). Sunucu yok, üyelik yok; veri kullanıcının kendi iCloud hesabında durur.
    Android: telefon değişince Google'ın kendi yedeği (android:allowBackup) geri yükler. Web/VR/Steam: yerel kalır.

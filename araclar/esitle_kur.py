@@ -1,11 +1,11 @@
-# Eşitleme (G76) kurulumu: iOS'a "Esitle" eklentisi (iCloud anahtar-değer deposu) + yetki dosyası.
+# Eşitleme (G84) kurulumu: iOS'a "Esitle" eklentisi (iCloud anahtar-değer deposu) + yetki dosyası.
 # Kullanım (repo kökünde): python3 araclar/esitle_kur.py   · Tekrar çalıştırmak zararsızdır.
 import os, re
 SD = 'ios/App/App/SceneDelegate.swift'
 ENT = 'ios/App/App/App.entitlements'
 PBX = 'ios/App/App.xcodeproj/project.pbxproj'
 EKLENTI = '''
-// MARK: Mr. Anduv! eşitleme (G76): kayıtlar iCloud anahtar-değer deposunda, kullanıcının kendi Apple hesabında.
+// MARK: Mr. Anduv! eşitleme (G84): kayıtlar iCloud anahtar-değer deposunda, kullanıcının kendi Apple hesabında.
 // JS tarafı: www/esitle.js. Sunucu yok; geliştirici hiçbir veriyi görmez.
 @objc(EsitlePlugin)
 public class EsitlePlugin: CAPPlugin, CAPBridgedPlugin {

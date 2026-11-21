@@ -23,7 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 }
 
-// MARK: Mr. Anduv! eşitleme (G76): kayıtlar iCloud anahtar-değer deposunda, kullanıcının kendi Apple hesabında.
+// MARK: Mr. Anduv! eşitleme (G84): kayıtlar iCloud anahtar-değer deposunda, kullanıcının kendi Apple hesabında.
 // JS tarafı: www/esitle.js. Sunucu yok; geliştirici hiçbir veriyi görmez.
 @objc(EsitlePlugin)
 public class EsitlePlugin: CAPPlugin, CAPBridgedPlugin {
