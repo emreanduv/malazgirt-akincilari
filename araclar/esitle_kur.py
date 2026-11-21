@@ -4,7 +4,7 @@
 #   2. iOS'a "Esitle" eklentisini (iCloud anahtar-değer deposu) ekler: SceneDelegate'li ya da storyboard'lu Capacitor
 #   3. Yetki dosyası (App.entitlements) + project.pbxproj'da CODE_SIGN_ENTITLEMENTS
 #   4. ios iş akışına "Eşitleme yetkisi arşive işlenir" adımını ekler (imzasız arşivde yetki kaybolmasın)
-# Kullanım: python3 araclar/esitle_kur.py <uygulama kökü> [--js-dizin www] [--sayfa www/index.html ...] [--is .github/workflows/ios.yml ...] [--depo <repo kökü>]
+# Kullanım: python3 araclar/esitle_kur.py <uygulama kökü> [--js-dizin www] [--sayfa www/index.html ...] [--is .github/workflows/ios.yml ...] [--depo <repo kökü>] [--js-src esitle.js]
 # App ID'de iCloud yeteneği açık olmalı (legend-heads asc-icloud.yml), yoksa dışa aktarım durur.
 import os, re, sys, shutil, argparse
 BURASI = os.path.dirname(os.path.abspath(__file__))
@@ -141,7 +141,7 @@ if __name__ == '__main__':
     a = argparse.ArgumentParser()
     a.add_argument('kok'); a.add_argument('--js-dizin', default='www')
     a.add_argument('--sayfa', nargs='*', default=None); a.add_argument('--is', dest='isler', nargs='*', default=None)
-    a.add_argument('--depo', default=None)
+    a.add_argument('--depo', default=None); a.add_argument('--js-src', default=None, help='sayfadaki yol (vite public/ için: esitle.js)')
     o = a.parse_args()
     kok, depo = os.path.abspath(o.kok), os.path.abspath(o.depo or o.kok)
     jd = os.path.join(kok, o.js_dizin); os.makedirs(jd, exist_ok=True)
@@ -149,7 +149,7 @@ if __name__ == '__main__':
     for p in (o.sayfa if o.sayfa is not None else [os.path.join(o.js_dizin, 'index.html')]):
         pp = os.path.join(kok, p)
         derin = os.path.relpath(jd, os.path.dirname(pp)).replace(os.sep, '/')
-        js = 'esitle.js' if derin == '.' else derin + '/esitle.js'
+        js = o.js_src or ('esitle.js' if derin == '.' else derin + '/esitle.js')
         print(' sayfa', p, 'eklendi' if sayfa(pp, js) else 'zaten var')
     print(' swift', swift(kok))
     for p in o.isler or ['.github/workflows/ios.yml']:
