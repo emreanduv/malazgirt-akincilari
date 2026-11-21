@@ -1,12 +1,19 @@
-# Eşitleme (G84) kurulumu: iOS'a "Esitle" eklentisi (iCloud anahtar-değer deposu) + yetki dosyası.
-# Kullanım (repo kökünde): python3 araclar/esitle_kur.py   · Tekrar çalıştırmak zararsızdır.
-import os, re
-SD = 'ios/App/App/SceneDelegate.swift'
-ENT = 'ios/App/App/App.entitlements'
-PBX = 'ios/App/App.xcodeproj/project.pbxproj'
-EKLENTI = '''
-// MARK: Mr. Anduv! eşitleme (G84): kayıtlar iCloud anahtar-değer deposunda, kullanıcının kendi Apple hesabında.
-// JS tarafı: www/esitle.js. Sunucu yok; geliştirici hiçbir veriyi görmez.
+# Eşitleme (G84) kurulumu: kayıtlar iPhone, iPad ve Mac arasında kaldığı yerden devam eder.
+# Ne yapar (tekrar çalıştırmak zararsızdır; eklenti bloğu her seferinde en güncel hâliyle yenilenir):
+#   1. esitle.js'i web klasörüne koyar ve verilen sayfaların <head>'ine, bütün betiklerden önce ekler
+#   2. iOS'a "Esitle" eklentisini (iCloud anahtar-değer deposu) ekler: SceneDelegate'li ya da storyboard'lu Capacitor
+#   3. Yetki dosyası (App.entitlements) + project.pbxproj'da CODE_SIGN_ENTITLEMENTS
+#   4. ios iş akışına "Eşitleme yetkisi arşive işlenir" adımını ekler (imzasız arşivde yetki kaybolmasın)
+# Kullanım: python3 araclar/esitle_kur.py <uygulama kökü> [--js-dizin www] [--sayfa www/index.html ...] [--is .github/workflows/ios.yml ...] [--depo <repo kökü>]
+# App ID'de iCloud yeteneği açık olmalı (legend-heads asc-icloud.yml), yoksa dışa aktarım durur.
+import os, re, sys, shutil, argparse
+BURASI = os.path.dirname(os.path.abspath(__file__))
+KAYNAK_JS = os.path.join(BURASI, '..', 'www', 'esitle.js')
+BAS, SON = '// MARK: Mr. Anduv! eşitleme (G84) başı', '// MARK: Mr. Anduv! eşitleme (G84) sonu'
+EKLENTI = BAS + '''
+// Kayıtlar iCloud anahtar-değer deposunda, kullanıcının kendi Apple hesabında. JS tarafı: esitle.js.
+// Sunucu yok; geliştirici hiçbir veriyi görmez.
+import Capacitor
 @objc(EsitlePlugin)
 public class EsitlePlugin: CAPPlugin, CAPBridgedPlugin {
     public let identifier = "EsitlePlugin"
@@ -28,10 +35,16 @@ public class EsitlePlugin: CAPPlugin, CAPBridgedPlugin {
         notifyListeners("degisti", data: ["anahtarlar": anahtarlar])
     }
 
+    // Boş liste: depodaki bütün anahtarlar
     @objc func oku(_ call: CAPPluginCall) {
         kv.synchronize()
         var d: [String: Any] = [:]
-        for k in call.getArray("anahtarlar", String.self) ?? [] { if let v = kv.string(forKey: k) { d[k] = v } }
+        let liste = call.getArray("anahtarlar", String.self) ?? []
+        if liste.isEmpty {
+            for (k, v) in kv.dictionaryRepresentation { if let s = v as? String { d[k] = s } }
+        } else {
+            for k in liste { if let v = kv.string(forKey: k) { d[k] = v } }
+        }
         call.resolve(["degerler": d, "icloud": FileManager.default.ubiquityIdentityToken != nil])
     }
 
@@ -47,15 +60,8 @@ class AnaViewController: CAPBridgeViewController {
         bridge?.registerPluginInstance(EsitlePlugin())
     }
 }
-'''
-s = open(SD).read()
-if 'EsitlePlugin' not in s:
-    assert 'window?.rootViewController = CAPBridgeViewController()' in s, 'SceneDelegate beklenen biçimde değil'
-    s = s.replace('window?.rootViewController = CAPBridgeViewController()', 'window?.rootViewController = AnaViewController()')
-    s = s.rstrip() + '\n' + EKLENTI
-    open(SD, 'w').write(s)
-if not os.path.exists(ENT):
-    open(ENT, 'w').write('''<?xml version="1.0" encoding="UTF-8"?>
+''' + SON + '\n'
+YETKI = '''<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
@@ -63,10 +69,89 @@ if not os.path.exists(ENT):
 	<string>$(TeamIdentifierPrefix)$(CFBundleIdentifier)</string>
 </dict>
 </plist>
-''')
-p = open(PBX).read()
-if 'CODE_SIGN_ENTITLEMENTS' not in p:
-    p, n = re.subn(r'(\n(\t+)PRODUCT_BUNDLE_IDENTIFIER = [^;]+;)', r'\1\n\2CODE_SIGN_ENTITLEMENTS = App/App.entitlements;', p)
-    assert n >= 2, n
-    open(PBX, 'w').write(p)
-print('eşitleme kuruldu')
+'''
+ADIM = '''      - name: Eşitleme yetkisi (iCloud anahtar-değer deposu) arşive işlenir
+        run: |
+          APP=$(ls -d $RUNNER_TEMP/*.xcarchive/Products/Applications/*.app | head -1)
+          BID=$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' "$APP/Info.plist")
+          cat > "$APP/archived-expanded-entitlements.xcent" <<X
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>application-identifier</key><string>${{ env.APPLE_TEAM_ID }}.$BID</string>
+            <key>com.apple.developer.team-identifier</key><string>${{ env.APPLE_TEAM_ID }}</string>
+            <key>com.apple.developer.ubiquity-kvstore-identifier</key><string>${{ env.APPLE_TEAM_ID }}.$BID</string>
+          </dict></plist>
+          X
+          # Arşiv imzasız alındığı için yetkiler ikilide yok; dışa aktarım yetkileri mevcut imzadan okur.
+          # Geçici (ad-hoc) imzayla yetkileri ikiliye koy; dışa aktarım asıl dağıtım imzasıyla yeniden imzalar.
+          codesign -f -s - --entitlements "$APP/archived-expanded-entitlements.xcent" "$APP"
+          codesign -d --entitlements - "$APP" 2>&1 | grep -i kvstore || true
+'''
+
+def oku(p): return open(p, encoding='utf-8').read()
+def yaz(p, s): open(p, 'w', encoding='utf-8').write(s)
+
+def swift(kok):
+    app = os.path.join(kok, 'ios/App/App')
+    sd, ad, sb = os.path.join(app, 'SceneDelegate.swift'), os.path.join(app, 'AppDelegate.swift'), os.path.join(app, 'Base.lproj/Main.storyboard')
+    if os.path.exists(sd) and ('CAPBridgeViewController()' in oku(sd) or 'AnaViewController()' in oku(sd)):
+        hedef = sd
+        s = oku(sd).replace('window?.rootViewController = CAPBridgeViewController()', 'window?.rootViewController = AnaViewController()')
+        assert 'AnaViewController()' in s, 'SceneDelegate beklenen biçimde değil'
+    else:
+        hedef = ad
+        b = oku(sb)
+        if 'customClass="AnaViewController"' not in b:
+            b2 = b.replace('customClass="CAPBridgeViewController" customModule="Capacitor"', 'customClass="AnaViewController" customModule="App" customModuleProvider="target"')
+            assert b2 != b, 'Main.storyboard beklenen biçimde değil'
+            yaz(sb, b2)
+        s = oku(ad)
+    # Eski (işaretsiz) pilot bloğunu ve önceki işaretli bloğu çıkar, en güncelini ekle
+    s = re.sub(re.escape(BAS) + r'.*?' + re.escape(SON) + r'\n?', '', s, flags=re.S)
+    s = re.sub(r'\n// MARK: Mr\. Anduv! eşitleme \(G84\): kayıtlar.*?\nclass AnaViewController: CAPBridgeViewController \{.*?\n\}\n', '\n', s, flags=re.S)
+    yaz(hedef, s.rstrip() + '\n\n' + EKLENTI)
+    ent = os.path.join(app, 'App.entitlements')
+    if not os.path.exists(ent): yaz(ent, YETKI)
+    pbx = os.path.join(kok, 'ios/App/App.xcodeproj/project.pbxproj')
+    p = oku(pbx)
+    if 'CODE_SIGN_ENTITLEMENTS' not in p:
+        p, n = re.subn(r'(\n(\t+)PRODUCT_BUNDLE_IDENTIFIER = [^;]+;)', r'\1\n\2CODE_SIGN_ENTITLEMENTS = App/App.entitlements;', p)
+        assert n >= 2, n
+        yaz(pbx, p)
+    return os.path.relpath(hedef, kok)
+
+def sayfa(p, js_yolu):
+    s = oku(p)
+    if re.search(r'<script[^>]+esitle\.js', s): return False
+    etiket = '<script src="%s"></script>' % js_yolu
+    m = re.search(r'<meta charset[^>]*>', s, re.I) or re.search(r'<head[^>]*>', s, re.I)
+    assert m, p
+    yaz(p, s[:m.end()] + etiket + s[m.end():])
+    return True
+
+def is_akisi(p):
+    s = oku(p)
+    if 'Eşitleme yetkisi' in s: return False
+    i = s.index("      - name: App Store Connect'e yükle")
+    yaz(p, s[:i] + ADIM + s[i:])
+    return True
+
+if __name__ == '__main__':
+    a = argparse.ArgumentParser()
+    a.add_argument('kok'); a.add_argument('--js-dizin', default='www')
+    a.add_argument('--sayfa', nargs='*', default=None); a.add_argument('--is', dest='isler', nargs='*', default=None)
+    a.add_argument('--depo', default=None)
+    o = a.parse_args()
+    kok, depo = os.path.abspath(o.kok), os.path.abspath(o.depo or o.kok)
+    jd = os.path.join(kok, o.js_dizin); os.makedirs(jd, exist_ok=True)
+    if os.path.abspath(KAYNAK_JS) != os.path.abspath(os.path.join(jd, 'esitle.js')): shutil.copy(KAYNAK_JS, os.path.join(jd, 'esitle.js'))
+    for p in (o.sayfa if o.sayfa is not None else [os.path.join(o.js_dizin, 'index.html')]):
+        pp = os.path.join(kok, p)
+        derin = os.path.relpath(jd, os.path.dirname(pp)).replace(os.sep, '/')
+        js = 'esitle.js' if derin == '.' else derin + '/esitle.js'
+        print(' sayfa', p, 'eklendi' if sayfa(pp, js) else 'zaten var')
+    print(' swift', swift(kok))
+    for p in o.isler or ['.github/workflows/ios.yml']:
+        print(' iş akışı', p, 'eklendi' if is_akisi(os.path.join(depo, p)) else 'zaten var')
+    print('eşitleme kuruldu:', kok)

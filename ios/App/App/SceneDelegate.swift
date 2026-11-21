@@ -23,8 +23,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 }
 
-// MARK: Mr. Anduv! eşitleme (G84): kayıtlar iCloud anahtar-değer deposunda, kullanıcının kendi Apple hesabında.
-// JS tarafı: www/esitle.js. Sunucu yok; geliştirici hiçbir veriyi görmez.
+// MARK: Mr. Anduv! eşitleme (G84) başı
+// Kayıtlar iCloud anahtar-değer deposunda, kullanıcının kendi Apple hesabında. JS tarafı: esitle.js.
+// Sunucu yok; geliştirici hiçbir veriyi görmez.
+import Capacitor
 @objc(EsitlePlugin)
 public class EsitlePlugin: CAPPlugin, CAPBridgedPlugin {
     public let identifier = "EsitlePlugin"
@@ -46,10 +48,16 @@ public class EsitlePlugin: CAPPlugin, CAPBridgedPlugin {
         notifyListeners("degisti", data: ["anahtarlar": anahtarlar])
     }
 
+    // Boş liste: depodaki bütün anahtarlar
     @objc func oku(_ call: CAPPluginCall) {
         kv.synchronize()
         var d: [String: Any] = [:]
-        for k in call.getArray("anahtarlar", String.self) ?? [] { if let v = kv.string(forKey: k) { d[k] = v } }
+        let liste = call.getArray("anahtarlar", String.self) ?? []
+        if liste.isEmpty {
+            for (k, v) in kv.dictionaryRepresentation { if let s = v as? String { d[k] = s } }
+        } else {
+            for k in liste { if let v = kv.string(forKey: k) { d[k] = v } }
+        }
         call.resolve(["degerler": d, "icloud": FileManager.default.ubiquityIdentityToken != nil])
     }
 
@@ -65,3 +73,4 @@ class AnaViewController: CAPBridgeViewController {
         bridge?.registerPluginInstance(EsitlePlugin())
     }
 }
+// MARK: Mr. Anduv! eşitleme (G84) sonu
