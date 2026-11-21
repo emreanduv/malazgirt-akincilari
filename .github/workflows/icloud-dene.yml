@@ -57,6 +57,10 @@ jobs:
           </dict></plist>
           X
           cat "$APP/archived-expanded-entitlements.xcent"
+          # Arşiv imzasız alındığı için yetkiler ikilide yok; dışa aktarım yetkileri mevcut imzadan okur.
+          # Geçici (ad-hoc) imzayla yetkileri ikiliye koy; dışa aktarım asıl dağıtım imzasıyla yeniden imzalar.
+          codesign -f -s - --entitlements "$APP/archived-expanded-entitlements.xcent" "$APP"
+          codesign -d --entitlements - "$APP" 2>&1 | grep -i kvstore || true
       - name: App Store Connect'e yükle
         run: |
           cat > $RUNNER_TEMP/export.plist <<PL
