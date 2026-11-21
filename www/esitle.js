@@ -29,7 +29,8 @@
 
   // Oyunun kendi yazışları: yerel yazılır, zaman damgası güncellenir, 1,5 sn sonra buluta gider
   Storage.prototype.setItem = function (k, v) { setI.call(this, k, v); if (this === LS && izli(k)) isaretle(k); };
-  Storage.prototype.removeItem = function (k) { remI.call(this, k); if (this === LS && izli(k)) isaretle(k); };
+  // Silme ("Verilerimi sil") hemen buluta da gider: kayıt bütün cihazlardan silinir
+  Storage.prototype.removeItem = function (k) { remI.call(this, k); if (this === LS && izli(k)) { isaretle(k); if (hazir) { clearTimeout(zamanlayici); gonder(); } } };
 
   // Buluttakiyle karşılaştır: yenisi buluttaysa yerele yaz (true döner), yerel yeniyse buluta gönder
   function karsilastir() {
