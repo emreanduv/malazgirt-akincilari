@@ -26,4 +26,7 @@ if [ -n "${SURUM:-}" ] && [ -f store/SON-SURUM ]; then
 fi
 # Türkçe yazı (iOS "ı") ve ◀ ▶ işaretleri — CLAUDE.md "Türkçe yazı ve iOS işaretleri"
 if python3 araclar/turkce-yazi-kontrol.py; then :; else hata=1; fi
+# Ses koruyucu (CLAUDE.md "Ses koruyucu"): arka plandan dönünce ses geri gelsin
+if grep -q 'ses-kurtarici.js' www/index.html && grep -q 'W.sesKurtar = later' www/ses-kurtarici.js && grep -q 'SesKoruyucu.shared.baslat' ios/App/App/AppDelegate.swift && grep -q 'window.sesKurtar' android/app/src/main/java/com/anduv/malazgirt/MainActivity.java; then echo "✓ ses koruyucu (JS + iOS + Android)"; else echo "::error::Ses koruyucu eksik (ses-kurtarici.js, AppDelegate SesKoruyucu, MainActivity onResume)"; HATA=1; hata=1; fi
+# ses koruyucu sonu
 [ $hata -eq 0 ] && echo "Yayın kontrolü geçti." || { echo "Yayın kontrolü BAŞARISIZ — derleme durduruldu."; exit 1; }

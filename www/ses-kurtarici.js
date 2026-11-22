@@ -1,35 +1,35 @@
 /*
- * ses-kurtarici.js — Mr. Anduv! oyunları için ortak ses düzeltmesi (v2)
+ * ses-kurtarici.js — Mr. Anduv! oyun ve uygulamaları için ortak ses koruyucu (v3, 22 Kasım 2026)
  *
- * Sorun: Oyundan WhatsApp vb. bir uygulamaya geçip dönünce telefon, oyunun ses
- * motorunu (AudioContext) "suspended" ya da iOS'ta "interrupted" bırakıyor.
- * Oyunlar yalnızca "suspended" durumuna bakıyordu, "interrupted" hiç açılmıyordu.
- * iOS bazen motoru "çalışıyor" gösterip sessiz de bırakabiliyor (zombi motor).
+ * Sorun: Başka uygulamaya/bildirime/kilit ekranına geçip dönünce telefon, sayfanın
+ * ses motorunu (AudioContext) "suspended" ya da iOS'ta "interrupted" bırakıyor;
+ * iOS bazen motoru "running" gösterip sessiz de bırakabiliyor (zombi motor).
+ * v2 yalnız JS'tendi; yerel taraf (iOS AVAudioSession, Android WebView) uyanmadığı
+ * için ses yine gidiyordu. v3 yerel kabuktan gelen window.sesKurtar() çağrısını da alır.
  *
  * Bu dosya:
- *  - Oyundaki her ses motorunu kendiliğinden takip eder.
- *  - Arka plana gidince sesi düzgünce durdurur, dönünce ve ilk dokunuşta açar.
- *  - iOS'un ses oturumunu sessiz bir "dürtme" sesiyle yeniden uyandırır.
- *  - Motor yine açılmazsa, oyunun bildirdiği "yeniden kur" fonksiyonunu çağırır.
- *  - <audio> müziklerini ve Howler.js'i de kapsar.
+ *  - Sayfadaki her AudioContext'i (Phaser, Howler, oyunun kendi motoru) kayda alır.
+ *  - Arka plana gidince sesi düzgünce durdurur; dönünce, odakta ve ilk dokunuşta
+ *    birkaç kez (0 / 150 / 600 / 1500 ms) açar, sessiz dürtme sesiyle oturumu uyandırır.
+ *  - Motor yine açılmazsa oyunun bildirdiği "yeniden kur" fonksiyonunu çağırır.
+ *  - Duran <audio>/<video> müziklerini sürdürür.
+ *  - iOS AppDelegate / Android MainActivity dönüşte window.sesKurtar() çağırır.
  *
- * Kullanım: HTML'de <head> içine, diğer tüm script'lerden ÖNCE:
+ * Kullanım: index.html <head> içinde, BÜTÜN betiklerden ÖNCE:
  *   <script src="ses-kurtarici.js"></script>
- * Oyunun ses motoru sıfırdan kurulabiliyorsa (önerilir):
- *   window.SesKurtarici && SesKurtarici.yenidenKur(() => { AC = null; });
+ * İsteğe bağlı: SesKurtarici.yenidenKur(() => { AC = null; });
+ * Kaynak: emreanduv/kervan-yolu www/ses-kurtarici.js (bütün repolarda aynı dosya).
  */
 (function () {
   'use strict';
-  if (window.SesKurtarici) return;
-  var contexts = [];
-  var pausedMedia = [];
-  var rebuildFns = [];
-  var broken = false;
-  var kick = null;
+  var W = window;
+  if (W.SesKurtarici) return;
+  var contexts = [], pausedMedia = [], rebuildFns = [];
+  var broken = false, kick = null;
 
-  // 1) Oyunun oluşturduğu her AudioContext'i otomatik kaydet
+  // 1) Oluşturulan her AudioContext'i kaydet
   ['AudioContext', 'webkitAudioContext'].forEach(function (name) {
-    var Orig = window[name];
+    var Orig = W[name];
     if (!Orig || Orig.__sesKurtarici) return;
     var Wrapped = function (opts) {
       var ctx = opts ? new Orig(opts) : new Orig();
@@ -37,14 +37,15 @@
       return ctx;
     };
     Wrapped.prototype = Orig.prototype;
+    try { Object.setPrototypeOf(Wrapped, Orig); } catch (e) {}
     Wrapped.__sesKurtarici = true;
-    window[name] = Wrapped;
+    W[name] = Wrapped;
   });
 
-  // iOS 17+: ses oturumunu oyun sesi olarak işaretle
+  // iOS 17+: oyun sesi, diğer seslerle karışabilir
   try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
 
-  // 2) Sessiz dürtme sesi: iOS'ta askıda kalan ses oturumunu yeniden başlatır
+  // 2) Sessiz dürtme sesi (iOS'ta askıda kalan oturumu yeniden başlatır)
   function makeKick() {
     try {
       var n = 800, sr = 8000, buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf);
@@ -62,7 +63,7 @@
   function alive() { return contexts.filter(function (c) { return c.state !== 'closed'; }); }
   function allContexts() {
     var list = alive();
-    if (window.Howler && Howler.ctx && list.indexOf(Howler.ctx) < 0) list.push(Howler.ctx);
+    try { if (W.Howler && Howler.ctx && list.indexOf(Howler.ctx) < 0) list.push(Howler.ctx); } catch (e) {}
     return list;
   }
 
@@ -88,26 +89,30 @@
     if (!kick) makeKick();
     if (kick) { try { kick.currentTime = 0; var p = kick.play(); if (p && p.catch) p.catch(function () {}); } catch (e) {} }
     allContexts().forEach(function (c) {
-      if (c.state !== 'running') c.resume().catch(function () { broken = true; });
+      if (c.state !== 'running') { try { c.resume().catch(function () { broken = true; }); } catch (e) {} }
       try { // boş bir ses parçası çalarak motoru dürt
         var b = c.createBuffer(1, 1, 22050), s = c.createBufferSource();
         s.buffer = b; s.connect(c.destination); s.start(0);
       } catch (e) {}
     });
-    pausedMedia.forEach(function (m) { var p = m.play(); if (p && p.catch) p.catch(function () {}); });
-    pausedMedia = [];
+    var pm = pausedMedia; pausedMedia = [];
+    pm.forEach(function (m) { try { var p = m.play(); if (p && p.catch) p.catch(function () { pausedMedia.push(m); }); } catch (e) {} });
     checkLater();
   }
+  // Dönüşte telefon ilk denemeyi reddedebilir: birkaç kez dene
+  function later() { wake(); setTimeout(wake, 150); setTimeout(wake, 600); setTimeout(wake, 1500); }
 
   function sleep() {
-    allContexts().forEach(function (c) { if (c.state === 'running') c.suspend().catch(function () {}); });
-    document.querySelectorAll('audio,video').forEach(function (m) {
-      if (!m.paused) { m.pause(); pausedMedia.push(m); }
-    });
+    allContexts().forEach(function (c) { if (c.state === 'running') { try { c.suspend().catch(function () {}); } catch (e) {} } });
+    try {
+      document.querySelectorAll('audio,video').forEach(function (m) {
+        if (!m.paused && m !== kick) { m.pause(); pausedMedia.push(m); }
+      });
+    } catch (e) {}
   }
 
-  // 3) Her dokunuşta: ses kapalı ya da bozuksa aç (tarayıcı yalnızca dokunuşla izin verir)
-  ['pointerdown', 'touchend', 'mousedown', 'keydown'].forEach(function (ev) {
+  // 3) Her dokunuşta: ses kapalı ya da bozuksa aç (tarayıcı yalnız dokunuşla izin verir)
+  ['pointerdown', 'touchstart', 'touchend', 'mousedown', 'keydown'].forEach(function (ev) {
     document.addEventListener(ev, function () {
       var needs = broken || pausedMedia.length ||
         allContexts().some(function (c) { return c.state !== 'running'; });
@@ -116,25 +121,29 @@
   });
 
   // 4) Arka plana gidiş / dönüş
-  document.addEventListener('visibilitychange', function () { document.hidden ? sleep() : wake(); });
-  window.addEventListener('pagehide', sleep);
-  window.addEventListener('pageshow', wake);
+  document.addEventListener('visibilitychange', function () { document.hidden ? sleep() : later(); });
+  W.addEventListener('pagehide', sleep);
+  W.addEventListener('pageshow', later);
+  W.addEventListener('focus', later);
 
-  // 5) Capacitor (mağaza sürümleri) yerel "uygulama döndü" olayları
+  // 5) Capacitor yerel olayları
   document.addEventListener('pause', sleep, false);
-  document.addEventListener('resume', wake, false);
+  document.addEventListener('resume', later, false);
   function hookCapacitor() {
     try {
-      var App = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App;
-      if (App && App.addListener) { App.addListener('appStateChange', function (s) { s.isActive ? wake() : sleep(); }); return true; }
+      var App = W.Capacitor && W.Capacitor.Plugins && W.Capacitor.Plugins.App;
+      if (App && App.addListener) { App.addListener('appStateChange', function (s) { s.isActive ? later() : sleep(); }); return true; }
     } catch (e) {}
     return false;
   }
-  if (!hookCapacitor()) window.addEventListener('load', hookCapacitor);
+  if (!hookCapacitor()) W.addEventListener('load', hookCapacitor);
 
-  window.SesKurtarici = {
+  W.SesKurtarici = {
     yenidenKur: function (fn) { if (typeof fn === 'function') rebuildFns.push(fn); },
-    uyandir: wake,
+    uyandir: later,
     durum: function () { return allContexts().map(function (c) { return c.state; }); }
   };
+  // iOS AppDelegate ve Android MainActivity dönüşte bunu çağırır
+  W.sesKurtar = later;
+  W.sesKurtarDurum = W.SesKurtarici.durum;
 })();
