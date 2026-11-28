@@ -77,3 +77,9 @@ Telefon değişince ya da iPhone, iPad, Mac arasında geçince oyunlar ve uygula
 - Varsayılan: localStorage'daki bütün kayıtlar eşitlenir; cihaza özgü olanlar (kumanda ölçüsü, VR görünüşü, ekran) `ESITLE_HARIC` ile dışarıda kalır. En son değişen kazanır; ilk eşitlemede çakışırsa daha uzun (daha ilerlemiş) kayıt kalır, öteki `anahtar·eski` olarak saklanır. "Verilerimi sil" iCloud'daki kopyayı da siler.
 - Android: `android:allowBackup="true"` (Google yedeği) açık kalır. Steam: Steam Cloud (Steamworks ayarı Emre'nin). Kayıt 1 MB'ı aşarsa (CBM kariyeri) iCloud Belgeler'e geçilir.
 - Gizlilik politikasında "Cihazlar arası kayıt" paragrafı (TR + EN) bulunur. Gelişim Defteri G84.
+
+### Repolar private, vitrin public (Emre'nin kuralı, 28 Kasım 2026)
+- **Bütün repolar private.** Yalnız iki repo public: `emreanduv/emreanduv` (profil) ve `emreanduv/emreanduv.github.io` (vitrin). Yeni bir oyun/uygulama reposu açılırken ilk günden private açılır.
+- Herkesin görmesi gereken her şey vitrine işlenir: gizlilik politikaları, destek sayfası, web/VR sürümleri, önizlemeler, tanıtım metinleri ve bağlantılar → `emreanduv.github.io/<ürün-adı>/…`. Oyun/uygulamanın ana klasörü (kod) private repoda kalır.
+- Mağazalara (App Store, Google Play, Meta, Steam) verilen gizlilik/destek/pazarlama bağlantısı **asla** `github.com/emreanduv/<repo>/…` (blob, issues, docs) olmaz; her zaman vitrin adresi. Bir sayfa repoda değişirse vitrindeki kopyası da aynı gün güncellenir.
+- İstisna (yalnız Emre'nin kararıyla): GitHub Actions bütçesi bitip iş durursa, bir repo ay başında dakikalar yenilenene kadar **kısa süreli** public yapılabilir. Açmadan önce repoda anahtar/şifre/.env/imza dosyası olmadığı denetlenir; ay dönünce yeniden private yapılır.
